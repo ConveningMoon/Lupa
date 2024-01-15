@@ -1,16 +1,41 @@
-import { Text, StyleSheet, View, TextInput, Image} from "react-native";
+import {
+    View, 
+    StyleSheet, 
+    TextInput
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+import { useState, useEffect } from 'react';
+
+import Colors from '../constants/colors';
 
 function InfoInput(props){
+    const [inputText, setInputText] = useState('');
+
+    function inputHandler(inputEnteredText){
+        setInputText(inputEnteredText);
+        props.onSaveInfo(inputText);        
+    }
+
+    // useEffect(() => {
+    //     console.log(inputText);
+    // }, [inputText]);
+
     return(
-        <View style={styles.infoContainer}>           
-            <Image
-                source={props.source}
-                style={styles.logoIco}
-            /> 
+        <View style={styles.infoContainer}>    
+            <View style={styles.logoIco}>
+                <Ionicons
+                    name={props.name}
+                    size={30}
+                    color={Colors.color_lightGreen}
+                />     
+            </View>               
             <TextInput
                 placeholder={props.placeholder}
                 placeholderTextColor={props.color}
                 style={styles.infoInput}
+                value={inputText}
+                onChangeText={inputHandler}                
             />
         </View>
     );
@@ -27,15 +52,13 @@ const styles = StyleSheet.create({
         paddingBottom: 15
     },    
     logoIco: {
-        tintColor: '#79AE92',
-        height: 20,
-        width: 35,
-        marginRight: 10
+        paddingRight: 10
     },
     infoInput: {
         width: '90%',
         borderWidth: 2,
-        borderColor: '#79AE92',
-        paddingLeft: 10
+        borderColor: Colors.color_lightGreen,
+        paddingLeft: 10,
+        height: 30
     }
 });

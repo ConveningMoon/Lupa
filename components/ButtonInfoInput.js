@@ -1,26 +1,49 @@
-import { View, Text, Pressable, StyleSheet} from 'react-native';
+import {
+  Text, 
+  Pressable, 
+  StyleSheet, 
+  View,
+  Platform
+} from 'react-native';
+
+import Colors from '../constants/colors';
 
 export default function ButtonInfoInput(props) {
   return (
-    <Pressable style={styles.signupButton} android_ripple={{ color: '#1C5560' }}>
-        <Text style={styles.signupText}>{props.text}</Text>
-    </Pressable>
+    <View style={styles.generalButton}>
+      <Pressable
+        android_ripple={{ color: '#1C5560', borderless: true}}
+        style={({pressed}) => pressed && styles.generalButtonIOS}      
+        onPress={props.onPressGeneral}
+      >
+          <Text style={styles.generalText}>{props.text}</Text>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-    signupButton: {
-        marginTop: 20,
-        paddingHorizontal: 130,
-        paddingVertical: 15,
-        backgroundColor: '#79AE92',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20
+    generalButton: {
+      marginTop: 20,
+      backgroundColor: Colors.color_lightGreen,
+      borderRadius: 20,
+      elevation: 5,
+      shadowColor: 'black',
+      shadowOffset: {width: 0, height: 2},
+      shadowRadius: 5,
+      shadowOpacity: 0.25,   
+      alignItems: 'center'
     },
-    signupText: {
-        color: '#ffffff',
-        fontSize: 15
+    generalButtonIOS: {
+      opacity: 0.5,
+      borderRadius: 20,
+      backgroundColor: Colors.color_darkGreen
+    },
+    generalText: {
+      color: '#ffffff',
+      fontSize: 15,
+      minWidth: '70%',
+      textAlign: 'center',
+      paddingVertical: 15,
     }
 });

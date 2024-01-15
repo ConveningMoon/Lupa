@@ -1,40 +1,48 @@
 import {
     View, 
-    TextInput, 
-    Pressable, 
     StyleSheet, 
-    Image, 
     Text
 } from 'react-native';
 
-import InfoInput from '../components/infoInput';
+import Colors from '../constants/colors';
+
+import InfoInput from '../components/InfoInput';
 import ButtonInfoInput from '../components/ButtonInfoInput';
 import MicroPressText from '../components/MicroPressText';
 
-function RegisterScreen(){
+function RegisterScreen({navigation, route}){
+    const testReceiveInfo = route.params.testSendInfo;
+
+    function newRegister(){
+        navigation.navigate('Register');
+    }
+
     return(
         <View style={styles.globalContainer}>     
-            <Text style={styles.registerLabel}>
-                LOGIN
-            </Text> 
+            <View style={styles.loginLabelBox}>
+                <Text style={styles.loginLabel}>
+                    LOGIN
+                </Text> 
+            </View> 
 
             <InfoInput 
-                source={require('../assets/img/EmailIco.png')}
+                name='mail'
                 placeholder='Enter your email'
                 color='#9d9d9d'
             />
 
             <InfoInput 
-                source={require('../assets/img/PasswordIco.png')}
+                name='key'
                 placeholder='Enter your password'
                 color='#9d9d9d'
             />
 
             <ButtonInfoInput text='LOGIN'/>
 
-            <MicroPressText text='Create an account'/>
+            <MicroPressText text='Create an account' onNewPress={newRegister}/>
 
             <MicroPressText text='Forgot the password'/>
+            <Text style={{padding: 20}}>{testReceiveInfo}</Text>
         </View>
     );
 }
@@ -44,16 +52,20 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
     globalContainer:{
         flex: 1,
-        margin: 15,
-        paddingTop: 20,        
+        paddingHorizontal: 35,
+        paddingVertical: 10,      
         alignItems: 'center' 
     },
-    registerLabel: {
-        color: '#79AE92',
-        fontSize: 40,
-        padding: 20,
+    loginLabelBox: {
+        paddingBottom: 10,
         marginBottom: 25,
-        borderBottomWidth: 2,
-        borderBottomColor: '#79AE92'
+        borderBottomWidth: 3,
+        borderBottomEndRadius: 20,
+        borderBottomColor: Colors.color_lightGreen
     },
+    loginLabel: {
+        color: Colors.color_lightGreen,
+        fontSize: 40,
+        fontWeight: 'bold'
+    }
 });

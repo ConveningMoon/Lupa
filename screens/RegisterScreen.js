@@ -1,41 +1,86 @@
 import {
     View, 
     StyleSheet, 
-    Text
+    Text,
+    Platform
 } from 'react-native';
 
-import InfoInput from '../components/infoInput';
+import { 
+    useState,
+    useEffect
+} from 'react';
+
+import Colors from '../constants/colors';
+
+import InfoInput from '../components/InfoInput';
 import ButtonInfoInput from '../components/ButtonInfoInput';
 import MicroPressText from '../components/MicroPressText';
+import TypeUser from '../components/TypeUser';
 
-function RegisterScreen(){
+function RegisterScreen({navigation}){
+    const [enteredEmail, setEnteredEmail] = useState('');
+    const [enteredPassword, setEnteredPassword] = useState('');
+    const [typeUserVisible, setTypeUserVisible] = useState(false);
+
+    function newEmailHandler(newEnteredEmail){
+        setEnteredEmail(newEnteredEmail);
+    }
+
+    function newPasswordHandler(newEnteredPassword){
+        setEnteredPassword(newEnteredPassword);
+    }
+
+    function signUpHandler(){
+        //navigation.navigate('NewRegisterStudent');
+        //console.log(enteredEmail);
+        //console.log(enteredPassword);
+        setTypeUserVisible(true);
+    }
+
+    function onBackHandler(){
+        setTypeUserVisible(false);
+    }
+
+    function newLogin(){
+        navigation.navigate('Login', {
+            testSendInfo: 'From the Register'
+        });
+    }
+
     return(
-        <View style={styles.globalContainer}>     
-            <Text style={styles.registerLabel}>
-                REGISTER
-            </Text> 
+        <View style={styles.globalContainer}>  
+            <View style={styles.registerLabelBox}>
+                <Text style={styles.registerLabel}>
+                    REGISTER
+                </Text> 
+            </View>  
+            
 
             <InfoInput 
-                source={require('../assets/img/EmailIco.png')}
+                name='mail'
                 placeholder='Enter your email'
-                color='#9d9d9d'
+                color='#9d9d9d'    
+                onSaveInfo={newEmailHandler}            
             />
 
             <InfoInput 
-                source={require('../assets/img/PasswordIco.png')}
+                name='key'
                 placeholder='Enter your password'
                 color='#9d9d9d'
+                onSaveInfo={newPasswordHandler} 
             />
 
             <InfoInput 
-                source={require('../assets/img/PasswordIco.png')}
+                name='key'
                 placeholder='Repeat your password'
                 color='#9d9d9d'
             />
 
-            <ButtonInfoInput text='SIGNUP'/>
+            <ButtonInfoInput text='SIGNUP' onPressGeneral={signUpHandler}/>
 
-            <MicroPressText text='Already have an account'/>
+            <MicroPressText text='Already have an account'  onNewPress={newLogin}/>
+
+            <TypeUser visible={typeUserVisible} onBack={onBackHandler}/>
         </View>
     );
 }
@@ -45,16 +90,21 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
     globalContainer:{
         flex: 1,
-        margin: 15,
-        paddingTop: 20,        
-        alignItems: 'center' 
+        paddingHorizontal: 35,
+        paddingVertical: 10,
+        alignItems: 'center',
+    },
+    registerLabelBox: {
+        paddingBottom: 10,
+        marginBottom: 25,
+        borderBottomWidth: 3,
+        borderBottomEndRadius: 20,
+        borderBottomColor: Colors.color_lightGreen
     },
     registerLabel: {
-        color: '#79AE92',
+        color: Colors.color_lightGreen,
         fontSize: 40,
-        padding: 20,
-        marginBottom: 25,
-        borderBottomWidth: 2,
-        borderBottomColor: '#79AE92'
-    },
+        fontWeight: 'bold'
+    }
+
 });

@@ -1,18 +1,24 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import {Text, Pressable, StyleSheet } from 'react-native'
+
+import Colors from '../constants/colors';
 
 export default function MicroPressText(props) {
   return (
     <Pressable>
-      <Text style={styles.microtext}>{props.text}</Text>
+      <Text style={styles.microtext} onPress={props.onNewPress}>{props.text}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
     microtext: {
-        color: '#1C5560',
-        fontStyle: 'italic',
-        textDecorationLine: 'underline',
-        paddingTop: 10
+      color: Colors.color_darkGreen,
+      fontStyle: 'italic',
+      textDecorationLine: 'underline',
+      paddingTop: 10
+    },
+    pressedText: {
+      color: Colors.color_boneYellow,
+      borderWidth: 10
     }
 });
