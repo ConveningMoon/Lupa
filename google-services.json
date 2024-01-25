@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "567825672718",
+    "project_id": "lupa-fc59a",
+    "storage_bucket": "lupa-fc59a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567825672718:android:2966c9031ea4181562ea5f",
+        "android_client_info": {
+          "package_name": "com.lupa.lupa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsW7HBBZZL4iBHIzBBZEBmS2KTfN0a2zo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -16,11 +16,7 @@ function InfoInput(props){
         setInputText(inputEnteredText);
         props.onSaveInfo(inputText);        
     }
-
-    // useEffect(() => {
-    //     console.log(inputText);
-    // }, [inputText]);
-
+    
     return(
         <View style={styles.infoContainer}>    
             <View style={styles.logoIco}>

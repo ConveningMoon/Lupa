@@ -1,22 +1,37 @@
-import { View, Text, StyleSheet, TextInput} from 'react-native'
+import { View, Text, StyleSheet, TextInput} from 'react-native';
+
+import { useState } from 'react';
 
 import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonInfoInput';
 
-export default function FillRegisterStudent({navigation}) {
+export default function FillRegisterSchoolScreen({navigation}) {
+  const [schoolUserName, setSchoolUserName] = useState('');
+  const [schoolName, setSchoolName] = useState('');
+
+  function newSchoolUserName(enteredUserName){
+    setSchoolUserName(enteredUserName);
+  }
+
+  function newSchoolName(enteredName){
+    setSchoolName(enteredName);
+  }
+
+  function toSchoolHomePage(){
+    navigation.navigate('Login');
+  }
+
   return (
     <View style={styles.globalContainer}>
       <Text style={styles.textContainer}>Username</Text>
-      <TextInput style={styles.inputContainer}/>
-      <Text style={styles.textContainer}>Name</Text>
-      <TextInput style={styles.inputContainer}/>
+      <TextInput style={styles.inputContainer} onChangeText={newSchoolUserName}/>
+      <Text style={styles.textContainer}>School's name</Text>
+      <TextInput style={styles.inputContainer} onChangeText={newSchoolName}/>
       <Text style={styles.textContainer}>Email</Text>
       <TextInput style={styles.inputContainer}/>
-      <Text style={styles.textContainer}>School code</Text>
+      <Text style={styles.textContainer}>Website</Text>
       <TextInput style={styles.inputContainer}/>
-      <Text style={styles.textContainer}>Course</Text>
-      <TextInput style={styles.inputContainer}/>
-      <ButtonInfoInput text='Continue'/>
+      <ButtonInfoInput text='Register' onPressGeneral={toSchoolHomePage}/>
     </View>
   )
 }

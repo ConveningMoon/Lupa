@@ -2,7 +2,8 @@ import {
     View, 
     StyleSheet, 
     Text,
-    Platform
+    Platform,
+    TextInput
 } from 'react-native';
 
 import { 
@@ -12,7 +13,10 @@ import {
 
 import Colors from '../constants/colors';
 
+import { Ionicons } from '@expo/vector-icons';
+
 import InfoInput from '../components/InfoInput';
+import ChangeTypeUser from '../components/ChangeTypeUser';
 import ButtonInfoInput from '../components/ButtonInfoInput';
 import MicroPressText from '../components/MicroPressText';
 import TypeUser from '../components/TypeUser';
@@ -20,21 +24,19 @@ import TypeUser from '../components/TypeUser';
 function RegisterScreen({navigation}){
     const [enteredEmail, setEnteredEmail] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
+    const [enteredRepeatPassword, setEnteredRepeatPassword] = useState('');
+    const [typeUser, setTypeUser] = useState('Not selected');
     const [typeUserVisible, setTypeUserVisible] = useState(false);
 
-    function newEmailHandler(newEnteredEmail){
-        setEnteredEmail(newEnteredEmail);
-    }
 
-    function newPasswordHandler(newEnteredPassword){
-        setEnteredPassword(newEnteredPassword);
+    function selectUserType(){
+        setTypeUserVisible(true);
     }
 
     function signUpHandler(){
-        //navigation.navigate('NewRegisterStudent');
-        //console.log(enteredEmail);
-        //console.log(enteredPassword);
-        setTypeUserVisible(true);
+        if(typeUser === 'School'){
+            navigation.navigate('NewRegisterSchool');
+        }       
     }
 
     function onBackHandler(){
@@ -42,9 +44,7 @@ function RegisterScreen({navigation}){
     }
 
     function newLogin(){
-        navigation.navigate('Login', {
-            testSendInfo: 'From the Register'
-        });
+        navigation.navigate('Login');
     }
 
     return(
@@ -55,32 +55,69 @@ function RegisterScreen({navigation}){
                 </Text> 
             </View>  
             
+            <View style={styles.infoContainer}>    
+                <View style={styles.logoIco}>
+                    <Ionicons
+                        name='mail'
+                        size={30}
+                        color={Colors.color_lightGreen}
+                    />     
+                </View>               
+                <TextInput
+                    placeholder='Enter your email'
+                    placeholderTextColor={Colors.gray_placeholder}
+                    style={styles.infoInput}
+                    value={enteredEmail}
+                    onChangeText={setEnteredEmail}                
+                />
+            </View>
 
-            <InfoInput 
-                name='mail'
-                placeholder='Enter your email'
-                color='#9d9d9d'    
-                onSaveInfo={newEmailHandler}            
-            />
+            <View style={styles.infoContainer}>    
+                <View style={styles.logoIco}>
+                    <Ionicons
+                        name='key'
+                        size={30}
+                        color={Colors.color_lightGreen}
+                    />     
+                </View>               
+                <TextInput
+                    placeholder='Enter your password'
+                    placeholderTextColor={Colors.gray_placeholder}
+                    style={styles.infoInput}
+                    value={enteredPassword}
+                    onChangeText={setEnteredPassword}                
+                />
+            </View>
 
-            <InfoInput 
-                name='key'
-                placeholder='Enter your password'
-                color='#9d9d9d'
-                onSaveInfo={newPasswordHandler} 
-            />
+            <View style={styles.infoContainer}>    
+                <View style={styles.logoIco}>
+                    <Ionicons
+                        name='key'
+                        size={30}
+                        color={Colors.color_lightGreen}
+                    />     
+                </View>               
+                <TextInput
+                    placeholder='Repeat your password'
+                    placeholderTextColor={Colors.gray_placeholder}
+                    style={styles.infoInput}
+                    value={enteredRepeatPassword}
+                    onChangeText={setEnteredRepeatPassword}                
+                />
+            </View>
 
-            <InfoInput 
-                name='key'
-                placeholder='Repeat your password'
-                color='#9d9d9d'
-            />
+            <ChangeTypeUser typeUserText={typeUser} onPress={selectUserType}/>
 
             <ButtonInfoInput text='SIGNUP' onPressGeneral={signUpHandler}/>
 
             <MicroPressText text='Already have an account'  onNewPress={newLogin}/>
 
-            <TypeUser visible={typeUserVisible} onBack={onBackHandler}/>
+            <TypeUser 
+                visible={typeUserVisible} 
+                onBack={onBackHandler}
+                onSelect={setTypeUserVisible}
+                value={setTypeUser}
+            />
         </View>
     );
 }
@@ -105,6 +142,22 @@ const styles = StyleSheet.create({
         color: Colors.color_lightGreen,
         fontSize: 40,
         fontWeight: 'bold'
+    },
+    infoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 15
+    },    
+    logoIco: {
+        paddingRight: 10
+    },
+    infoInput: {
+        width: '90%',
+        borderWidth: 2,
+        borderColor: Colors.color_lightGreen,
+        paddingLeft: 10,
+        height: 30
     }
 
 });

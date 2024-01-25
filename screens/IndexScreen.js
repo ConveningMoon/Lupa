@@ -18,9 +18,7 @@ export default function IndexScreen({navigation}) {
     }
 
     function onPressGeneralLoginHandler(){
-        navigation.navigate('Login', {
-            testSendInfo: 'From the Index'
-        });
+        navigation.navigate('Login');
     }
     
     return (

@@ -9,8 +9,10 @@ import MicroPressText from './MicroPressText';
 export default function TypeUser(props) {
     const navigation = useNavigation();
 
-    function toSchoolRegister(){
-        navigation.navigate('NewRegisterSchool');
+    function schoolRegister(){
+        props.onSelect(false);
+        props.value('School');
+        //navigation.navigate('NewRegisterSchool');
     }
 
     return (
@@ -18,7 +20,10 @@ export default function TypeUser(props) {
             <View style={styles.globalContainer}>
                 <ButtonInfoInput text='Student'/>
                 <ButtonInfoInput text='Teacher'/>
-                <ButtonInfoInput text='School' onPressGeneral={toSchoolRegister}/>
+                <ButtonInfoInput 
+                    text='School' 
+                    onPressGeneral={schoolRegister}
+                />
                 <ButtonInfoInput text='Parent'/>
                 <View style={styles.backContainer}>
                     <MicroPressText text='Back' onNewPress={props.onBack}/>
@@ -29,7 +34,7 @@ export default function TypeUser(props) {
 }
 
 const styles = StyleSheet.create({
-    globalContainer: {
+    globalContainer: {        
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
