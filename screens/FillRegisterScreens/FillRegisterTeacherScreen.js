@@ -12,9 +12,9 @@ import { useState } from 'react';
 import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonInfoInput';
 
-export default function FillRegisterSchoolScreen({navigation}) {
-  const [schoolUsername, setSchoolUserName] = useState('');
-  const [schoolName, setSchoolName] = useState('');
+export default function FillRegisterTeacherScreen({navigation}) {
+  const [teacehrUsername, setSchoolUserName] = useState('');
+  const [teacherName, setSchoolName] = useState('');
 
   function toLogin(){
     navigation.navigate('Login');

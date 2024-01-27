@@ -12,7 +12,6 @@ import IndexScreen from './screens/IndexScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
 
-import FillRegisterStudentScreen from './screens/FillRegisterScreens/FillRegisterStudentScreen';
 import FillRegisterSchoolScreen from './screens/FillRegisterScreens/FillRegisterSchoolScreen';
 
 import SchoolHomeScreen from './screens/HomesScreens/SchoolHomeScreen';
@@ -23,6 +22,7 @@ import GroupsInfoScreen from './screens/InfoScreens/GroupsInfoScreen';
 import StudentsOptionsScreen from './screens/DisplayOptionsScreens/StudentsOptionsScreen';
 import StudentsInfoScreen from './screens/InfoScreens/StudentsInfoScreen';
 
+import FillRegisterTeacherScreen from './screens/FillRegisterScreens/FillRegisterTeacherScreen';
 import TeachersOptionsScreen from './screens/DisplayOptionsScreens/TeachersOptionsScreen';
 import TeachersInfoScreen from './screens/InfoScreens/TeachersInfoScreen';
 
@@ -62,20 +62,17 @@ export default function App() {
                 component={LoginScreen}
               />
 
-              <Stack.Screen 
-                name='NewRegisterStudent' 
-                component={FillRegisterStudentScreen}
-              />
+              {/* Schools */}
               <Stack.Screen 
                 name='NewRegisterSchool' 
                 component={FillRegisterSchoolScreen}
               />
-
               <Stack.Screen 
                 name='SchoolHome' 
                 component={SchoolHomeScreen}
               />
 
+              {/* Groups */}
               <Stack.Screen 
                 name='Groups' 
                 component={GroupsOptionsScreen}
@@ -85,6 +82,7 @@ export default function App() {
                 component={GroupsInfoScreen}
               />
 
+              {/* Students */}
               <Stack.Screen 
                 name='Students' 
                 component={StudentsOptionsScreen}
@@ -94,6 +92,7 @@ export default function App() {
                 component={StudentsInfoScreen}
               />
 
+              {/* Teachers */}
               <Stack.Screen 
                 name='Teachers' 
                 component={TeachersOptionsScreen}
@@ -102,7 +101,12 @@ export default function App() {
                 name='TeachersInfo' 
                 component={TeachersInfoScreen}
               />
-
+              <Stack.Screen 
+                name='NewRegisterTeacher' 
+                component={FillRegisterSchoolScreen}
+              />
+              
+              {/* Subjects */}
               <Stack.Screen 
                 name='Subjects' 
                 component={SubjectsOptionsScreen}

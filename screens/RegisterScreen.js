@@ -34,9 +34,13 @@ function RegisterScreen({navigation}){
     }
 
     function signUpHandler(){
-        if(typeUser === 'School'){
-            navigation.navigate('NewRegisterSchool');
-        }       
+        const userTypes = ['School', 'Teacher', 'Parent', 'Student'];
+        const userType = userTypes.find(type => type.toLowerCase() === typeUser.toLowerCase());
+        if (userType) {
+            navigation.navigate(`NewRegister${userType}`);
+        } else {
+            console.log('Select user type please');
+        }
     }
 
     function onBackHandler(){
@@ -55,56 +59,30 @@ function RegisterScreen({navigation}){
                 </Text> 
             </View>  
             
-            <View style={styles.infoContainer}>    
-                <View style={styles.logoIco}>
-                    <Ionicons
-                        name='mail'
-                        size={30}
-                        color={Colors.color_lightGreen}
-                    />     
-                </View>               
-                <TextInput
-                    placeholder='Enter your email'
-                    placeholderTextColor={Colors.gray_placeholder}
-                    style={styles.infoInput}
-                    value={enteredEmail}
-                    onChangeText={setEnteredEmail}                
-                />
-            </View>
+            <Text></Text>
+            <InfoInput
+                name='mail'
+                placeholder='Enter your email'
+                color={Colors.gray_placeholder}
+                onSaveInfo = {setEnteredEmail}
+                value = {enteredEmail}
+            />
 
-            <View style={styles.infoContainer}>    
-                <View style={styles.logoIco}>
-                    <Ionicons
-                        name='key'
-                        size={30}
-                        color={Colors.color_lightGreen}
-                    />     
-                </View>               
-                <TextInput
-                    placeholder='Enter your password'
-                    placeholderTextColor={Colors.gray_placeholder}
-                    style={styles.infoInput}
-                    value={enteredPassword}
-                    onChangeText={setEnteredPassword}                
-                />
-            </View>
+            <InfoInput
+                name='key'
+                placeholder='Enter your password'
+                color={Colors.gray_placeholder}
+                onSaveInfo = {setEnteredPassword}
+                value = {enteredPassword}
+            />
 
-            <View style={styles.infoContainer}>    
-                <View style={styles.logoIco}>
-                    <Ionicons
-                        name='key'
-                        size={30}
-                        color={Colors.color_lightGreen}
-                    />     
-                </View>               
-                <TextInput
-                    placeholder='Repeat your password'
-                    placeholderTextColor={Colors.gray_placeholder}
-                    style={styles.infoInput}
-                    value={enteredRepeatPassword}
-                    onChangeText={setEnteredRepeatPassword}                
-                />
-            </View>
+            <InfoInput
+                name='key'
+                placeholder='Repeat your password'
+                color={Colors.gray_placeholder}
+                onSaveInfo = {setEnteredRepeatPassword}
+                value = {enteredRepeatPassword}
+            />
 
             <ChangeTypeUser typeUserText={typeUser} onPress={selectUserType}/>
 
@@ -143,21 +121,6 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold'
     },
-    infoContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingBottom: 15
-    },    
-    logoIco: {
-        paddingRight: 10
-    },
-    infoInput: {
-        width: '90%',
-        borderWidth: 2,
-        borderColor: Colors.color_lightGreen,
-        paddingLeft: 10,
-        height: 30
-    }
+    erroEmailText
 
 });

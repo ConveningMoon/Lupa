@@ -9,14 +9,7 @@ import { useState, useEffect } from 'react';
 
 import Colors from '../constants/colors';
 
-function InfoInput(props){
-    const [inputText, setInputText] = useState('');
-
-    function inputHandler(inputEnteredText){
-        setInputText(inputEnteredText);
-        props.onSaveInfo(inputText);        
-    }
-    
+function InfoInput(props){    
     return(
         <View style={styles.infoContainer}>    
             <View style={styles.logoIco}>
@@ -30,8 +23,8 @@ function InfoInput(props){
                 placeholder={props.placeholder}
                 placeholderTextColor={props.color}
                 style={styles.infoInput}
-                value={inputText}
-                onChangeText={inputHandler}                
+                value={props.value}
+                onChangeText={props.onSaveInfo}                
             />
         </View>
     );
