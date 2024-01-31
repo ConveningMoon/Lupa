@@ -17,19 +17,20 @@ import ButtonInfoInput from '../components/ButtonInfoInput';
 import MicroPressText from '../components/MicroPressText';
 
 function LoginScreen({navigation, route}){
-    const [userEmail, setUserEmail] = useState('');
+    const [enteredEmail, setEnteredEmail] = useState('');
+    const [enteredPassword, setEnteredPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState(false);
 
     function toHome(){
         const entities = [
             { list: SCHOOLS, route: 'SchoolHome' },
-            { list: TEACHERS, route: '' },
-            { list: PARENTS, route: '' },
-            { list: STUDENTS, route: '' }
+            { list: TEACHERS, route: 'TeacherHome' },
+            { list: PARENTS, route: 'ParentHome' },
+            { list: STUDENTS, route: 'StudentHome' }
         ];          
-        const entity = entities.find(entry => entry.list.some(item => item.email === userEmail));
+        const entity = entities.find(entry => entry.list.some(item => item.email === enteredEmail));
         if(entity){
-            const element = entity.list.find(item => item.email === userEmail);
+            const element = entity.list.find(item => item.email === enteredEmail);
             navigation.navigate(entity.route, {user: element});
         } else {
             setErrorMessage(true);
@@ -48,43 +49,26 @@ function LoginScreen({navigation, route}){
                     LOGIN
                 </Text> 
             </View> 
+
             {errorMessage &&(
                 <Text style={styles.errorText}>Incorrect email or password</Text>
             )}
-            <View style={styles.infoContainer}>    
-                <View style={styles.logoIco}>
-                    <Ionicons
-                        name='mail'
-                        size={30}
-                        color={Colors.color_lightGreen}
-                    />     
-                </View>               
-                <TextInput
-                    placeholder='Enter your email'
-                    placeholderTextColor={Colors.gray_placeholder}
-                    style={styles.infoInput}
-                    value={userEmail}
-                    onChangeText={setUserEmail}                
-                />
-            </View>
 
+            <InfoInput
+                name='mail'
+                placeholder='Enter your email'
+                color={Colors.gray_placeholder}
+                onSaveInfo = {setEnteredEmail}
+                value = {enteredEmail}
+            />
 
-            <View style={styles.infoContainer}>    
-                <View style={styles.logoIco}>
-                    <Ionicons
-                        name='key'
-                        size={30}
-                        color={Colors.color_lightGreen}
-                    />     
-                </View>               
-                <TextInput
-                    placeholder='Enter your password'
-                    placeholderTextColor={Colors.gray_placeholder}
-                    style={styles.infoInput}
-                    //value={enteredPassword}
-                    //onChangeText={setEnteredPassword}                
-                />
-            </View>
+            <InfoInput
+                name='key'
+                placeholder='Enter your password'
+                color={Colors.gray_placeholder}
+                onSaveInfo = {setEnteredPassword}
+                value = {enteredPassword}
+            />
 
             <ButtonInfoInput 
                 text='LOGIN'

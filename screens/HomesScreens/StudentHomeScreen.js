@@ -7,7 +7,7 @@ import ButtonInfoInput from '../../components/ButtonInfoInput';
 import Colors from '../../constants/colors';
 import { Entypo } from '@expo/vector-icons';
 
-export default function StudentsInfoScreen({navigation, route}) { 
+export default function StudentHomeScreen({navigation, route}) {
     const [resultsTeachers, setResultsTeachers] = useState([]);
     const [showTeachers, setShowTeachers] = useState(false);
 
@@ -109,7 +109,10 @@ export default function StudentsInfoScreen({navigation, route}) {
                     <ButtonInfoInput
                         text='SHEDULE'
                         //onPressGeneral={searchTeachers}
-
+                    />
+                    <ButtonInfoInput
+                        text='FEEDBACK'
+                        //onPressGeneral={searchTeachers}
                     />
                 </View>
             </View>
@@ -189,5 +192,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingLeft: 10
     }
-
 });

@@ -5,15 +5,14 @@ import {
 import {STUDENTS, PARENTS} from '../../data/dummy-data';
 import TableOptions from '../../components/TableOptions';
 
-export default function GroupsOptionsScreen({navigation}) {
+export default function StudentsOptionsScreen({navigation, route}) {
+    const typeUser = route.params.typeUser;
+    const userId = route.params.userId;
+
     function renderStudentItem(itemData) {    
         function pressHandler() {
-            const parents = PARENTS.filter(parent => 
-                itemData.item.parents.includes(parent.id)).map(parent => 
-                    parent.name);
             navigation.navigate('StudentsInfo', {
-                studentInfo: itemData.item,
-                studentParents: parents
+                user: itemData.item
             });
         }
     
@@ -27,7 +26,7 @@ export default function GroupsOptionsScreen({navigation}) {
     
     return (
         <FlatList
-            data={STUDENTS}
+            data={typeUser === 'School'? STUDENTS : STUDENTS.filter(student => student.parents.includes(userId))}
             keyExtractor={(item) => item.id}
             renderItem={renderStudentItem}
         />

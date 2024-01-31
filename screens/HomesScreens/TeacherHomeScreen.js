@@ -1,51 +1,69 @@
 import { 
     View, 
     Text,
-    Image,
     StyleSheet,
     SafeAreaView
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useLayoutEffect } from 'react';
 
-import ButtonInfoInput from '../../components/ButtonInfoInput';
+import { Entypo } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
+import ButtonInfoInput from '../../components/ButtonInfoInput';
 
-export default function IndexScreen({navigation}) {
+import {SCHOOLS} from '../../data/dummy-data';
 
-    function onPressGeneralRegisterHandler(){
-        navigation.navigate('Register');
-    }
+export default function TeacherHomeScreen({navigation, route}) {
+    const user = route.params.user;
+    //const name = route.params.name;
 
-    function onPressGeneralLoginHandler(){
-        navigation.navigate('Login', {
-            testSendInfo: 'From the Index'
+    // useLayoutEffect (() => {
+        // navigation.setOptions({
+        //     title: 'Users name'
+        // });
+
+    // },[]);
+
+    function toGroups(){
+        navigation.navigate('Groups', {
+            typeUser: 'Teacher',
+            userId: user.id
         });
     }
-    
+
     return (
         <>
             <StatusBar style='dark'/>
             <SafeAreaView style={styles.generalContainer}>
                 <View style={styles.generalContainer}>
-                    <Image 
-                        source={require('../assets/img/logo.png')}
-                        style={styles.logoContainer}
-                    />
+                    <View style={styles.topContainer}>
+                        <View style={styles.topTextContainer}>
+                            <Text style={styles.nameText}>{user.name}</Text>
+                            <Text style={styles.usernameText}>{user.username}</Text>
+                        </View>
+                    </View> 
 
-                    <Text style={styles.logoText}>LUPA</Text>
+                    <View style={styles.contactContainer}>
+                        <Text style={styles.contactText}>Contact: {user.email}</Text>
+                    </View>
 
-                    <ButtonInfoInput 
-                        text='REGISTER' 
-                        onPressGeneral={onPressGeneralRegisterHandler}
-                    />
+                    <View style={styles.subjectsContainer}>
+                        <Text style={styles.subjectsText}>Subjects: {user.subjects.join(', ')}</Text>
+                    </View>
 
-                    <ButtonInfoInput 
-                        text='LOGIN' 
-                        onPressGeneral={onPressGeneralLoginHandler}
-                    />
-                </View>
-                    
+                    <View style={styles.descriptionContainer}>
+                        <Text style={styles.descriptionText}>{user.description}</Text>
+                    </View>
+                    <View style={styles.optionsContainer}>
+                        <ButtonInfoInput 
+                            text='GROUPS' 
+                            onPressGeneral={toGroups}
+                        />
+                        <ButtonInfoInput text='POST'/>
+                        <ButtonInfoInput text='GRADES'/>
+                    </View>                      
+                </View>                    
             </SafeAreaView>
         </>
     )
@@ -54,20 +72,45 @@ export default function IndexScreen({navigation}) {
 const styles = StyleSheet.create({
     generalContainer: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
-    logoContainer: {
-        tintColor: Colors.color_lightGreen,
-        marginBottom: 10,
-        resizeMode: 'center',
-        width: 200,
-        height: 200,        
-    },
-    logoText: {
-        fontSize: 50,
+    nameText: {
+        fontSize: 25,
         fontWeight: 'bold',
-        marginBottom: 50, 
-        color: Colors.color_lightGreen
+        color: Colors.color_lightGreen,
+    },
+    usernameText: {
+        fontStyle: 'italic',
+        color: Colors.color_darkGreen
+    },
+    topContainer: {
+        flexDirection: 'row',
+        padding: 10,
+    },
+    topTextContainer: {
+        flex: 1
+    },
+    subjectsContainer: {
+        padding: 10,
+    },
+    subjectsText: {
+
+    },
+    descriptionContainer: {
+        paddingTop: 15,
+        padding: 10
+    },
+    descriptionText: {
+        fontSize: 16
+    },
+    contactContainer: {
+        flexDirection: 'row'
+    },
+    contactText: {
+        paddingHorizontal: 10,
+        fontSize: 12
+    },
+    optionsContainer: {
+        padding: 10,
+        alignItems: 'center'
     }
 });

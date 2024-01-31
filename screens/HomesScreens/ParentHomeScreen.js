@@ -14,7 +14,7 @@ import ButtonInfoInput from '../../components/ButtonInfoInput';
 
 import {SCHOOLS} from '../../data/dummy-data';
 
-export default function SchoolHomeScreen({navigation, route}) {
+export default function ParentHomeScreen({navigation, route}) {
     const user = route.params.user;
     //const name = route.params.name;
 
@@ -25,26 +25,11 @@ export default function SchoolHomeScreen({navigation, route}) {
 
     // },[]);
 
-    function toGroups(){
-        navigation.navigate('Groups', {
-            typeUser: 'School',
-            userId: user.id
-        });
-    }
-
     function toStudents(){
         navigation.navigate('Students', {
-            typeUser: 'School',
+            typeUser: 'Student',
             userId: user.id
         });
-    }
-
-    function toTeachers(){
-        navigation.navigate('Teachers');
-    }
-
-    function toSubjects(){
-        navigation.navigate('Subjects');
     }
 
     return (
@@ -57,37 +42,16 @@ export default function SchoolHomeScreen({navigation, route}) {
                             <Text style={styles.nameText}>{user.name}</Text>
                             <Text style={styles.usernameText}>{user.username}</Text>
                         </View>
-                        <View style={styles.topRatingContainer}>
-                            <Text style={styles.ratingText}>9.8</Text>
-                            <Entypo name="star" size={24} color={Colors.color_lightGreen} />
-                        </View>
                     </View> 
+
                     <View style={styles.contactContainer}>
                         <Text style={styles.contactText}>Contact: {user.email}</Text>
-                        <Text style={styles.contactText}>Adress: {user.adress}</Text>
-                    </View>
-                    <View style={styles.descriptionContainer}>
-                        <Text style={styles.descriptionText}>{user.description}</Text>
                     </View>
                     <View style={styles.optionsContainer}>
                         <ButtonInfoInput 
-                            text='GROUPS' 
-                            onPressGeneral={toGroups}
-                        />
-                        <ButtonInfoInput text='POST'/>
-                        <ButtonInfoInput 
-                            text='STUDENTS'
+                            text='MY CHILDREN' 
                             onPressGeneral={toStudents}
                         />
-                        <ButtonInfoInput 
-                            text='TEACHERS'
-                            onPressGeneral={toTeachers}
-                        />
-                        <ButtonInfoInput 
-                            text='SUBJECTS'
-                            onPressGeneral={toSubjects}
-                        />
-                        <ButtonInfoInput text='FEEDBACKS'/>
                     </View>                      
                 </View>                    
             </SafeAreaView>
@@ -115,18 +79,8 @@ const styles = StyleSheet.create({
     topTextContainer: {
         flex: 1
     },
-    topRatingContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    ratingText: {
-        fontSize: 30,
-        paddingRight: 5
-
-    },
     descriptionContainer: {
-        paddingTop: 20,
+        paddingTop: 15,
         padding: 10
     },
     descriptionText: {

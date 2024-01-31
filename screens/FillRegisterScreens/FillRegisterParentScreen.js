@@ -12,7 +12,7 @@ import { useState } from 'react';
 import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonInfoInput';
 
-export default function FillRegisterTeacherScreen({navigation}) {
+export default function FillRegisterParentScreen({navigation}) {
   const [teacherUsername, setSchoolUserName] = useState('');
   const [teacherName, setSchoolName] = useState('');
 
@@ -32,20 +32,6 @@ export default function FillRegisterTeacherScreen({navigation}) {
 
           <Text style={styles.textContainer}>Email</Text>
           <TextInput style={styles.inputContainer}/>
-
-          <Text style={styles.textContainer}>Website</Text>
-          <TextInput style={styles.inputContainer}/>
-
-          <Text style={styles.textContainer}>School</Text>
-          <TextInput style={styles.inputContainer}/>
-
-          <Text 
-            style={styles.textContainer}>Description</Text>
-          <TextInput 
-            style={styles.inputContainer}
-            multiline={true}
-            numberOfLines={3}
-          />
 
           <ButtonInfoInput text='Register' onPressGeneral={toLogin}/>
 

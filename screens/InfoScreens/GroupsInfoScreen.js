@@ -25,7 +25,7 @@ export default function GroupsInfoScreen({navigation, route}) {
     function searchStudents(){    
         setShowStudents(!showStudents);    
         const foundStudents = STUDENTS.filter((student) =>
-        student.group.includes(groupName));
+            student.group.includes(groupName));
         setResultsStudents(foundStudents);
     }
 
@@ -39,12 +39,8 @@ export default function GroupsInfoScreen({navigation, route}) {
     function renderStudentItem(itemData) {
         function pressHandler() {
             setShowStudents(!showStudents);
-            const parents = PARENTS.filter(parent => 
-                itemData.item.parents.includes(parent.id)).map(parent => 
-                    parent.name);
             navigation.navigate('StudentsInfo', {
-                studentInfo: itemData.item,
-                studentParents: parents
+                user: itemData.item,
             });
         }
     

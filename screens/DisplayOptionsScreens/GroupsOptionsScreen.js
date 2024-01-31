@@ -5,7 +5,10 @@ import {
 import { GROUPS } from '../../data/dummy-data';
 import TableOptions from '../../components/TableOptions';
 
-export default function GroupsOptionsScreen({navigation}) {
+export default function GroupsOptionsScreen({navigation, route}) {
+    const typeUser = route.params.typeUser;
+    const userId = route.params.userId;
+
     function renderGroupItem(itemData) {
         function pressHandler() {
           navigation.navigate('GroupsInfo', {
@@ -23,7 +26,7 @@ export default function GroupsOptionsScreen({navigation}) {
     
     return (
         <FlatList
-            data={GROUPS}
+            data={typeUser === 'School'? GROUPS : GROUPS.filter(group => group.teachers.includes(userId))}
             keyExtractor={(item) => item.id}
             renderItem={renderGroupItem}
         />

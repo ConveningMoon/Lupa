@@ -20,6 +20,7 @@ import ChangeTypeUser from '../components/ChangeTypeUser';
 import ButtonInfoInput from '../components/ButtonInfoInput';
 import MicroPressText from '../components/MicroPressText';
 import TypeUser from '../components/TypeUser';
+import { SCHOOLS, TEACHERS, PARENTS, STUDENTS } from '../data/dummy-data';
 
 function RegisterScreen({navigation}){
     const [enteredEmail, setEnteredEmail] = useState('');
@@ -27,6 +28,7 @@ function RegisterScreen({navigation}){
     const [enteredRepeatPassword, setEnteredRepeatPassword] = useState('');
     const [typeUser, setTypeUser] = useState('Not selected');
     const [typeUserVisible, setTypeUserVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
 
 
     function selectUserType(){
@@ -36,10 +38,17 @@ function RegisterScreen({navigation}){
     function signUpHandler(){
         const userTypes = ['School', 'Teacher', 'Parent', 'Student'];
         const userType = userTypes.find(type => type.toLowerCase() === typeUser.toLowerCase());
-        if (userType) {
-            navigation.navigate(`NewRegister${userType}`);
-        } else {
-            console.log('Select user type please');
+        const findTypes = [SCHOOLS, TEACHERS, PARENTS, STUDENTS];
+        const findEmail = findTypes.find(type => type.find(user => user.email === enteredEmail))
+        if(!findEmail){
+            if (userType) {
+                navigation.navigate(`NewRegister${userType}`);
+            } else {
+                setTypeUser('Select user type please');
+            }
+        }
+        else {
+            setErrorMessage(true);
         }
     }
 
@@ -59,7 +68,10 @@ function RegisterScreen({navigation}){
                 </Text> 
             </View>  
             
-            <Text></Text>
+            {errorMessage &&(
+                <Text style={styles.errorText}>This email already exists</Text>
+            )}
+
             <InfoInput
                 name='mail'
                 placeholder='Enter your email'
@@ -121,6 +133,8 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold'
     },
-    erroEmailText
+    errorText: {
+        color: Colors.error_red
+    }
 
 });

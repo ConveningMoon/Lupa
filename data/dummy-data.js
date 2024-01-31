@@ -7,7 +7,7 @@ import Subject from '../models/subject';
 
 export const SCHOOLS = [
     new School(
-        's1', 
+        'sc1', 
         'The best school ever',
         'URFU1',
         'urfu2024',
@@ -16,7 +16,7 @@ export const SCHOOLS = [
         'Malysheva Street'
     ),
     new School(
-        's2', 
+        'sc2', 
         'The best school ever',
         'URFU2',
         'urfu2024',
