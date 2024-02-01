@@ -3,7 +3,7 @@ import {
 } from 'react-native';
 
 import { SUBJECTS } from '../../data/dummy-data';
-import TableOptions from '../../components/TableOptions';
+import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
 
 export default function SubjectsOptionsScreen({navigation}) {
     function renderSubjectItem(itemData) {

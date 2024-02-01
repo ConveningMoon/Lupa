@@ -7,12 +7,10 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { useLayoutEffect } from 'react';
 
-import { Entypo } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
-import ButtonInfoInput from '../../components/ButtonInfoInput';
+import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
-import {SCHOOLS} from '../../data/dummy-data';
 
 export default function ParentHomeScreen({navigation, route}) {
     const user = route.params.user;
@@ -78,13 +76,6 @@ const styles = StyleSheet.create({
     },
     topTextContainer: {
         flex: 1
-    },
-    descriptionContainer: {
-        paddingTop: 15,
-        padding: 10
-    },
-    descriptionText: {
-        fontSize: 16
     },
     contactContainer: {
         flexDirection: 'row'

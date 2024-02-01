@@ -15,10 +15,10 @@ import Colors from '../constants/colors';
 
 import { Ionicons } from '@expo/vector-icons';
 
-import InfoInput from '../components/InfoInput';
+import InfoInputWithLogo from '../components/InputComponents/InfoInputWithLogo';
 import ChangeTypeUser from '../components/ChangeTypeUser';
-import ButtonInfoInput from '../components/ButtonInfoInput';
-import MicroPressText from '../components/MicroPressText';
+import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
+import MicroPressText from '../components/PressableTextComponents/MicroPressText';
 import TypeUser from '../components/TypeUser';
 import { SCHOOLS, TEACHERS, PARENTS, STUDENTS } from '../data/dummy-data';
 
@@ -72,7 +72,7 @@ function RegisterScreen({navigation}){
                 <Text style={styles.errorText}>This email already exists</Text>
             )}
 
-            <InfoInput
+            <InfoInputWithLogo
                 name='mail'
                 placeholder='Enter your email'
                 color={Colors.gray_placeholder}
@@ -80,7 +80,7 @@ function RegisterScreen({navigation}){
                 value = {enteredEmail}
             />
 
-            <InfoInput
+            <InfoInputWithLogo
                 name='key'
                 placeholder='Enter your password'
                 color={Colors.gray_placeholder}
@@ -88,7 +88,7 @@ function RegisterScreen({navigation}){
                 value = {enteredPassword}
             />
 
-            <InfoInput
+            <InfoInputWithLogo
                 name='key'
                 placeholder='Repeat your password'
                 color={Colors.gray_placeholder}

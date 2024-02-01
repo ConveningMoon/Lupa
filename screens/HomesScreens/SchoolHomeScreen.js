@@ -10,9 +10,7 @@ import { useLayoutEffect } from 'react';
 import { Entypo } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
-import ButtonInfoInput from '../../components/ButtonInfoInput';
-
-import {SCHOOLS} from '../../data/dummy-data';
+import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
 export default function SchoolHomeScreen({navigation, route}) {
     const user = route.params.user;
@@ -27,20 +25,23 @@ export default function SchoolHomeScreen({navigation, route}) {
 
     function toGroups(){
         navigation.navigate('Groups', {
-            typeUser: 'School',
-            userId: user.id
+            from: 'School',
+            filterGroups: []
         });
     }
 
     function toStudents(){
         navigation.navigate('Students', {
-            typeUser: 'School',
-            userId: user.id
+            from: 'School',
+            filterStudents: []
         });
     }
 
     function toTeachers(){
-        navigation.navigate('Teachers');
+        navigation.navigate('Teachers',{
+            from: 'School',
+            filterTeachers: []
+        });
     }
 
     function toSubjects(){

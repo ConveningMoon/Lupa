@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-import ButtonInfoInput from '../components/ButtonInfoInput';
+import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
 
 import Colors from '../constants/colors';
 

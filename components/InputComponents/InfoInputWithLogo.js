@@ -4,12 +4,9 @@ import {
     TextInput
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Colors from '../../constants/colors';
 
-import { useState, useEffect } from 'react';
-
-import Colors from '../constants/colors';
-
-function InfoInput(props){    
+function InfoInputWithLogo(props){    
     return(
         <View style={styles.infoContainer}>    
             <View style={styles.logoIco}>
@@ -31,7 +28,7 @@ function InfoInput(props){
 }
 
 
-export default InfoInput;
+export default InfoInputWithLogo;
 
 const styles = StyleSheet.create({
     infoContainer: {

@@ -1,43 +1,28 @@
-import { View, Text, StyleSheet, FlatList, Button, Pressable, Modal } from 'react-native';
-import { useState } from 'react';
+import { 
+    View, 
+    Text, 
+    StyleSheet
+} from 'react-native';
 
 import { STUDENTS } from '../../data/dummy-data';
-import ButtonInfoInput from '../../components/ButtonInfoInput';
+import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
 import Colors from '../../constants/colors';
-import { Entypo } from '@expo/vector-icons';
 
-export default function ParentsInfoScreen({navigation, route}) { 
-    const [resultsStudents, setResultsStudents] = useState([]);
-    const [showStudents, setShowStudents] = useState(false);
-
+export default function ParentsInfoScreen({navigation, route}) {
     const user = route.params.user;
 
-    function closeShowStudents(){
-        setShowStudents(!showStudents);
-    }
-
-
-    function searchStudents(){
-        setShowStudents(!showStudents);
-        const foundStudents = STUDENTS.filter(student => 
-            student.parents.includes(user.id));
-        setResultsStudents(foundStudents);
-    }
-
-    function renderStudentsItem(itemData){    
-        function pressHandler(){
-            navigation.navigate('StudentsInfo',{
-                user: itemData.item
-            });
-        }
-
-        return (
-            <Pressable onPress={pressHandler}>
-                <Text style={styles.textStudentParents}>{itemData.item.name}</Text>
-            </Pressable>
+    function toStudents(){
+        const filterStudents = STUDENTS.filter(
+            student => student.parents.includes(user.id)
         );
+
+        navigation.navigate('Students',{
+            from: 'Parent',
+            filterStudents: filterStudents
+        }); 
     }
+
 
     return (
         <View style={styles.globalContainer}>
@@ -52,25 +37,10 @@ export default function ParentsInfoScreen({navigation, route}) {
             </View>
 
             <View style={styles.allButtonsContainer}>
-                <View style={styles.buttonContainer}>
-                    <ButtonInfoInput 
-                        text='SHOW STUDENTS'
-                        onPressGeneral={searchStudents}
-                    />
-                </View>
-                <Modal animationType='slide' visible={showStudents}>
-                    <Pressable style={styles.closeContainer} onPress={closeShowStudents}>
-                        <Entypo name="arrow-long-left" size={30} color={Colors.color_lightGreen}/>
-                        <Text style={styles.backText}>Back</Text>
-                    </Pressable>
-                    <View style={styles.itemsContainer}>
-                        <FlatList
-                            data={resultsStudents}
-                            keyExtractor={(item) => item.id}
-                            renderItem={renderStudentsItem}
-                        />
-                    </View>
-                </Modal>
+                <ButtonInfoInput 
+                    text='SHOW STUDENTS'
+                    onPressGeneral={toStudents}
+                />
             </View>
         </View>
     )
@@ -104,32 +74,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         fontSize: 12
     },
-    textStudentParents: {
-        padding: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
-        textDecorationLine: 'underline'
-    },
     allButtonsContainer: {
         paddingTop: 30
-    },
-    buttonContainer: {
-        alignItems: 'center'        
-    },
-    itemsContainer: {
-        padding: 20
-    },
-    closeContainer: {
-        padding: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingBottom: 10
-    },
-    backText: {
-        fontSize: 25,
-        color: Colors.color_lightGreen,
-        fontWeight: 'bold',
-        paddingLeft: 10
     }
-
 });

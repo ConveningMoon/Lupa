@@ -3,11 +3,11 @@ import {
 } from 'react-native';
 
 import { GROUPS } from '../../data/dummy-data';
-import TableOptions from '../../components/TableOptions';
+import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
 
 export default function GroupsOptionsScreen({navigation, route}) {
-    const typeUser = route.params.typeUser;
-    const userId = route.params.userId;
+    const from = route.params.from;
+    const filterGroups = route.params.filterGroups;
 
     function renderGroupItem(itemData) {
         function pressHandler() {
@@ -26,8 +26,7 @@ export default function GroupsOptionsScreen({navigation, route}) {
     
     return (
         <FlatList
-            data={typeUser === 'School'? GROUPS : GROUPS.filter(group => group.teachers.includes(userId))}
-            keyExtractor={(item) => item.id}
+            data={from === 'School'? GROUPS : filterGroups}
             renderItem={renderGroupItem}
         />
     );

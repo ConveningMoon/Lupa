@@ -2,12 +2,13 @@ import {
     FlatList
 } from 'react-native';
 
-import {STUDENTS, PARENTS} from '../../data/dummy-data';
-import TableOptions from '../../components/TableOptions';
+import {STUDENTS} from '../../data/dummy-data';
+import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
+
 
 export default function StudentsOptionsScreen({navigation, route}) {
-    const typeUser = route.params.typeUser;
-    const userId = route.params.userId;
+    const from = route.params.from;
+    const filterStudents = route.params.filterStudents;
 
     function renderStudentItem(itemData) {    
         function pressHandler() {
@@ -26,7 +27,7 @@ export default function StudentsOptionsScreen({navigation, route}) {
     
     return (
         <FlatList
-            data={typeUser === 'School'? STUDENTS : STUDENTS.filter(student => student.parents.includes(userId))}
+            data={from === 'School' ? STUDENTS : filterStudents}
             keyExtractor={(item) => item.id}
             renderItem={renderStudentItem}
         />

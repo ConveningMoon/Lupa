@@ -1,13 +1,14 @@
 import { 
     FlatList,
-    Text,
-    View
 } from 'react-native';
 
 import {TEACHERS} from '../../data/dummy-data';
-import TableOptions from '../../components/TableOptions';
+import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
 
-export default function TeachersOptionsScreen({navigation}) {
+export default function TeachersOptionsScreen({navigation, route}) {
+    const from = route.params.from;
+    const filterTeachers = route.params.filterTeachers;
+
     function renderTeacherItem(itemData) {    
         function pressHandler() {
             navigation.navigate('TeachersInfo', {
@@ -25,7 +26,7 @@ export default function TeachersOptionsScreen({navigation}) {
     
     return (
         <FlatList
-            data={TEACHERS}
+            data={from === 'School' ? TEACHERS : filterTeachers}
             keyExtractor={(item) => item.id}
             renderItem={renderTeacherItem}
         />

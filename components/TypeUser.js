@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Modal } from 'react-native'
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
-import ButtonInfoInput from './ButtonInfoInput';
-import MicroPressText from './MicroPressText';
+import ButtonInfoInput from './ButtonComponents/ButtonInfoInput';
+import MicroPressText from './PressableTextComponents/MicroPressText';
 
 export default function TypeUser(props) {
     const navigation = useNavigation();

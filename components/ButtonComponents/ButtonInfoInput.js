@@ -6,7 +6,7 @@ import {
   Platform
 } from 'react-native';
 
-import Colors from '../constants/colors';
+import Colors from '../../constants/colors';
 
 export default function ButtonInfoInput(props) {
   return (
@@ -24,7 +24,8 @@ export default function ButtonInfoInput(props) {
 
 const styles = StyleSheet.create({
     generalButton: {
-      marginTop: 20,
+      marginBottom: 20,
+      alignSelf: 'center',
       backgroundColor: Colors.color_lightGreen,
       borderRadius: 20,
       elevation: 5,
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
       shadowOffset: {width: 0, height: 2},
       shadowRadius: 5,
       shadowOpacity: 0.25,   
-      alignItems: 'center'
+      alignItems: 'center',
     },
     generalButtonIOS: {
       opacity: 0.5,

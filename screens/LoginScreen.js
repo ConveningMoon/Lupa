@@ -12,9 +12,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { SCHOOLS, TEACHERS, PARENTS, STUDENTS } from '../data/dummy-data';
 
-import InfoInput from '../components/InfoInput';
-import ButtonInfoInput from '../components/ButtonInfoInput';
-import MicroPressText from '../components/MicroPressText';
+import InfoInputWithLogo from '../components/InputComponents/InfoInputWithLogo';
+import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
+import MicroPressText from '../components/PressableTextComponents/MicroPressText';
 
 function LoginScreen({navigation, route}){
     const [enteredEmail, setEnteredEmail] = useState('');
@@ -54,7 +54,7 @@ function LoginScreen({navigation, route}){
                 <Text style={styles.errorText}>Incorrect email or password</Text>
             )}
 
-            <InfoInput
+            <InfoInputWithLogo
                 name='mail'
                 placeholder='Enter your email'
                 color={Colors.gray_placeholder}
@@ -62,7 +62,7 @@ function LoginScreen({navigation, route}){
                 value = {enteredEmail}
             />
 
-            <InfoInput
+            <InfoInputWithLogo
                 name='key'
                 placeholder='Enter your password'
                 color={Colors.gray_placeholder}
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     logoIco: {
         paddingRight: 10
     },
-    infoInput: {
+    InfoInputWithLogo: {
         width: '90%',
         borderWidth: 2,
         borderColor: Colors.color_lightGreen,
