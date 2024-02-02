@@ -1,14 +1,31 @@
 import { 
-    FlatList
+    FlatList,
+    View,
+    StyleSheet
 } from 'react-native';
 
-import {STUDENTS} from '../../data/dummy-data';
-import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
+import { useState, useEffect } from 'react';
 
+import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
+import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
 
 export default function StudentsOptionsScreen({navigation, route}) {
-    const from = route.params.from;
     const filterStudents = route.params.filterStudents;
+
+    const [searchText, setSearchText] = useState('');
+    const [foundStudents, setFoundStudents] = useState([]);
+
+    useEffect(() => {
+        if (searchText.trim() !== '') {
+            const searchGroups = filterStudents.filter(
+                student => student.name.toLowerCase().includes(searchText.toLowerCase())
+            );
+            setFoundStudents(searchGroups);
+        } else {
+            setFoundStudents(filterStudents);
+        }
+
+    }, [searchText]);
 
     function renderStudentItem(itemData) {    
         function pressHandler() {
@@ -26,10 +43,19 @@ export default function StudentsOptionsScreen({navigation, route}) {
     }
     
     return (
-        <FlatList
-            data={from === 'School' ? STUDENTS : filterStudents}
-            keyExtractor={(item) => item.id}
-            renderItem={renderStudentItem}
-        />
+        <View style={styles.globalContainer}>    
+            <SearchInputText onChangeText={setSearchText} value={searchText}/>
+            <FlatList
+                data={foundStudents}
+                renderItem={renderStudentItem}
+            />
+        </View>  
     );
 }
+
+const styles = StyleSheet.create({
+    globalContainer: {
+        flex: 1,
+        margin: 10
+    }
+});

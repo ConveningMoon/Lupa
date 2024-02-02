@@ -18,7 +18,6 @@ export default function ParentsInfoScreen({navigation, route}) {
         );
 
         navigation.navigate('Students',{
-            from: 'Parent',
             filterStudents: filterStudents
         }); 
     }

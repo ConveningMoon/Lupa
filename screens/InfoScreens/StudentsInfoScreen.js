@@ -23,7 +23,6 @@ export default function StudentsInfoScreen({navigation, route}) {
         );
 
         navigation.navigate('Teachers',{
-            from: 'Student',
             filterTeachers: filterTeachers
         }); 
     }

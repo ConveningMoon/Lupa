@@ -4,8 +4,12 @@ import {
     StyleSheet,
     SafeAreaView
 } from 'react-native';
+
 import { StatusBar } from 'expo-status-bar';
+
 import { useLayoutEffect } from 'react';
+
+import { GROUPS} from '../../data/dummy-data';
 
 import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
@@ -22,9 +26,12 @@ export default function TeacherHomeScreen({navigation, route}) {
     // },[]);
 
     function toGroups(){
+        const filterGroups = GROUPS.filter(
+            group => group.teachers.includes(user.id)
+        );
+
         navigation.navigate('Groups', {
-            typeUser: 'Teacher',
-            userId: user.id
+            filterGroups: filterGroups
         });
     }
 

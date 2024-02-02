@@ -18,7 +18,6 @@ export default function GroupsInfoScreen({navigation, route}) {
         );
  
         navigation.navigate('Students',{
-            from: 'Group',
             filterStudents: filterStudents
         }); 
         
@@ -30,7 +29,6 @@ export default function GroupsInfoScreen({navigation, route}) {
         );
 
         navigation.navigate('Teachers',{
-            from: 'Group',
             filterTeachers: filterTeachers
         }); 
     }

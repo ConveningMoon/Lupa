@@ -18,7 +18,6 @@ export default function TeachersInfoScreen({navigation, route}) {
         );
 
         navigation.navigate('Teachers',{
-            from: 'Teacher',
             filterGroups: filterGroups
         }); 
     }

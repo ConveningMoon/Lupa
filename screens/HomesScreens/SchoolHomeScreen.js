@@ -11,6 +11,7 @@ import { Entypo } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
+import { GROUPS, STUDENTS, TEACHERS } from '../../data/dummy-data';
 
 export default function SchoolHomeScreen({navigation, route}) {
     const user = route.params.user;
@@ -25,22 +26,19 @@ export default function SchoolHomeScreen({navigation, route}) {
 
     function toGroups(){
         navigation.navigate('Groups', {
-            from: 'School',
-            filterGroups: []
+            filterGroups: GROUPS
         });
     }
 
     function toStudents(){
         navigation.navigate('Students', {
-            from: 'School',
-            filterStudents: []
+            filterStudents: STUDENTS
         });
     }
 
     function toTeachers(){
         navigation.navigate('Teachers',{
-            from: 'School',
-            filterTeachers: []
+            filterTeachers: TEACHERS
         });
     }
 

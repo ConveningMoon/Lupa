@@ -1,13 +1,31 @@
 import { 
     FlatList,
+    View,
+    StyleSheet
 } from 'react-native';
 
-import {TEACHERS} from '../../data/dummy-data';
+import { useState, useEffect } from 'react';
+
 import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
+import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
 
 export default function TeachersOptionsScreen({navigation, route}) {
-    const from = route.params.from;
     const filterTeachers = route.params.filterTeachers;
+
+    const [searchText, setSearchText] = useState('');
+    const [foundTeachers, setFoundTeachers] = useState([]);
+
+    useEffect(() => {
+        if (searchText.trim() !== '') {
+            const searchGroups = filterTeachers.filter(
+                teacher => teacher.name.toLowerCase().includes(searchText.toLowerCase())
+            );
+            setFoundTeachers(searchGroups);
+        } else {
+            setFoundTeachers(filterTeachers);
+        }
+
+    }, [searchText]);
 
     function renderTeacherItem(itemData) {    
         function pressHandler() {
@@ -25,10 +43,19 @@ export default function TeachersOptionsScreen({navigation, route}) {
     }
     
     return (
-        <FlatList
-            data={from === 'School' ? TEACHERS : filterTeachers}
-            keyExtractor={(item) => item.id}
-            renderItem={renderTeacherItem}
-        />
+        <View style={styles.globalContainer}>    
+            <SearchInputText onChangeText={setSearchText} value={searchText}/>
+            <FlatList
+                data={foundTeachers}
+                renderItem={renderTeacherItem}
+            />
+        </View>  
     );
 }
+
+const styles = StyleSheet.create({
+    globalContainer: {
+        flex: 1,
+        margin: 10
+    }
+});

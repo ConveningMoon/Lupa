@@ -4,9 +4,12 @@ import {
     StyleSheet,
     SafeAreaView
 } from 'react-native';
+
 import { StatusBar } from 'expo-status-bar';
+
 import { useLayoutEffect } from 'react';
 
+import { STUDENTS} from '../../data/dummy-data';
 
 import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
@@ -24,9 +27,12 @@ export default function ParentHomeScreen({navigation, route}) {
     // },[]);
 
     function toStudents(){
+        const filterStudents = STUDENTS.filter(
+            student => student.parents.includes(user.id)
+        );
+
         navigation.navigate('Students', {
-            typeUser: 'Student',
-            userId: user.id
+            filterStudents: filterStudents
         });
     }
 

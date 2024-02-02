@@ -57,7 +57,7 @@ export const TEACHERS = [
         'Pedro Teacher2',
         'teacher_2',
         'teacher2@gmail.com',
-        ['Group_3'],
+        ['Group_2', 'Group_3'],
         ['English', 'Informatics']
     )
 ];
