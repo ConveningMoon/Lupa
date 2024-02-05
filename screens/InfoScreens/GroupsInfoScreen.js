@@ -10,11 +10,11 @@ import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import Colors from '../../constants/colors';
 
 export default function GroupsInfoScreen({navigation, route}) {  
-    const groupName = route.params.groupName;
+    const groupId = route.params.groupId;
 
     function toStudents(){    
         const filterStudents = STUDENTS.filter(
-            student => student.group.includes(groupName)
+            student => student.group.includes(groupId)
         );
  
         navigation.navigate('Students',{
@@ -25,7 +25,7 @@ export default function GroupsInfoScreen({navigation, route}) {
 
     function toTeachers(){
         const filterTeachers = TEACHERS.filter(
-            teacher => teacher.groups.includes(groupName)
+            teacher => teacher.groups.includes(groupId)
         );
 
         navigation.navigate('Teachers',{
@@ -36,7 +36,7 @@ export default function GroupsInfoScreen({navigation, route}) {
     return (
         <View style={styles.globalContainer}>
 
-            <Text style={styles.textGroupName}>{groupName}</Text>
+            <Text style={styles.textGroupName}>{groupId}</Text>
 
             <ButtonInfoInput 
                 text='SHOW STUDENTS'

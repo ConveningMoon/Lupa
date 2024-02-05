@@ -6,7 +6,7 @@ import {
     Pressable
 } from 'react-native';
 
-import { TEACHERS, PARENTS } from '../../data/dummy-data';
+import { TEACHERS, PARENTS, GROUPS } from '../../data/dummy-data';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
 import Colors from '../../constants/colors';
@@ -25,6 +25,14 @@ export default function StudentsInfoScreen({navigation, route}) {
         navigation.navigate('Teachers',{
             filterTeachers: filterTeachers
         }); 
+    }
+
+    function toGroup(){
+        const findGroup = GROUPS.find(group => group.name === student.group);
+        
+        navigation.navigate('GroupsInfo', {
+            groupId: findGroup.id
+        });
     }
 
     function renderParentsItem(itemData){    
@@ -48,7 +56,9 @@ export default function StudentsInfoScreen({navigation, route}) {
                     <Text style={styles.textStudentName}>{student.name}</Text>
                     <Text style={styles.textStudentUsername}>{student.username}</Text>
                 </View>
-                <Text style={styles.textStudentGroup}>{student.group}</Text>
+                <Pressable onPress={toGroup}>
+                    <Text style={styles.textStudentGroup}>{student.group}</Text>
+                </Pressable>
             </View>
 
             <View style={styles.parentsContainer}>

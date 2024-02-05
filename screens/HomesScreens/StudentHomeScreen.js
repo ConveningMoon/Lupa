@@ -9,13 +9,31 @@ import {
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
 import Colors from '../../constants/colors';
-import {PARENTS} from '../../data/dummy-data';
+import {PARENTS, TEACHERS, GROUPS} from '../../data/dummy-data';
 
 export default function StudentHomeScreen({navigation, route}) {
  const student = route.params.user;
     
     const parents = PARENTS.filter(parent => 
         student.parents.includes(parent.id));
+
+    function toTeachers(){
+        const filterTeachers = TEACHERS.filter(
+            teacher => teacher.groups.includes(student.group)
+        );
+
+        navigation.navigate('Teachers',{
+            filterTeachers: filterTeachers
+        }); 
+    }
+
+    function toGroup(){
+        const findGroup = GROUPS.find(group => group.name === student.group);
+        
+        navigation.navigate('GroupsInfo', {
+            groupId: findGroup.id
+        });
+    }
 
     function renderParentsItem(itemData){    
         function pressHandler(){
@@ -38,7 +56,9 @@ export default function StudentHomeScreen({navigation, route}) {
                     <Text style={styles.textStudentName}>{student.name}</Text>
                     <Text style={styles.textStudentUsername}>{student.username}</Text>
                 </View>
-                <Text style={styles.textStudentGroup}>{student.group}</Text>
+                <Pressable onPress={toGroup}>
+                    <Text style={styles.textStudentGroup}>{student.group}</Text>
+                </Pressable>
             </View>
 
             <View style={styles.parentsContainer}>
@@ -53,6 +73,10 @@ export default function StudentHomeScreen({navigation, route}) {
 
             <View style={styles.allButtonsContainer}>
                 <View style={styles.buttonContainer}>
+                    <ButtonInfoInput 
+                        text='MY TEACHERS'
+                        onPressGeneral={toTeachers}
+                    /> 
                     <ButtonInfoInput 
                         text='GRADES'
                         //onPressGeneral={searchTeachers}
