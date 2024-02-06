@@ -21,7 +21,6 @@ export default InfoInputWithLogo;
 
 const styles = StyleSheet.create({
     mainContainer: {
-        flex: 1,
         marginBottom: 20
     },   
     textContainer: {

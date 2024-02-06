@@ -93,7 +93,8 @@ export const STUDENTS = [
         'student_1',
         'student1@gmail.com',
         'Group_1',
-        ['p1', 'p2']
+        ['p1', 'p2'],
+        'sc1'
     ),
     new Student(
         's2',
@@ -101,7 +102,8 @@ export const STUDENTS = [
         'student_2',
         'student2@gmail.com',
         'Group_1',
-        ['p1', 'p2']
+        ['p1', 'p2'],
+        'sc2'
     ),
     new Student(
         's3',
@@ -109,7 +111,8 @@ export const STUDENTS = [
         'student_3',
         'student3@gmail.com',
         'Group_2',
-        ['p3']
+        ['p3'],
+        'sc1'
     )
 ];
 

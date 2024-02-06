@@ -20,6 +20,7 @@ import ChangeTypeUser from '../components/ChangeTypeUser';
 import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
 import MicroPressText from '../components/PressableTextComponents/MicroPressText';
 import TypeUser from '../components/TypeUser';
+
 import { SCHOOLS, TEACHERS, PARENTS, STUDENTS } from '../data/dummy-data';
 
 function RegisterScreen({navigation}){
