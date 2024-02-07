@@ -9,11 +9,25 @@ import { useState, useEffect } from 'react';
 import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
 
+import { GROUPS, STUDENTS, TEACHERS } from '../../data/dummy-data';
+
 export default function GroupsOptionsScreen({navigation, route}) {
     const filterGroups = route.params.filterGroups;
 
     const [searchText, setSearchText] = useState('');
     const [foundGroups, setFoundGroups] = useState([]);
+
+    // useEffect(() => {
+    //     const unsubscribe = navigation.addListener('tabPress', () => {
+    //         const filterGroups = GROUPS.filter(
+    //             group => group.school === user.id
+    //         );
+    //         console.log(filterGroups);
+    //       navigation.navigate('Groups', { filterGroups: filterGroups });
+    //     });
+    
+    //     return unsubscribe;
+    // }, [navigation]);
 
     useEffect(() => {
         if (searchText.trim() !== '') {

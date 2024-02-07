@@ -2,20 +2,25 @@ import {
     View, 
     Text,
     StyleSheet,
-    SafeAreaView
+    SafeAreaView,
+    ScrollView,
+    Platform
 } from 'react-native';
+
 import { StatusBar } from 'expo-status-bar';
-import { useLayoutEffect } from 'react';
+
+import { useEffect, useLayoutEffect } from 'react';
 
 import { Entypo } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
+import CustomeNavigator from '../../components/NavigatorComponents/CustomeNavigator';
+
 import { GROUPS, STUDENTS, TEACHERS } from '../../data/dummy-data';
 
 export default function SchoolHomeScreen({navigation, route}) {
     const user = route.params.user;
-    //const name = route.params.name;
 
     // useLayoutEffect (() => {
         // navigation.setOptions({
@@ -23,22 +28,34 @@ export default function SchoolHomeScreen({navigation, route}) {
         // });
 
     // },[]);
-
+    
     function toGroups(){
+        const filterGroups = GROUPS.filter(
+            group => group.school === user.id
+        );
+
         navigation.navigate('Groups', {
-            filterGroups: GROUPS
+            filterGroups: filterGroups
         });
     }
 
     function toStudents(){
+        const filterStudents = STUDENTS.filter(
+            student => student.school === user.id
+        );
+
         navigation.navigate('Students', {
-            filterStudents: STUDENTS
+            filterStudents: filterStudents
         });
     }
 
     function toTeachers(){
+        const filterTeachers = TEACHERS.filter(
+            teacher => teacher.school.includes(user.id)
+        );    
+
         navigation.navigate('Teachers',{
-            filterTeachers: TEACHERS
+            filterTeachers: filterTeachers
         });
     }
 
@@ -49,52 +66,58 @@ export default function SchoolHomeScreen({navigation, route}) {
     return (
         <>
             <StatusBar style='dark'/>
-            <SafeAreaView style={styles.generalContainer}>
+            <SafeAreaView style={styles.saveAreaContainer}>                   
                 <View style={styles.generalContainer}>
-                    <View style={styles.topContainer}>
-                        <View style={styles.topTextContainer}>
-                            <Text style={styles.nameText}>{user.name}</Text>
-                            <Text style={styles.usernameText}>{user.username}</Text>
+                    <ScrollView> 
+                        <View style={styles.topContainer}>
+                            <View style={styles.topTextContainer}>
+                                <Text style={styles.nameText}>{user.name}</Text>
+                                <Text style={styles.usernameText}>{user.username}</Text>
+                            </View>
+                            <View style={styles.topRatingContainer}>
+                                <Text style={styles.ratingText}>9.8</Text>
+                                <Entypo name="star" size={24} color={Colors.color_lightGreen} />
+                            </View>
+                        </View> 
+                        <View style={styles.contactContainer}>
+                            <Text style={styles.contactText}>Contact: {user.email}</Text>
+                            <Text style={styles.contactText}>Adress: {user.adress}</Text>
                         </View>
-                        <View style={styles.topRatingContainer}>
-                            <Text style={styles.ratingText}>9.8</Text>
-                            <Entypo name="star" size={24} color={Colors.color_lightGreen} />
+                        <View style={styles.descriptionContainer}>
+                            <Text style={styles.descriptionText}>{user.description}</Text>
                         </View>
-                    </View> 
-                    <View style={styles.contactContainer}>
-                        <Text style={styles.contactText}>Contact: {user.email}</Text>
-                        <Text style={styles.contactText}>Adress: {user.adress}</Text>
-                    </View>
-                    <View style={styles.descriptionContainer}>
-                        <Text style={styles.descriptionText}>{user.description}</Text>
-                    </View>
-                    <View style={styles.optionsContainer}>
-                        <ButtonInfoInput 
-                            text='GROUPS' 
-                            onPressGeneral={toGroups}
-                        />
-                        <ButtonInfoInput text='POST'/>
-                        <ButtonInfoInput 
-                            text='STUDENTS'
-                            onPressGeneral={toStudents}
-                        />
-                        <ButtonInfoInput 
-                            text='TEACHERS'
-                            onPressGeneral={toTeachers}
-                        />
-                        <ButtonInfoInput 
-                            text='SUBJECTS'
-                            onPressGeneral={toSubjects}
-                        />
-                        <ButtonInfoInput text='FEEDBACKS'/>
-                    </View>                      
-                </View>                    
+                        <View style={styles.optionsContainer}>
+                            {/* <ButtonInfoInput 
+                                text='GROUPS' 
+                                onPressGeneral={toGroups}
+                            /> */}
+                            <ButtonInfoInput text='POST'/>
+                            <ButtonInfoInput 
+                                text='STUDENTS'
+                                onPressGeneral={toStudents}
+                            />
+                            <ButtonInfoInput 
+                                text='TEACHERS'
+                                onPressGeneral={toTeachers}
+                            />
+                            <ButtonInfoInput 
+                                text='SUBJECTS'
+                                onPressGeneral={toSubjects}
+                            />
+                            <ButtonInfoInput text='FEEDBACKS'/>
+                        </View>   
+                    </ScrollView>              
+                </View>                                              
             </SafeAreaView>
         </>
     )
 }
 
 const styles = StyleSheet.create({
+    saveAreaContainer: {
+        flex: 1,
+        marginTop: Platform.OS === 'android'? 15 : 0
+    },
     generalContainer: {
         flex: 1,
     },

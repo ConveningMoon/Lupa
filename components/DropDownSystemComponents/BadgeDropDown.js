@@ -11,7 +11,8 @@ export default function BadgeDropDown(props) {
         <DropDownPicker 
             searchable={true}
 
-            multiple={true}
+            multiple={props.multiple}
+            max={7}
             open={open}
             value={value}
             items={item}

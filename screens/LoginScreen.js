@@ -10,7 +10,7 @@ import { useState } from 'react';
 import Colors from '../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 
-import { SCHOOLS, TEACHERS, PARENTS, STUDENTS } from '../data/dummy-data';
+import { SCHOOLS, TEACHERS, PARENTS, STUDENTS, GROUPS } from '../data/dummy-data';
 
 import InfoInputWithLogo from '../components/InputComponents/InfoInputWithLogo';
 import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
@@ -23,15 +23,25 @@ function LoginScreen({navigation, route}){
 
     function toHome(){
         const entities = [
-            { list: SCHOOLS, route: 'SchoolHome' },
-            { list: TEACHERS, route: 'TeacherHome' },
+            { list: SCHOOLS, route: 'SchoolHomeNav'},
+            { list: TEACHERS, route: 'TeacherHome'},
             { list: PARENTS, route: 'ParentHome' },
             { list: STUDENTS, route: 'StudentHome' }
-        ];          
+        ];      
+
         const entity = entities.find(entry => entry.list.some(item => item.email === enteredEmail));
-        if(entity){
+
+        if (entity) {
             const element = entity.list.find(item => item.email === enteredEmail);
-            navigation.navigate(entity.route, {user: element});
+            
+            const filterGroups = GROUPS.filter(
+                group => group.school === element.id
+            );
+
+            navigation.navigate(entity.route, {
+                user: element,
+                filterGroups: filterGroups
+            });
         } else {
             setErrorMessage(true);
         }        

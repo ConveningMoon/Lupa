@@ -50,6 +50,7 @@ export const TEACHERS = [
         'teacher1@gmail.com',
         ['Group_1', 'Group_2'],
         ['Maths']
+        ['sc1']
     ),
     new Teacher(
         't2',
@@ -59,6 +60,7 @@ export const TEACHERS = [
         'teacher2@gmail.com',
         ['Group_2', 'Group_3'],
         ['English', 'Informatics']
+        ['sc2']
     )
 ];
 
@@ -120,19 +122,16 @@ export const GROUPS = [
     new Group(
         'Group_1',
         'Group_1', 
-        ['t1'],
-        ['s1']
+        'sc1'
     ),
     new Group(
         'Group_2',
         'Group_2', 
-        ['t1', 't2'],
-        ['s2']
+        'sc1'
     ),
     new Group(
         'Group_3',
-        'Group_3', 
-        ['t2'],
-        ['s3']
+        'Group_3',
+        'sc2'
     )
 ];

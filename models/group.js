@@ -1,9 +1,8 @@
 class Group {
-    constructor(id, name, teachers, students) {
+    constructor(id, name, school) {
       this.id = id;
       this.name = name;
-      this.teachers = teachers;
-      this.students = students;
+      this.school = school;
     }
   }
   
