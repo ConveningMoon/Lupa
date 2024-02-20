@@ -28,7 +28,7 @@ export default function SchoolHomeScreen({navigation, route}) {
         // });
 
     // },[]);
-    
+
     function toGroups(){
         const filterGroups = GROUPS.filter(
             group => group.school === user.id
@@ -87,10 +87,10 @@ export default function SchoolHomeScreen({navigation, route}) {
                             <Text style={styles.descriptionText}>{user.description}</Text>
                         </View>
                         <View style={styles.optionsContainer}>
-                            {/* <ButtonInfoInput 
+                            <ButtonInfoInput 
                                 text='GROUPS' 
                                 onPressGeneral={toGroups}
-                            /> */}
+                            />
                             <ButtonInfoInput text='POST'/>
                             <ButtonInfoInput 
                                 text='STUDENTS'

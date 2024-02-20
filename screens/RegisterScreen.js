@@ -20,6 +20,7 @@ import ChangeTypeUser from '../components/ChangeTypeUser';
 import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
 import MicroPressText from '../components/PressableTextComponents/MicroPressText';
 import TypeUser from '../components/TypeUser';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 import { SCHOOLS, TEACHERS, PARENTS, STUDENTS } from '../data/dummy-data';
 
@@ -27,30 +28,52 @@ function RegisterScreen({navigation}){
     const [enteredEmail, setEnteredEmail] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
     const [enteredRepeatPassword, setEnteredRepeatPassword] = useState('');
-    const [typeUser, setTypeUser] = useState('Not selected');
-    const [typeUserVisible, setTypeUserVisible] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [typeUser, setTypeUser] = useState('None');
 
+    const [typeUserVisible, setTypeUserVisible] = useState(false);
+
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showError, setShowError] = useState(false);
+
+    const [isAuthenticating, setIsAuthenticating] = useState(false);
 
     function selectUserType(){
         setTypeUserVisible(true);
     }
 
     function signUpHandler(){
-        const userTypes = ['School', 'Teacher', 'Parent', 'Student'];
-        const userType = userTypes.find(type => type.toLowerCase() === typeUser.toLowerCase());
+        setIsAuthenticating(true);
+
+        const checkEmail = enteredEmail.includes('@');
+        const checkPassword = enteredPassword.length > 6;
+        const checkRepeatPassword = enteredPassword === enteredRepeatPassword;
+        //Change the followinf line to fetch and check from the database
         const findTypes = [SCHOOLS, TEACHERS, PARENTS, STUDENTS];
-        const findEmail = findTypes.find(type => type.find(user => user.email === enteredEmail))
-        if(!findEmail){
-            if (userType) {
-                navigation.navigate(`NewRegister${userType}`);
+        const findEmail = findTypes.find(type => type.find(user => user.email === enteredEmail));
+        
+        if (findEmail) {
+            setErrorMessage('The email already exists.');
+        } else if (!checkEmail) {
+            setErrorMessage('The email is incorrect.');
+        } else if (!checkPassword) {
+            setErrorMessage('The password is too short.');
+        } else if (!checkRepeatPassword) {
+            setErrorMessage('The passwords do not match.');
+        } else {
+            if (typeUser !== 'None') {
+                navigation.navigate(`NewRegister${typeUser}`, {
+                    email: enteredEmail,
+                    password: enteredPassword
+                });
+    
             } else {
-                setTypeUser('Select user type please');
-            }
+                setErrorMessage('Select user type please');
+            }            
         }
-        else {
-            setErrorMessage(true);
-        }
+        
+        setShowError(!findEmail || !checkEmail || !checkPassword || !checkRepeatPassword);
+
+        setIsAuthenticating(false);
     }
 
     function onBackHandler(){
@@ -61,6 +84,10 @@ function RegisterScreen({navigation}){
         navigation.navigate('Login');
     }
 
+    if (isAuthenticating) {
+        return <LoadingOverlay message="Checking credentials..." />;
+    }
+
     return(
         <View style={styles.globalContainer}>  
             <View style={styles.registerLabelBox}>
@@ -69,8 +96,8 @@ function RegisterScreen({navigation}){
                 </Text> 
             </View>  
             
-            {errorMessage &&(
-                <Text style={styles.errorText}>This email already exists</Text>
+            {showError &&(
+                <Text style={styles.errorText}>{errorMessage}</Text>
             )}
 
             <InfoInputWithLogo
@@ -79,6 +106,8 @@ function RegisterScreen({navigation}){
                 color={Colors.gray_placeholder}
                 onSaveInfo = {setEnteredEmail}
                 value = {enteredEmail}
+                keyboardType = 'email-address'
+                secureTextEntry = {false}
             />
 
             <InfoInputWithLogo
@@ -87,6 +116,8 @@ function RegisterScreen({navigation}){
                 color={Colors.gray_placeholder}
                 onSaveInfo = {setEnteredPassword}
                 value = {enteredPassword}
+                keyboardType = 'default'
+                secureTextEntry = {true}
             />
 
             <InfoInputWithLogo
@@ -95,6 +126,8 @@ function RegisterScreen({navigation}){
                 color={Colors.gray_placeholder}
                 onSaveInfo = {setEnteredRepeatPassword}
                 value = {enteredRepeatPassword}
+                keyboardType = 'default'
+                secureTextEntry = {true}
             />
 
             <ChangeTypeUser typeUserText={typeUser} onPress={selectUserType}/>

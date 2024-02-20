@@ -5,13 +5,18 @@ import {
   ScrollView
 } from 'react-native';
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import SimpleFillInfoInput from '../../components/InputComponents/SimpleFillInfoInput';
 import SimpleMultilineFillInfoInput from '../../components/InputComponents/SimpleMultilineFillInfoInput';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
-export default function FillRegisterSchoolScreen({navigation}) {
+import { createUser } from '../../util/auth';
+import { AuthContext } from '../../store/auth-context';
+import { registerNewUser } from '../../util/http';
+
+export default function FillRegisterSchoolScreen({navigation, route}) {
   const [schoolUsername, setSchoolUserName] = useState('');
   const [schoolName, setSchoolName] = useState('');
   const [schoolEmail, setSchoolEmail] = useState('');
@@ -19,8 +24,32 @@ export default function FillRegisterSchoolScreen({navigation}) {
   const [schoolAdress, setSchoolAdress] = useState('');
   const [schoolDescription, setSchoolDescription] = useState('');
 
-  function toLogin(){
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  const authCtx = useContext(AuthContext);
+
+  async function newRegister(){
+    setIsAuthenticating(true);
+
+    const token = await createUser(
+      route.params.email, 
+      route.params.password,
+    );
+    authCtx.authenticate(token);
+
+    // const newUserId = tokenData.localId;
+    // await registerNewUser({
+    //   id: newUserId,
+    //   name: schoolName
+    // }, "School");
+
+    setIsAuthenticating(false);
+
     navigation.navigate('Login');
+  }
+
+  if (isAuthenticating) {
+    return <LoadingOverlay message="Creating user..." />;
   }
 
   return (
@@ -36,7 +65,7 @@ export default function FillRegisterSchoolScreen({navigation}) {
 
           <SimpleMultilineFillInfoInput text='Description' onChangeText={setSchoolDescription}/>
           
-          <ButtonInfoInput text='Register' onPressGeneral={toLogin}/>
+          <ButtonInfoInput text='Register' onPressGeneral={newRegister}/>
 
         </View>
       </ScrollView>
@@ -46,6 +75,7 @@ export default function FillRegisterSchoolScreen({navigation}) {
 const styles = StyleSheet.create({
   globalContainer: {
     flex: 1,
-    margin: 20
+    marginVertical: 40,
+    marginHorizontal: 20
   }  
 });

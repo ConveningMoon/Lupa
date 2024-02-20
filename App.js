@@ -7,6 +7,10 @@ import {
   SafeAreaView,
 } from 'react-native';
 
+import Colors from './constants/colors';
+
+import { Ionicons } from '@expo/vector-icons';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -36,139 +40,192 @@ import TeachersOptionsScreen from './screens/DisplayOptionsScreens/TeachersOptio
 import TeachersInfoScreen from './screens/InfoScreens/TeachersInfoScreen';
 import TeacherHomeScreen from './screens/HomesScreens/TeacherHomeScreen';
 
+import SettingScreen from './screens/SettingScreen';
+
 import SubjectsOptionsScreen from './screens/DisplayOptionsScreens/SubjectsOptionsScreen';
+import AuthContextProvider from './store/auth-context';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function SchoolNavigation({route}){
+const homeScreens = {
+  'SchoolHome': SchoolHomeScreen,
+  'TeacherHome': TeacherHomeScreen,
+  'ParentHome': ParentHomeScreen,
+  'StudentHome': StudentHomeScreen,
+};
+
+function UserNavigation({route}){
+  const userHome = route.params.userHome;
   const user = route.params.user;
-  const filterGroups = route.params.filterGroups;
 
   return (
     <Tab.Navigator>
-        <Tab.Screen name="SchoolHome" component={SchoolHomeScreen} initialParams={{user: user}}/>
-        <Tab.Screen name="Groups" component={GroupsOptionsScreen} initialParams={{filterGroups: filterGroups}}/>
+        <Tab.Screen 
+          name={userHome} 
+          component={homeScreens[userHome]} 
+          initialParams={{user: user}}
+          options={{
+            tabBarLabel: 'Home',
+            tabBarLabelStyle: {color: Colors.color_darkGreen},
+            tabBarIcon: () => (
+              <Ionicons name="home-sharp" size={24} color={Colors.color_darkGreen} />
+            )
+          }}  
+        />
+        <Tab.Screen 
+          name='SettingScreen' 
+          component={SettingScreen} 
+          options={{
+            tabBarLabel: 'Settings',
+            tabBarLabelStyle: {color: Colors.color_darkGreen},
+            tabBarIcon: () => (
+              <Ionicons name="settings-sharp" size={24} color={Colors.color_darkGreen} />
+            )
+          }}  
+        />
     </Tab.Navigator>
   );
 }
 
+
 export default function App() {
+  const authCtx = useContext(AuthContext);
+
   return (
     <>
       <StatusBar style='dark'/>
       <SafeAreaView style={styles.screenDesign}>
-        <NavigationContainer>          
-          <Stack.Navigator
-            screenOptions={{
-              // headerStyle: { backgroundColor: '#351401' },
-              // headerTintColor: 'white',
-              // contentStyle: { backgroundColor: '#3f2f25' },
-            }}
-          >          
-            <Stack.Screen 
-              name='Index' 
-              component={IndexScreen}
-              options={{
-                //title: 'My title',                  
-                headerShown: false
+        <AuthContextProvider>
+          <NavigationContainer>          
+            <Stack.Navigator
+              screenOptions={{
+                // headerStyle: { backgroundColor: '#351401' },
+                // headerTintColor: 'white',
+                // contentStyle: { backgroundColor: '#3f2f25' },
               }}
-            />
-            <Stack.Screen 
-              name='Register' 
-              component={RegisterScreen}
-              options={{              
-                headerShown: false
-              }}
-            />
-            <Stack.Screen 
-              name='Login' 
-              component={LoginScreen}
-              options={{               
-                headerShown: false
-              }}
-            />
+            >          
+              <Stack.Screen 
+                name='Index' 
+                component={IndexScreen}
+                options={{
+                  //title: 'My title',                  
+                  headerShown: false
+                }}
+              />
+              <Stack.Screen 
+                name='Register' 
+                component={RegisterScreen}
+                options={{              
+                  headerShown: false
+                }}
+              />
+              {/* {!authCtx.isAuthenticated && */}
+                <Stack.Screen 
+                  name='Login' 
+                  component={LoginScreen}
+                  options={{               
+                    headerShown: false
+                  }}
+                />
+              {/* } */}
 
-            {/* Schools */}
-            <Stack.Screen 
-              name='NewRegisterSchool' 
-              component={FillRegisterSchoolScreen}
-            />
-            <Stack.Screen 
-              name='SchoolHomeNav' 
-              component={SchoolNavigation}
-              options={{               
-                headerShown: false
-              }}
-            />
+              {/* {authCtx.isAuthenticated && */}
+                <Stack.Screen 
+                  name='UserNavigation' 
+                  component={UserNavigation}
+                  options={{               
+                    headerShown: false
+                  }}
+                />
+              {/* } */}
 
-            {/* Groups */}
-            {/* <Stack.Screen 
-              name='Groups' 
-              component={GroupsOptionsScreen}
-            /> */}
-            <Stack.Screen 
-              name='GroupsInfo' 
-              component={GroupsInfoScreen}
-            />
+              {/* Schools */}
+              <Stack.Screen 
+                name='NewRegisterSchool' 
+                component={FillRegisterSchoolScreen}
+                options={{               
+                  headerShown: false
+                }}
+              />              
 
-            {/* Parents */}
-            <Stack.Screen 
-              name='ParentsInfo' 
-              component={ParentsInfoScreen}
-            />
-            <Stack.Screen 
-              name='NewRegisterParent' 
-              component={FillRegisterParentScreen}
-            />
-            <Stack.Screen 
-              name='ParentHome' 
-              component={ParentHomeScreen}
-            />
+              {/* Groups */}
+              <Stack.Screen 
+                name='Groups' 
+                component={GroupsOptionsScreen}
+              />
+              <Stack.Screen 
+                name='GroupsInfo' 
+                component={GroupsInfoScreen}
+              />
 
-            {/* Students */}
-            <Stack.Screen 
-              name='Students' 
-              component={StudentsOptionsScreen}
-            />
-            <Stack.Screen 
-              name='StudentsInfo' 
-              component={StudentsInfoScreen}
-            />
-            <Stack.Screen 
-              name='NewRegisterStudent' 
-              component={FillRegisterStudentScreen}
-            />
-            <Stack.Screen 
-              name='StudentHome' 
-              component={StudentHomeScreen}
-            />
+              {/* Parents */}
+              <Stack.Screen 
+                name='ParentsInfo' 
+                component={ParentsInfoScreen}
+              />
+              <Stack.Screen 
+                name='NewRegisterParent' 
+                component={FillRegisterParentScreen}
+                options={{               
+                  headerShown: false
+                }}
+              />
+              {/* <Stack.Screen 
+                name='ParentHome' 
+                component={ParentHomeScreen}
+              /> */}
 
-            {/* Teachers */}
-            <Stack.Screen 
-              name='Teachers' 
-              component={TeachersOptionsScreen}
-            />
-            <Stack.Screen 
-              name='TeachersInfo' 
-              component={TeachersInfoScreen}
-            />
-            <Stack.Screen 
-              name='NewRegisterTeacher' 
-              component={FillRegisterTeacherScreen}
-            />
-            <Stack.Screen 
-              name='TeacherHome' 
-              component={TeacherHomeScreen}
-            />
-            
-            {/* Subjects */}
-            <Stack.Screen 
-              name='Subjects' 
-              component={SubjectsOptionsScreen}
-            />
-          </Stack.Navigator>         
-        </NavigationContainer>
+              {/* Students */}
+              <Stack.Screen 
+                name='Students' 
+                component={StudentsOptionsScreen}
+              />
+              <Stack.Screen 
+                name='StudentsInfo' 
+                component={StudentsInfoScreen}
+              />
+              <Stack.Screen 
+                name='NewRegisterStudent' 
+                component={FillRegisterStudentScreen}
+                options={{               
+                  headerShown: false
+                }}
+              />
+              {/* <Stack.Screen 
+                name='StudentHome' 
+                component={StudentHomeScreen}
+              /> */}
+
+              {/* Teachers */}
+              <Stack.Screen 
+                name='Teachers' 
+                component={TeachersOptionsScreen}
+              />
+              <Stack.Screen 
+                name='TeachersInfo' 
+                component={TeachersInfoScreen}
+              />
+              <Stack.Screen 
+                name='NewRegisterTeacher' 
+                component={FillRegisterTeacherScreen}
+                options={{               
+                  headerShown: false
+                }}
+              />
+              {/* <Stack.Screen 
+                name='TeacherHome' 
+                component={TeacherHomeScreen}
+              /> */}
+              
+              {/* Subjects */}
+              <Stack.Screen 
+                name='Subjects' 
+                component={SubjectsOptionsScreen}
+              />
+            </Stack.Navigator>         
+          </NavigationContainer>
+        </AuthContextProvider>
       </SafeAreaView>
     </>     
   );
