@@ -40,6 +40,8 @@ import TeachersOptionsScreen from './screens/DisplayOptionsScreens/TeachersOptio
 import TeachersInfoScreen from './screens/InfoScreens/TeachersInfoScreen';
 import TeacherHomeScreen from './screens/HomesScreens/TeacherHomeScreen';
 
+import SettingScreen from './screens/SettingScreen';
+
 import SubjectsOptionsScreen from './screens/DisplayOptionsScreens/SubjectsOptionsScreen';
 import AuthContextProvider from './store/auth-context';
 
@@ -71,15 +73,25 @@ function UserNavigation({route}){
             )
           }}  
         />
-        {/* <Tab.Screen
-          name={}
-        /> */}
+        <Tab.Screen 
+          name='SettingScreen' 
+          component={SettingScreen} 
+          options={{
+            tabBarLabel: 'Settings',
+            tabBarLabelStyle: {color: Colors.color_darkGreen},
+            tabBarIcon: () => (
+              <Ionicons name="settings-sharp" size={24} color={Colors.color_darkGreen} />
+            )
+          }}  
+        />
     </Tab.Navigator>
   );
 }
 
 
 export default function App() {
+  const authCtx = useContext(AuthContext);
+
   return (
     <>
       <StatusBar style='dark'/>
@@ -108,13 +120,25 @@ export default function App() {
                   headerShown: false
                 }}
               />
-              <Stack.Screen 
-                name='Login' 
-                component={LoginScreen}
-                options={{               
-                  headerShown: false
-                }}
-              />
+              {/* {!authCtx.isAuthenticated && */}
+                <Stack.Screen 
+                  name='Login' 
+                  component={LoginScreen}
+                  options={{               
+                    headerShown: false
+                  }}
+                />
+              {/* } */}
+
+              {/* {authCtx.isAuthenticated && */}
+                <Stack.Screen 
+                  name='UserNavigation' 
+                  component={UserNavigation}
+                  options={{               
+                    headerShown: false
+                  }}
+                />
+              {/* } */}
 
               {/* Schools */}
               <Stack.Screen 
@@ -123,14 +147,7 @@ export default function App() {
                 options={{               
                   headerShown: false
                 }}
-              />
-              <Stack.Screen 
-                name='UserNavigation' 
-                component={UserNavigation}
-                options={{               
-                  headerShown: false
-                }}
-              />
+              />              
 
               {/* Groups */}
               <Stack.Screen 

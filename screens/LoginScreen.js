@@ -3,6 +3,7 @@ import {
     StyleSheet, 
     Text
 } from 'react-native';
+
 import { useContext, useState } from 'react';
 
 import Colors from '../constants/colors';
@@ -12,6 +13,7 @@ import { SCHOOLS, TEACHERS, PARENTS, STUDENTS, GROUPS } from '../data/dummy-data
 import InfoInputWithLogo from '../components/InputComponents/InfoInputWithLogo';
 import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
 import MicroPressText from '../components/PressableTextComponents/MicroPressText';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 import { login } from '../util/auth';
 import { AuthContext } from '../store/auth-context';
@@ -28,14 +30,17 @@ function LoginScreen({navigation, route}){
     const authCtx = useContext(AuthContext);
 
     async function toHome(){
-        setIsAuthenticating(true);
-        try{
-            const token = await login(route.params.email, route.params.password);
-            authCtx.authenticate(token);
-        }
-        catch (error){
-            setIsAuthenticating(false);
-        }        
+        // setIsAuthenticating(true);
+        // try{
+        //     const token = await login(
+        //         route.params.email, 
+        //         route.params.password
+        //     );
+        //     authCtx.authenticate(token);
+        // }
+        // catch (error){
+        //     setIsAuthenticating(false);
+        // }        
         
         const entities = [
             { list: SCHOOLS, route: 'SchoolHome'},
@@ -63,9 +68,9 @@ function LoginScreen({navigation, route}){
         navigation.navigate('Register');
     }
 
-    if (isAuthenticating) {
-        return <LoadingOverlay message="Logging..." />;
-    }
+    // if (isAuthenticating) {
+    //     return <LoadingOverlay message="Logging..." />;
+    // }
 
     return(
         <View style={styles.globalContainer}>     

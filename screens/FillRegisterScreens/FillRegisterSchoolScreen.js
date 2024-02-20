@@ -12,8 +12,9 @@ import SimpleFillInfoInput from '../../components/InputComponents/SimpleFillInfo
 import SimpleMultilineFillInfoInput from '../../components/InputComponents/SimpleMultilineFillInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import {createUser} from '../../util/auth';
+import { createUser } from '../../util/auth';
 import { AuthContext } from '../../store/auth-context';
+import { registerNewUser } from '../../util/http';
 
 export default function FillRegisterSchoolScreen({navigation, route}) {
   const [schoolUsername, setSchoolUserName] = useState('');
@@ -29,8 +30,19 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
 
   async function newRegister(){
     setIsAuthenticating(true);
-    const token = await createUser(route.params.email, route.params.password);
+
+    const token = await createUser(
+      route.params.email, 
+      route.params.password,
+    );
     authCtx.authenticate(token);
+
+    // const newUserId = tokenData.localId;
+    // await registerNewUser({
+    //   id: newUserId,
+    //   name: schoolName
+    // }, "School");
+
     setIsAuthenticating(false);
 
     navigation.navigate('Login');
