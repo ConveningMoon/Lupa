@@ -1,14 +1,11 @@
 import {
     View, 
     StyleSheet, 
-    Text,
-    Button,
-    TextInput
+    Text
 } from 'react-native';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 import Colors from '../constants/colors';
-import { Ionicons } from '@expo/vector-icons';
 
 import { SCHOOLS, TEACHERS, PARENTS, STUDENTS, GROUPS } from '../data/dummy-data';
 
@@ -16,14 +13,32 @@ import InfoInputWithLogo from '../components/InputComponents/InfoInputWithLogo';
 import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
 import MicroPressText from '../components/PressableTextComponents/MicroPressText';
 
+import { login } from '../util/auth';
+import { AuthContext } from '../store/auth-context';
+
 function LoginScreen({navigation, route}){
     const [enteredEmail, setEnteredEmail] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState(false);
 
-    function toHome(){
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showError, setShowError] = useState(false);
+
+    const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+    const authCtx = useContext(AuthContext);
+
+    async function toHome(){
+        setIsAuthenticating(true);
+        try{
+            const token = await login(route.params.email, route.params.password);
+            authCtx.authenticate(token);
+        }
+        catch (error){
+            setIsAuthenticating(false);
+        }        
+        
         const entities = [
-            { list: SCHOOLS, route: 'SchoolHomeNav'},
+            { list: SCHOOLS, route: 'SchoolHome'},
             { list: TEACHERS, route: 'TeacherHome'},
             { list: PARENTS, route: 'ParentHome' },
             { list: STUDENTS, route: 'StudentHome' }
@@ -34,22 +49,22 @@ function LoginScreen({navigation, route}){
         if (entity) {
             const element = entity.list.find(item => item.email === enteredEmail);
             
-            const filterGroups = GROUPS.filter(
-                group => group.school === element.id
-            );
-
-            navigation.navigate(entity.route, {
-                user: element,
-                filterGroups: filterGroups
+            navigation.navigate('UserNavigation', {
+                userHome: entity.route,
+                user: element
             });
         } else {
-            setErrorMessage(true);
+            setErrorMessage('This user does not exist.');
         }        
 
     }
 
     function newRegister(){
         navigation.navigate('Register');
+    }
+
+    if (isAuthenticating) {
+        return <LoadingOverlay message="Logging..." />;
     }
 
     return(
@@ -60,8 +75,8 @@ function LoginScreen({navigation, route}){
                 </Text> 
             </View> 
 
-            {errorMessage &&(
-                <Text style={styles.errorText}>Incorrect email or password</Text>
+            {showError &&(
+                <Text style={styles.errorText}>{errorMessage}</Text>
             )}
 
             <InfoInputWithLogo

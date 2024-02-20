@@ -21,7 +21,9 @@ function InfoInputWithLogo(props){
                 placeholderTextColor={props.color}
                 style={styles.infoInput}
                 value={props.value}
-                onChangeText={props.onSaveInfo}                
+                onChangeText={props.onSaveInfo}  
+                keyboardType={props.keyboardType}  
+                secureTextEntry={props.secureTextEntry}            
             />
         </View>
     );
