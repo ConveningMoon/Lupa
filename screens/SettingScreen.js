@@ -7,17 +7,27 @@ import {
 
 import Colors from '../constants/colors';
 
-export default function SettingScreen() {
-  return (
-    <View style={styles.globalContainer}>
-        <Pressable
-            style={styles.logOutContainer}
-            //onPress={}
-        >
-            <Text style={styles.logOutText}>Log Out</Text>
-        </Pressable>
-    </View>
-  )
+import { useContext } from 'react';
+import { AuthContext } from '../store/auth-context';
+
+export default function SettingScreen({navigation}) {
+    const authCtx = useContext(AuthContext);
+
+    function toLogin(){
+        authCtx.logout();
+        navigation.navigate('Login');
+    }
+
+    return (
+        <View style={styles.globalContainer}>
+            <Pressable
+                style={styles.logOutContainer}
+                onPress={toLogin}
+            >
+                <Text style={styles.logOutText}>Log Out</Text>
+            </Pressable>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({

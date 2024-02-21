@@ -10,7 +10,7 @@ export const SCHOOLS = [
         'sc1', 
         'The best school ever',
         'URFU1',
-        'urfu2024',
+        'my_urfu1',
         'urfu1@gmail.com',
         'urfu.com',
         'Malysheva Street'
@@ -19,7 +19,7 @@ export const SCHOOLS = [
         'sc2', 
         'The best school ever',
         'URFU2',
-        'urfu2024',
+        'my_urfu2',
         'urfu2@gmail.com',
         'urfu.com',
         'Malysheva Street'

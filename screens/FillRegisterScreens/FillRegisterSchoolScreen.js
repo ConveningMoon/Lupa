@@ -31,17 +31,22 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
   async function newRegister(){
     setIsAuthenticating(true);
 
-    const token = await createUser(
+    const tokenData = await createUser(
       route.params.email, 
       route.params.password,
     );
-    authCtx.authenticate(token);
+    // authCtx.authenticate(tokenData.idToken);
+    // authCtx.currentUserId(tokenData.localId);
 
-    // const newUserId = tokenData.localId;
-    // await registerNewUser({
-    //   id: newUserId,
-    //   name: schoolName
-    // }, "School");
+    await registerNewUser({
+      id: tokenData.localId,
+      username: schoolUsername,
+      name: schoolName,
+      emailContact: schoolEmail,
+      website: schoolWebsite,
+      adress: schoolAdress,
+      description: schoolDescription
+    }, "School");
 
     setIsAuthenticating(false);
 
