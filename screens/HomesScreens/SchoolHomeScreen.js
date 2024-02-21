@@ -80,7 +80,7 @@ export default function SchoolHomeScreen({navigation, route}) {
                             </View>
                         </View> 
                         <View style={styles.contactContainer}>
-                            <Text style={styles.contactText}>Contact: {user.email}</Text>
+                            <Text style={styles.contactText}>Contact: {user.emailContact}</Text>
                             <Text style={styles.contactText}>Adress: {user.adress}</Text>
                         </View>
                         <View style={styles.descriptionContainer}>

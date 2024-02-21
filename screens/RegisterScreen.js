@@ -47,7 +47,7 @@ function RegisterScreen({navigation}){
         const checkEmail = enteredEmail.includes('@');
         const checkPassword = enteredPassword.length > 6;
         const checkRepeatPassword = enteredPassword === enteredRepeatPassword;
-        //Change the followinf line to fetch and check from the database
+        //Change the following line to fetch and check from the database
         const findTypes = [SCHOOLS, TEACHERS, PARENTS, STUDENTS];
         const findEmail = findTypes.find(type => type.find(user => user.email === enteredEmail));
         
@@ -71,7 +71,7 @@ function RegisterScreen({navigation}){
             }            
         }
         
-        setShowError(!findEmail || !checkEmail || !checkPassword || !checkRepeatPassword);
+        setShowError(findEmail || !checkEmail || !checkPassword || !checkRepeatPassword);
 
         setIsAuthenticating(false);
     }

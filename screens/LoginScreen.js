@@ -1,10 +1,13 @@
 import {
     View, 
     StyleSheet, 
-    Text
+    Text,
+    Alert
 } from 'react-native';
 
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+
+import { useIsFocused } from '@react-navigation/native';
 
 import Colors from '../constants/colors';
 
@@ -17,8 +20,11 @@ import LoadingOverlay from '../components/LoadingOverlay';
 
 import { login } from '../util/auth';
 import { AuthContext } from '../store/auth-context';
+import { fetchUser } from '../util/http';
 
-function LoginScreen({navigation, route}){
+function LoginScreen({navigation}){
+    const authCtx = useContext(AuthContext);
+
     const [enteredEmail, setEnteredEmail] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
 
@@ -26,41 +32,58 @@ function LoginScreen({navigation, route}){
     const [showError, setShowError] = useState(false);
 
     const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const isFocused = useIsFocused();
 
-    const authCtx = useContext(AuthContext);
+    useEffect(() => {
+        if(isFocused) {
+            setIsAuthenticating(false);
+        };
+    }, [isFocused]);
 
     async function toHome(){
-        // setIsAuthenticating(true);
-        // try{
-        //     const token = await login(
-        //         route.params.email, 
-        //         route.params.password
-        //     );
-        //     authCtx.authenticate(token);
-        // }
-        // catch (error){
-        //     setIsAuthenticating(false);
-        // }        
-        
-        const entities = [
-            { list: SCHOOLS, route: 'SchoolHome'},
-            { list: TEACHERS, route: 'TeacherHome'},
-            { list: PARENTS, route: 'ParentHome' },
-            { list: STUDENTS, route: 'StudentHome' }
-        ];      
-
-        const entity = entities.find(entry => entry.list.some(item => item.email === enteredEmail));
-
-        if (entity) {
-            const element = entity.list.find(item => item.email === enteredEmail);
+        setIsAuthenticating(true);
+        try{
+            const tokenData = await login(
+                enteredEmail, 
+                enteredPassword
+            );
+            authCtx.authenticate(tokenData.idToken);  
+            
+            const userInfo = await fetchUser(tokenData.localId); 
+            authCtx.currentUser(userInfo);           
             
             navigation.navigate('UserNavigation', {
-                userHome: entity.route,
-                user: element
+                userHome: userInfo.type,
+                user: userInfo.data
             });
-        } else {
-            setErrorMessage('This user does not exist.');
+
+        }
+        catch (error){
+            setIsAuthenticating(false);
+            setShowError(true);
+            Alert.alert('Something is wrong', 'Your email or password is incorrect');
+            //console.log(error);
         }        
+        
+        // const entities = [
+        //     { list: SCHOOLS, route: 'SchoolHome'},
+        //     { list: TEACHERS, route: 'TeacherHome'},
+        //     { list: PARENTS, route: 'ParentHome' },
+        //     { list: STUDENTS, route: 'StudentHome' }
+        // ];      
+
+        // const entity = entities.find(entry => entry.list.some(item => item.email === enteredEmail));
+
+        // if (entity) {
+        //     const element = entity.list.find(item => item.email === enteredEmail);
+            
+        //     navigation.navigate('UserNavigation', {
+        //         userHome: entity.route,
+        //         user: element
+        //     });
+        // } else {
+        //     setErrorMessage('This user does not exist.');
+        // }        
 
     }
 
@@ -68,9 +91,9 @@ function LoginScreen({navigation, route}){
         navigation.navigate('Register');
     }
 
-    // if (isAuthenticating) {
-    //     return <LoadingOverlay message="Logging..." />;
-    // }
+    if (isAuthenticating) {
+        return <LoadingOverlay message="Logging..." />;
+    }
 
     return(
         <View style={styles.globalContainer}>     

@@ -23,7 +23,8 @@ function InfoInputWithLogo(props){
                 value={props.value}
                 onChangeText={props.onSaveInfo}  
                 keyboardType={props.keyboardType}  
-                secureTextEntry={props.secureTextEntry}            
+                secureTextEntry={props.secureTextEntry}   
+                autoCapitalize='none'         
             />
         </View>
     );

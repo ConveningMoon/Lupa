@@ -43,16 +43,17 @@ import TeacherHomeScreen from './screens/HomesScreens/TeacherHomeScreen';
 import SettingScreen from './screens/SettingScreen';
 
 import SubjectsOptionsScreen from './screens/DisplayOptionsScreens/SubjectsOptionsScreen';
+
 import AuthContextProvider from './store/auth-context';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const homeScreens = {
-  'SchoolHome': SchoolHomeScreen,
-  'TeacherHome': TeacherHomeScreen,
-  'ParentHome': ParentHomeScreen,
-  'StudentHome': StudentHomeScreen,
+  'School': SchoolHomeScreen,
+  'Teacher': TeacherHomeScreen,
+  'Parent': ParentHomeScreen,
+  'Student': StudentHomeScreen,
 };
 
 function UserNavigation({route}){
@@ -90,8 +91,6 @@ function UserNavigation({route}){
 
 
 export default function App() {
-  const authCtx = useContext(AuthContext);
-
   return (
     <>
       <StatusBar style='dark'/>
@@ -119,26 +118,22 @@ export default function App() {
                 options={{              
                   headerShown: false
                 }}
+              />              
+              <Stack.Screen 
+                name='Login' 
+                component={LoginScreen}
+                options={{               
+                  headerShown: false
+                }}
               />
-              {/* {!authCtx.isAuthenticated && */}
-                <Stack.Screen 
-                  name='Login' 
-                  component={LoginScreen}
-                  options={{               
-                    headerShown: false
-                  }}
-                />
-              {/* } */}
 
-              {/* {authCtx.isAuthenticated && */}
-                <Stack.Screen 
-                  name='UserNavigation' 
-                  component={UserNavigation}
-                  options={{               
-                    headerShown: false
-                  }}
-                />
-              {/* } */}
+              <Stack.Screen 
+                name='UserNavigation' 
+                component={UserNavigation}
+                options={{               
+                  headerShown: false
+                }}
+              />
 
               {/* Schools */}
               <Stack.Screen 

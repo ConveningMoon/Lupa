@@ -10,11 +10,18 @@ async function authenticate(mode, email, password) {
     password: password,
     returnSecureToken: true,
   });
+//   .catch(error => {
+//     if (error.response) {
+//       console.log(error.response.data);
+//     } else if (error.request) {
+//       console.log(error.request);
+//     } else {
+//       console.log("Error with login: ", error.message);
+//     }
 
-  const token = response.data.idToken;
+//   });
 
-  return token;
-  //return response.data;
+  return response.data;
 }
 
 export function createUser(email, password) {
