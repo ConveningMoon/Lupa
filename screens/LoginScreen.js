@@ -46,16 +46,18 @@ function LoginScreen({navigation}){
             const tokenData = await login(
                 enteredEmail, 
                 enteredPassword
-            );
-            authCtx.authenticate(tokenData.idToken);  
+            );            
             
             const userInfo = await fetchUser(tokenData.localId); 
-            authCtx.currentUser(userInfo);           
+            userInfo.tokenId = tokenData.idToken;
+
+            authCtx.currentUser(userInfo);   
+            authCtx.authenticate(tokenData.idToken);         
             
-            navigation.navigate('UserNavigation', {
-                userHome: userInfo.type,
-                user: userInfo.data
-            });
+            // navigation.navigate('UserNavigation', {
+            //     userHome: userInfo.type,
+            //     user: userInfo.data
+            // });
 
         }
         catch (error){
@@ -102,7 +104,6 @@ function LoginScreen({navigation}){
                     LOGIN
                 </Text> 
             </View> 
-
             {showError &&(
                 <Text style={styles.errorText}>{errorMessage}</Text>
             )}

@@ -7,6 +7,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 
+import { useContext, useState, useEffect } from 'react';
+
 import Colors from './constants/colors';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -44,7 +46,11 @@ import SettingScreen from './screens/SettingScreen';
 
 import SubjectsOptionsScreen from './screens/DisplayOptionsScreens/SubjectsOptionsScreen';
 
-import AuthContextProvider from './store/auth-context';
+import AuthContextProvider, { AuthContext } from './store/auth-context';
+
+import * as SplashScreen from 'expo-splash-screen';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,9 +62,11 @@ const homeScreens = {
   'Student': StudentHomeScreen,
 };
 
-function UserNavigation({route}){
-  const userHome = route.params.userHome;
-  const user = route.params.user;
+function UserNavigation(){
+  const authCtx = useContext(AuthContext);
+
+  const userHome = authCtx.infoUser.type;
+  const user = authCtx.infoUser.data;
 
   return (
     <Tab.Navigator>
@@ -89,6 +97,173 @@ function UserNavigation({route}){
   );
 }
 
+function NewUserScreens() {
+  return (
+    <Stack.Navigator>  
+      <Stack.Screen 
+        name='Index' 
+        component={IndexScreen}
+        options={{
+          //title: 'My title',                  
+          headerShown: false
+        }}        
+      />
+
+      <Stack.Screen 
+        name='Register' 
+        component={RegisterScreen}
+        options={{              
+          headerShown: false
+        }}
+      />            
+      <Stack.Screen 
+        name='Login' 
+        component={LoginScreen}
+        options={{               
+          headerShown: false
+        }}
+      />
+      {/* Schools */}
+      <Stack.Screen 
+        name='NewRegisterSchool' 
+        component={FillRegisterSchoolScreen}
+        options={{               
+          headerShown: false
+        }}
+      />  
+
+      {/* Parents */}
+      <Stack.Screen 
+        name='NewRegisterParent' 
+        component={FillRegisterParentScreen}
+        options={{               
+          headerShown: false
+        }}
+      />
+
+      {/* Students */}
+      <Stack.Screen 
+        name='NewRegisterStudent' 
+        component={FillRegisterStudentScreen}
+        options={{               
+          headerShown: false
+        }}
+      />
+
+      {/* Teachers */}
+      <Stack.Screen 
+        name='NewRegisterTeacher' 
+        component={FillRegisterTeacherScreen}
+        options={{               
+          headerShown: false
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function UserNavigationStack() {
+  return(
+    <Stack.Navigator
+      screenOptions={{
+        // headerStyle: { backgroundColor: '#351401' },
+        // headerTintColor: 'white',
+        // contentStyle: { backgroundColor: '#3f2f25' },
+      }}
+    > 
+      <Stack.Screen 
+        name='UserNavigation' 
+        component={UserNavigation}
+        options={{               
+          headerShown: false
+        }}
+      />
+      
+      {/* Groups */}
+      <Stack.Screen 
+        name='Groups' 
+        component={GroupsOptionsScreen}
+      />
+      <Stack.Screen 
+        name='GroupsInfo' 
+        component={GroupsInfoScreen}
+      />
+      
+      {/* Parents */}
+      <Stack.Screen 
+        name='ParentsInfo' 
+        component={ParentsInfoScreen}
+      />
+
+      {/* Students */}
+      <Stack.Screen 
+        name='Students' 
+        component={StudentsOptionsScreen}
+      />
+      <Stack.Screen 
+        name='StudentsInfo' 
+        component={StudentsInfoScreen}
+      />
+
+      {/* Teachers */}
+      <Stack.Screen 
+        name='Teachers' 
+        component={TeachersOptionsScreen}
+      />
+      <Stack.Screen 
+        name='TeachersInfo' 
+        component={TeachersInfoScreen}
+      />
+
+      {/* Subjects */}
+      <Stack.Screen 
+        name='Subjects' 
+        component={SubjectsOptionsScreen}
+      />
+
+    </Stack.Navigator>
+  );
+}
+
+function Navigation() {
+  const authCtx = useContext(AuthContext);
+  
+  return (
+    <NavigationContainer>
+      {!authCtx.isAuthenticated && <NewUserScreens />}
+      {authCtx.isAuthenticated && <UserNavigationStack />}
+    </NavigationContainer>
+  );
+}
+
+function Root() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  const authCtx = useContext(AuthContext);
+
+  useEffect(() => {
+    async function fetchToken() {
+      const storedToken = await AsyncStorage.getItem('token');
+      const convertToken = JSON.parse(storedToken);
+      if (storedToken) {  
+        authCtx.currentUser(convertToken);     
+        authCtx.authenticate(convertToken.tokenId);
+      }
+      
+      setAppIsReady(true);
+    }
+
+    fetchToken();
+  }, []);
+
+  if (appIsReady) {
+    SplashScreen.hideAsync();
+  }
+
+  return <Navigation/>;
+}
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   return (
@@ -96,130 +271,7 @@ export default function App() {
       <StatusBar style='dark'/>
       <SafeAreaView style={styles.screenDesign}>
         <AuthContextProvider>
-          <NavigationContainer>          
-            <Stack.Navigator
-              screenOptions={{
-                // headerStyle: { backgroundColor: '#351401' },
-                // headerTintColor: 'white',
-                // contentStyle: { backgroundColor: '#3f2f25' },
-              }}
-            >          
-              <Stack.Screen 
-                name='Index' 
-                component={IndexScreen}
-                options={{
-                  //title: 'My title',                  
-                  headerShown: false
-                }}
-              />
-              <Stack.Screen 
-                name='Register' 
-                component={RegisterScreen}
-                options={{              
-                  headerShown: false
-                }}
-              />              
-              <Stack.Screen 
-                name='Login' 
-                component={LoginScreen}
-                options={{               
-                  headerShown: false
-                }}
-              />
-
-              <Stack.Screen 
-                name='UserNavigation' 
-                component={UserNavigation}
-                options={{               
-                  headerShown: false
-                }}
-              />
-
-              {/* Schools */}
-              <Stack.Screen 
-                name='NewRegisterSchool' 
-                component={FillRegisterSchoolScreen}
-                options={{               
-                  headerShown: false
-                }}
-              />              
-
-              {/* Groups */}
-              <Stack.Screen 
-                name='Groups' 
-                component={GroupsOptionsScreen}
-              />
-              <Stack.Screen 
-                name='GroupsInfo' 
-                component={GroupsInfoScreen}
-              />
-
-              {/* Parents */}
-              <Stack.Screen 
-                name='ParentsInfo' 
-                component={ParentsInfoScreen}
-              />
-              <Stack.Screen 
-                name='NewRegisterParent' 
-                component={FillRegisterParentScreen}
-                options={{               
-                  headerShown: false
-                }}
-              />
-              {/* <Stack.Screen 
-                name='ParentHome' 
-                component={ParentHomeScreen}
-              /> */}
-
-              {/* Students */}
-              <Stack.Screen 
-                name='Students' 
-                component={StudentsOptionsScreen}
-              />
-              <Stack.Screen 
-                name='StudentsInfo' 
-                component={StudentsInfoScreen}
-              />
-              <Stack.Screen 
-                name='NewRegisterStudent' 
-                component={FillRegisterStudentScreen}
-                options={{               
-                  headerShown: false
-                }}
-              />
-              {/* <Stack.Screen 
-                name='StudentHome' 
-                component={StudentHomeScreen}
-              /> */}
-
-              {/* Teachers */}
-              <Stack.Screen 
-                name='Teachers' 
-                component={TeachersOptionsScreen}
-              />
-              <Stack.Screen 
-                name='TeachersInfo' 
-                component={TeachersInfoScreen}
-              />
-              <Stack.Screen 
-                name='NewRegisterTeacher' 
-                component={FillRegisterTeacherScreen}
-                options={{               
-                  headerShown: false
-                }}
-              />
-              {/* <Stack.Screen 
-                name='TeacherHome' 
-                component={TeacherHomeScreen}
-              /> */}
-              
-              {/* Subjects */}
-              <Stack.Screen 
-                name='Subjects' 
-                component={SubjectsOptionsScreen}
-              />
-            </Stack.Navigator>         
-          </NavigationContainer>
+          <Root />
         </AuthContextProvider>
       </SafeAreaView>
     </>     

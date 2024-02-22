@@ -10,8 +10,11 @@ import { StatusBar } from 'expo-status-bar';
 import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
 
 import Colors from '../constants/colors';
+import { useContext } from 'react';
+import { AuthContext } from '../store/auth-context';
 
 export default function IndexScreen({navigation}) {
+    const authCtx = useContext(AuthContext);
 
     function onPressGeneralRegisterHandler(){
         navigation.navigate('Register');

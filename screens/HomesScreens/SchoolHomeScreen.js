@@ -9,7 +9,7 @@ import {
 
 import { StatusBar } from 'expo-status-bar';
 
-import { useEffect, useLayoutEffect } from 'react';
+import { useContext, useEffect, useLayoutEffect } from 'react';
 
 import { Entypo } from '@expo/vector-icons';
 
@@ -19,9 +19,12 @@ import CustomeNavigator from '../../components/NavigatorComponents/CustomeNaviga
 
 import { GROUPS, STUDENTS, TEACHERS } from '../../data/dummy-data';
 
-export default function SchoolHomeScreen({navigation, route}) {
-    const user = route.params.user;
+import { AuthContext } from '../../store/auth-context';
 
+export default function SchoolHomeScreen({navigation, route}) {
+    //const user = route.params.user;
+    const authCtx = useContext(AuthContext);
+    const user = authCtx.infoUser.data;
     // useLayoutEffect (() => {
         // navigation.setOptions({
         //     title: 'Users name'
