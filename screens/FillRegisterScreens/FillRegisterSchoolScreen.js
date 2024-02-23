@@ -2,19 +2,19 @@ import {
   View,  
   StyleSheet, 
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 
-import { useContext, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import SimpleFillInfoInput from '../../components/InputComponents/SimpleFillInfoInput';
 import SimpleMultilineFillInfoInput from '../../components/InputComponents/SimpleMultilineFillInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { createUser } from '../../util/auth';
-import { AuthContext } from '../../store/auth-context';
 import { registerNewUser } from '../../util/http';
+import { createUser, login } from '../../util/auth';
 
 export default function FillRegisterSchoolScreen({navigation, route}) {
   const [schoolUsername, setSchoolUserName] = useState('');
@@ -26,31 +26,49 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  const authCtx = useContext(AuthContext);
+   useEffect(() => {
+    async function emailExistsHandler (){
+      try{
+        await login(
+          route.params.email,
+          route.params.password
+        );
+
+        Alert.alert('Ups!', 'This email already exists');
+        navigation.navigate('Register');
+      }
+      catch {
+      }
+    }
+    emailExistsHandler();    
+  }, [])
 
   async function newRegister(){
     setIsAuthenticating(true);
 
-    const tokenData = await createUser(
-      route.params.email, 
-      route.params.password,
-    );
-    // authCtx.authenticate(tokenData.idToken);
-    // authCtx.currentUserId(tokenData.localId);
+    try {
+      const response = await createUser(
+        route.params.email,
+        route.params.password
+      );
+      
+      await registerNewUser({
+        id: response.localId,
+        username: schoolUsername.trim(),
+        name: schoolName.trim(),
+        emailContact: schoolEmail.trim(),
+        website: schoolWebsite.trim(),
+        adress: schoolAdress,
+        description: schoolDescription
+      }, "School");
 
-    await registerNewUser({
-      id: tokenData.localId,
-      username: schoolUsername,
-      name: schoolName,
-      emailContact: schoolEmail,
-      website: schoolWebsite,
-      adress: schoolAdress,
-      description: schoolDescription
-    }, "School");
+      navigation.navigate('Login');
+    } catch (error) {
+      console.log(error);
+      setIsAuthenticating(false);
+      Alert.alert('Something is wrong', 'Try it later');
+    }
 
-    setIsAuthenticating(false);
-
-    navigation.navigate('Login');
   }
 
   if (isAuthenticating) {
@@ -62,13 +80,34 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
       <ScrollView>
         <View style={styles.globalContainer}>
 
-          <SimpleFillInfoInput text='Name of the school' onChangeText={setSchoolName}/>
-          <SimpleFillInfoInput text='Username' onChangeText={setSchoolUserName}/>
-          <SimpleFillInfoInput text='Email' onChangeText={setSchoolEmail}/>
-          <SimpleFillInfoInput text='Website' onChangeText={setSchoolWebsite}/>
-          <SimpleFillInfoInput text='Adress' onChangeText={setSchoolAdress}/>
+          <SimpleFillInfoInput 
+            text='Name of the school' 
+            onChangeText={setSchoolName}                    
+          />
+          <SimpleFillInfoInput 
+            text='Username' 
+            onChangeText={setSchoolUserName}
+            autoCapitalize='none'
+          />
+          <SimpleFillInfoInput 
+            text='Email' 
+            onChangeText={setSchoolEmail}
+            autoCapitalize='none'
+          />
+          <SimpleFillInfoInput 
+            text='Website' 
+            onChangeText={setSchoolWebsite}
+            autoCapitalize='none'
+          />
+          <SimpleFillInfoInput 
+            text='Adress' 
+            onChangeText={setSchoolAdress}
+          />
 
-          <SimpleMultilineFillInfoInput text='Description' onChangeText={setSchoolDescription}/>
+          <SimpleMultilineFillInfoInput 
+            text='Description' 
+            onChangeText={setSchoolDescription}
+          />
           
           <ButtonInfoInput text='Register' onPressGeneral={newRegister}/>
 

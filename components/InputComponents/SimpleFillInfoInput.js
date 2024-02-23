@@ -11,7 +11,11 @@ function InfoInputWithLogo(props){
     return(
         <View style={styles.mainContainer}>                  
             <Text style={styles.textContainer}>{props.text}</Text>
-            <TextInput style={styles.inputContainer} onChangeText={props.onChangeText}/>
+            <TextInput 
+                style={styles.inputContainer} 
+                onChangeText={props.onChangeText}
+                autoCapitalize={props.autoCapitalize}
+            />
         </View>
     );
 }

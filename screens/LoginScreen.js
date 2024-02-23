@@ -7,11 +7,9 @@ import {
 
 import { useContext, useEffect, useState } from 'react';
 
-import { useIsFocused } from '@react-navigation/native';
+//import { useIsFocused } from '@react-navigation/native';
 
 import Colors from '../constants/colors';
-
-import { SCHOOLS, TEACHERS, PARENTS, STUDENTS, GROUPS } from '../data/dummy-data';
 
 import InfoInputWithLogo from '../components/InputComponents/InfoInputWithLogo';
 import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
@@ -28,24 +26,21 @@ function LoginScreen({navigation}){
     const [enteredEmail, setEnteredEmail] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
 
-    const [errorMessage, setErrorMessage] = useState('');
-    const [showError, setShowError] = useState(false);
-
     const [isAuthenticating, setIsAuthenticating] = useState(false);
-    const isFocused = useIsFocused();
+    //const isFocused = useIsFocused();
 
-    useEffect(() => {
-        if(isFocused) {
-            setIsAuthenticating(false);
-        };
-    }, [isFocused]);
+    // useEffect(() => {
+    //     if(isFocused) {
+    //         setIsAuthenticating(false);
+    //     };
+    // }, [isFocused]);
 
     async function toHome(){
         setIsAuthenticating(true);
         try{
             const tokenData = await login(
-                enteredEmail, 
-                enteredPassword
+                enteredEmail.trim(), 
+                enteredPassword.trim()
             );            
             
             const userInfo = await fetchUser(tokenData.localId); 
@@ -53,40 +48,12 @@ function LoginScreen({navigation}){
 
             authCtx.currentUser(userInfo);   
             authCtx.authenticate(tokenData.idToken);         
-            
-            // navigation.navigate('UserNavigation', {
-            //     userHome: userInfo.type,
-            //     user: userInfo.data
-            // });
 
         }
         catch (error){
             setIsAuthenticating(false);
-            setShowError(true);
             Alert.alert('Something is wrong', 'Your email or password is incorrect');
-            //console.log(error);
-        }        
-        
-        // const entities = [
-        //     { list: SCHOOLS, route: 'SchoolHome'},
-        //     { list: TEACHERS, route: 'TeacherHome'},
-        //     { list: PARENTS, route: 'ParentHome' },
-        //     { list: STUDENTS, route: 'StudentHome' }
-        // ];      
-
-        // const entity = entities.find(entry => entry.list.some(item => item.email === enteredEmail));
-
-        // if (entity) {
-        //     const element = entity.list.find(item => item.email === enteredEmail);
-            
-        //     navigation.navigate('UserNavigation', {
-        //         userHome: entity.route,
-        //         user: element
-        //     });
-        // } else {
-        //     setErrorMessage('This user does not exist.');
-        // }        
-
+        }             
     }
 
     function newRegister(){
@@ -104,9 +71,6 @@ function LoginScreen({navigation}){
                     LOGIN
                 </Text> 
             </View> 
-            {showError &&(
-                <Text style={styles.errorText}>{errorMessage}</Text>
-            )}
 
             <InfoInputWithLogo
                 name='mail'
@@ -173,7 +137,4 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         height: 30
     },
-    errorText: {
-        color: Colors.error_red
-    }
 });

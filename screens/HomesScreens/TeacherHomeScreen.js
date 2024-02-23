@@ -7,23 +7,14 @@ import {
 
 import { StatusBar } from 'expo-status-bar';
 
-import { useLayoutEffect } from 'react';
-
 import { GROUPS} from '../../data/dummy-data';
 
 import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
-export default function TeacherHomeScreen({navigation, route}) {
-    const user = route.params.user;
-    //const name = route.params.name;
-
-    // useLayoutEffect (() => {
-        // navigation.setOptions({
-        //     title: 'Users name'
-        // });
-
-    // },[]);
+export default function TeacherHomeScreen({navigation}) {
+    const authCtx = useContext(AuthContext);
+    const user = authCtx.infoUser.data;
 
     function toGroups(){
         const filterGroups = GROUPS.filter(
@@ -48,7 +39,7 @@ export default function TeacherHomeScreen({navigation, route}) {
                     </View> 
 
                     <View style={styles.contactContainer}>
-                        <Text style={styles.contactText}>Contact: {user.email}</Text>
+                        <Text style={styles.contactText}>Contact: {user.emailContact}</Text>
                     </View>
 
                     <View style={styles.subjectsContainer}>

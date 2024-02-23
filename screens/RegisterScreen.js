@@ -3,13 +3,16 @@ import {
     StyleSheet, 
     Text,
     Platform,
-    TextInput
+    TextInput,
+    Alert
 } from 'react-native';
 
 import { 
     useState,
     useEffect
 } from 'react';
+
+import { useIsFocused } from '@react-navigation/native';
 
 import Colors from '../constants/colors';
 
@@ -21,8 +24,6 @@ import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
 import MicroPressText from '../components/PressableTextComponents/MicroPressText';
 import TypeUser from '../components/TypeUser';
 import LoadingOverlay from '../components/LoadingOverlay';
-
-import { SCHOOLS, TEACHERS, PARENTS, STUDENTS } from '../data/dummy-data';
 
 function RegisterScreen({navigation}){
     const [enteredEmail, setEnteredEmail] = useState('');
@@ -36,25 +37,27 @@ function RegisterScreen({navigation}){
     const [showError, setShowError] = useState(false);
 
     const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if(isFocused) {
+            setIsAuthenticating(false);
+        };
+    }, [isFocused]);
 
     function selectUserType(){
         setTypeUserVisible(true);
     }
 
-    function signUpHandler(){
+    async function signUpHandler(){
         setIsAuthenticating(true);
 
-        const checkEmail = enteredEmail.includes('@');
-        const checkPassword = enteredPassword.length > 6;
-        const checkRepeatPassword = enteredPassword === enteredRepeatPassword;
-        //Change the following line to fetch and check from the database
-        const findTypes = [SCHOOLS, TEACHERS, PARENTS, STUDENTS];
-        const findEmail = findTypes.find(type => type.find(user => user.email === enteredEmail));
-        
-        if (findEmail) {
-            setErrorMessage('The email already exists.');
-        } else if (!checkEmail) {
-            setErrorMessage('The email is incorrect.');
+        const checkEmail = enteredEmail.trim().includes('@');
+        const checkPassword = enteredPassword.trim().length > 6;
+        const checkRepeatPassword = enteredPassword.trim() === enteredRepeatPassword.trim();
+
+        if (!checkEmail) {
+            setErrorMessage('The email format is incorrect.');
         } else if (!checkPassword) {
             setErrorMessage('The password is too short.');
         } else if (!checkRepeatPassword) {
@@ -62,18 +65,16 @@ function RegisterScreen({navigation}){
         } else {
             if (typeUser !== 'None') {
                 navigation.navigate(`NewRegister${typeUser}`, {
-                    email: enteredEmail,
-                    password: enteredPassword
+                    email: enteredEmail.trim(),
+                    password: enteredPassword.trim()
                 });
-    
+                
             } else {
                 setErrorMessage('Select user type please');
             }            
         }
-        
-        setShowError(findEmail || !checkEmail || !checkPassword || !checkRepeatPassword);
 
-        setIsAuthenticating(false);
+        setShowError(!checkEmail || !checkPassword || !checkRepeatPassword);
     }
 
     function onBackHandler(){
@@ -107,7 +108,6 @@ function RegisterScreen({navigation}){
                 onSaveInfo = {setEnteredEmail}
                 value = {enteredEmail}
                 keyboardType = 'email-address'
-                secureTextEntry = {false}
             />
 
             <InfoInputWithLogo
@@ -117,7 +117,7 @@ function RegisterScreen({navigation}){
                 onSaveInfo = {setEnteredPassword}
                 value = {enteredPassword}
                 keyboardType = 'default'
-                secureTextEntry = {true}
+                //secureTextEntry = {true}
             />
 
             <InfoInputWithLogo
@@ -127,7 +127,7 @@ function RegisterScreen({navigation}){
                 onSaveInfo = {setEnteredRepeatPassword}
                 value = {enteredRepeatPassword}
                 keyboardType = 'default'
-                secureTextEntry = {true}
+                //secureTextEntry = {true}
             />
 
             <ChangeTypeUser typeUserText={typeUser} onPress={selectUserType}/>

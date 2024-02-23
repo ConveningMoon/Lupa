@@ -24,7 +24,7 @@ async function authenticate(mode, email, password) {
   return response.data;
 }
 
-export function createUser(email, password) {
+export async function createUser(email, password) {
   return authenticate('signUp', email, password);
 }
 
