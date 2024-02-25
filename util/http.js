@@ -9,13 +9,35 @@ export async function registerNewUser(newUserData, typeUser) {
     );
 }
 
+export async function registerNewGroup(newGroupData) {
+    await axios.post(
+        `${BACKEND_URL}/groups.json`,
+        newGroupData
+    );
+}
+
+export async function fetchGroup(id) {
+    const response = await axios.get(BACKEND_URL + '/groups.json');
+
+    const groups = Object.values(response.data)
+        .reduce((acc, item) => item.school === id ? [...acc, item.name] : acc, []);
+
+    return groups;
+} 
+
 export async function fetchUser(id){
-    const responseSchool = await axios.get(BACKEND_URL + '/users/School.json');
-    // const responseStudent = await axios.get(BACKEND_URL + '/users/Student.json');
+    const responseUsers = await axios.get(BACKEND_URL + '/users.json');
 
-    const schoolUser = Object.values(responseSchool.data).find(user => user.id === id);
-    if (schoolUser) return { type: 'School', data: schoolUser };
+    function findUserById(id) {
+        for (let type in responseUsers.data) {
+          for (let user in responseUsers.data[type]) {
+            if (responseUsers.data[type][user].id === id) {
+                return { type: type, data: responseUsers.data[type][user] };
+            }
+          }
+        }
+        return null;
+    }
 
-    // const studentUser = Object.values(responseStudent.data).find(user => user.id === id);
-    // if (studentUser) return { type: 'Student', data: studentUser };
+    return findUserById(id);
 }

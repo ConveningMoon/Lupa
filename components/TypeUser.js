@@ -1,14 +1,9 @@
-import { View, Text, StyleSheet, Modal } from 'react-native'
-
-import { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { View,StyleSheet, Modal } from 'react-native'
 
 import ButtonInfoInput from './ButtonComponents/ButtonInfoInput';
 import MicroPressText from './PressableTextComponents/MicroPressText';
 
 export default function TypeUser(props) {
-    const navigation = useNavigation();
-
     function schoolRegister(){
         props.onSelect(false);
         props.value('School');

@@ -1,38 +1,46 @@
 import { 
     FlatList, 
     View,
-    StyleSheet
+    StyleSheet,
+    ScrollView,
+    RefreshControl
 } from 'react-native';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 
 import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
+import ButtonToAdd from '../../components/ButtonComponents/ButtonToAdd';
+import NewGroupInfo from '../../components/ModalComponents/NewGroupInfo';
 
-import { GROUPS, STUDENTS, TEACHERS } from '../../data/dummy-data';
+import { fetchGroup } from '../../util/http';
 
-export default function GroupsOptionsScreen({navigation, route}) {
-    const filterGroups = route.params.filterGroups;
+import { AuthContext } from '../../store/auth-context';
 
+export default function GroupsOptionsScreen({navigation}) {
+    const authCtx = useContext(AuthContext);
+
+    const [filterGroups, setFilterGroups] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [foundGroups, setFoundGroups] = useState([]);
+    const [addGroupVisible, setAddNewGroupVisible] = useState(false);
 
-    // useEffect(() => {
-    //     const unsubscribe = navigation.addListener('tabPress', () => {
-    //         const filterGroups = GROUPS.filter(
-    //             group => group.school === user.id
-    //         );
-    //         console.log(filterGroups);
-    //       navigation.navigate('Groups', { filterGroups: filterGroups });
-    //     });
-    
-    //     return unsubscribe;
-    // }, [navigation]);
+    const [refreshing, setRefreshing] = useState(false);
+
+    async function initialGroupsData() {
+        const groups = await fetchGroup(authCtx.infoUser.data.id);
+        setFilterGroups(groups);
+        setFoundGroups(groups);
+    }
+
+    useEffect(() => {
+        initialGroupsData();
+    }, []);
 
     useEffect(() => {
         if (searchText.trim() !== '') {
             const searchGroups = filterGroups.filter(
-                group => group.name.toLowerCase().includes(searchText.toLowerCase())
+                group => group.toLowerCase().includes(searchText.toLowerCase())
             );
             setFoundGroups(searchGroups);
         } else {
@@ -40,6 +48,7 @@ export default function GroupsOptionsScreen({navigation, route}) {
         }
 
     }, [searchText]);
+    
 
     function renderGroupItem(itemData) {
         function pressHandler() {
@@ -50,18 +59,40 @@ export default function GroupsOptionsScreen({navigation, route}) {
     
         return (
             <TableOptions
-                text={itemData.item.name}
+                text={itemData.item}
                 onPressGeneral={pressHandler}
             />          
         );
     }
+
+    function addNewGroup() {
+        setAddNewGroupVisible(true);
+    }
+
+    function onBackHandler(){
+        setAddNewGroupVisible(false);
+    }
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        initialGroupsData();
+        setRefreshing(false);
+    }, []);
     
     return (  
         <View style={styles.globalContainer}>    
             <SearchInputText onChangeText={setSearchText} value={searchText}/>
+            <ButtonToAdd text='Add New Group' onPressGeneral={addNewGroup}/>
+            <NewGroupInfo 
+                visible={addGroupVisible}
+                onBack={onBackHandler}
+            />
             <FlatList
                 data={foundGroups}
                 renderItem={renderGroupItem}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
             />
         </View>  
     );

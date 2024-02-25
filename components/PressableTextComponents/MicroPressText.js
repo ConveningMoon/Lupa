@@ -14,8 +14,7 @@ const styles = StyleSheet.create({
     microtext: {
       color: Colors.color_darkGreen,
       fontStyle: 'italic',
-      textDecorationLine: 'underline',
-      paddingTop: 10
+      textDecorationLine: 'underline'
     },
     pressedText: {
       color: Colors.color_boneYellow,

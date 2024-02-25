@@ -7,7 +7,7 @@ import {
 
 import Colors from '../../constants/colors';
 
-function InfoInputWithLogo(props){    
+export default function SimpleFillInfoInput(props){    
     return(
         <View style={styles.mainContainer}>                  
             <Text style={styles.textContainer}>{props.text}</Text>
@@ -15,13 +15,11 @@ function InfoInputWithLogo(props){
                 style={styles.inputContainer} 
                 onChangeText={props.onChangeText}
                 autoCapitalize={props.autoCapitalize}
+                keyboardType={props.keyboardType}
             />
         </View>
     );
 }
-
-
-export default InfoInputWithLogo;
 
 const styles = StyleSheet.create({
     mainContainer: {

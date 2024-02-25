@@ -6,20 +6,25 @@ import {
     Pressable
 } from 'react-native';
 
+import { useContext} from 'react';
+
+import { AuthContext } from '../../store/auth-context';
+
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
 import Colors from '../../constants/colors';
 import {PARENTS, TEACHERS, GROUPS} from '../../data/dummy-data';
 
 export default function StudentHomeScreen({navigation, route}) {
- const student = route.params.user;
+    const authCtx = useContext(AuthContext);
+    const user = authCtx.infoUser.data;
     
     const parents = PARENTS.filter(parent => 
-        student.parents.includes(parent.id));
+        user.parents.includes(parent.id));
 
     function toTeachers(){
         const filterTeachers = TEACHERS.filter(
-            teacher => teacher.groups.includes(student.group)
+            teacher => teacher.groups.includes(user.group)
         );
 
         navigation.navigate('Teachers',{
@@ -28,7 +33,7 @@ export default function StudentHomeScreen({navigation, route}) {
     }
 
     function toGroup(){
-        const findGroup = GROUPS.find(group => group.name === student.group);
+        const findGroup = GROUPS.find(group => group.name === user.group);
         
         navigation.navigate('GroupsInfo', {
             groupId: findGroup.id
@@ -53,11 +58,10 @@ export default function StudentHomeScreen({navigation, route}) {
         <View style={styles.globalContainer}>
             <View style={styles.topInfoContainer}>
                 <View style={styles.nameUsernameContainer}>
-                    <Text style={styles.textStudentName}>{student.name}</Text>
-                    <Text style={styles.textStudentUsername}>{student.username}</Text>
+                    <Text style={styles.textStudentName}>{user.name}</Text>
                 </View>
                 <Pressable onPress={toGroup}>
-                    <Text style={styles.textStudentGroup}>{student.group}</Text>
+                    <Text style={styles.textStudentGroup}>{user.group}</Text>
                 </Pressable>
             </View>
 
@@ -115,10 +119,6 @@ const styles = StyleSheet.create({
         color: Colors.color_lightGreen,
         fontWeight: 'bold',
         paddingHorizontal: 10,
-    },
-    textStudentUsername:{
-        color: Colors.color_darkGreen,
-        paddingHorizontal: 10
     },
     textStudentGroup: {
         color: Colors.color_darkBlue,

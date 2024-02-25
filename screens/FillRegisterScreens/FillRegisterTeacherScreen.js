@@ -2,46 +2,65 @@ import {
   View,  
   StyleSheet,
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import SimpleFillInfoInput from '../../components/InputComponents/SimpleFillInfoInput';
 import SimpleMultilineFillInfoInput from '../../components/InputComponents/SimpleMultilineFillInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { createUser } from '../../util/auth';
+import { createUser, login } from '../../util/auth';
 import { registerNewUser } from '../../util/http';
 
 export default function FillRegisterTeacherScreen({navigation, route}) {
-  const [teacherUsername, setTeacherUserName] = useState('');
   const [teacherName, setTeacherName] = useState('');
   const [teacherEmail, setTeacherEmail] = useState('');
   const [teacherDescription, setTeacherDescription] = useState('');
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
+  useEffect(() => {
+    async function emailExistsHandler (){
+      try{
+        await login(
+          route.params.email,
+          route.params.password
+        );
+
+        Alert.alert('Ups!', 'This email already exists');
+        navigation.navigate('Register');
+      }
+      catch {
+      }
+    }
+    emailExistsHandler();    
+  }, []);
+
   async function newRegister(){
     setIsAuthenticating(true);
 
-    const tokenData = await createUser(
-      route.params.email, 
-      route.params.password,
-    );
+    try {
+      const tokenData = await createUser(
+        route.params.email, 
+        route.params.password,
+      );
 
-    await registerNewUser({
-      id: tokenData.localId,
-      username: teacherUsername.trim(),
-      name: teacherName.trim(),
-      emailContact: teacherEmail.trim(),
-      description: teacherDescription
-    }, "Teacher");
-
-    setIsAuthenticating(false);
-
-    navigation.navigate('Login');
+      await registerNewUser({
+        id: tokenData.localId,
+        name: teacherName.trim(),
+        emailContact: teacherEmail.trim(),
+        description: teacherDescription
+      }, "Teacher");
+      
+      navigation.navigate('Login');
+    } catch (error) {
+      setIsAuthenticating(false);
+      Alert.alert('Something is wrong', 'Try it later');
+    }
   }
 
   if (isAuthenticating) {
@@ -59,14 +78,10 @@ export default function FillRegisterTeacherScreen({navigation, route}) {
             onChangeText={setTeacherName}
           />
           <SimpleFillInfoInput 
-            text='Username' 
-            onChangeText={setTeacherUserName}
-            autoCapitalize='none'
-          />
-          <SimpleFillInfoInput 
             text='Email' 
             onChangeText={setTeacherEmail}
             autoCapitalize='none'
+            keyboardType='email-address'
           />
 
           <SimpleMultilineFillInfoInput 

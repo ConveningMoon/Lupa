@@ -7,7 +7,9 @@ import {
 
 import { StatusBar } from 'expo-status-bar';
 
-import { useLayoutEffect } from 'react';
+import { useContext} from 'react';
+
+import { AuthContext } from '../../store/auth-context';
 
 import { STUDENTS} from '../../data/dummy-data';
 
@@ -15,16 +17,9 @@ import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
 
-export default function ParentHomeScreen({navigation, route}) {
-    const user = route.params.user;
-    //const name = route.params.name;
-
-    // useLayoutEffect (() => {
-        // navigation.setOptions({
-        //     title: 'Users name'
-        // });
-
-    // },[]);
+export default function ParentHomeScreen({navigation}) {
+    const authCtx = useContext(AuthContext);
+    const user = authCtx.infoUser.data;
 
     function toStudents(){
         const filterStudents = STUDENTS.filter(
@@ -44,7 +39,6 @@ export default function ParentHomeScreen({navigation, route}) {
                     <View style={styles.topContainer}>
                         <View style={styles.topTextContainer}>
                             <Text style={styles.nameText}>{user.name}</Text>
-                            <Text style={styles.usernameText}>{user.username}</Text>
                         </View>
                     </View> 
 
@@ -71,10 +65,6 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: 'bold',
         color: Colors.color_lightGreen,
-    },
-    usernameText: {
-        fontStyle: 'italic',
-        color: Colors.color_darkGreen
     },
     topContainer: {
         flexDirection: 'row',

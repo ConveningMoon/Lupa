@@ -17,7 +17,6 @@ import { registerNewUser } from '../../util/http';
 import { createUser, login } from '../../util/auth';
 
 export default function FillRegisterSchoolScreen({navigation, route}) {
-  const [schoolUsername, setSchoolUserName] = useState('');
   const [schoolName, setSchoolName] = useState('');
   const [schoolEmail, setSchoolEmail] = useState('');
   const [schoolWebsite, setSchoolWebsite] = useState('');
@@ -26,7 +25,7 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-   useEffect(() => {
+  useEffect(() => {
     async function emailExistsHandler (){
       try{
         await login(
@@ -41,7 +40,7 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
       }
     }
     emailExistsHandler();    
-  }, [])
+  }, []);
 
   async function newRegister(){
     setIsAuthenticating(true);
@@ -54,7 +53,6 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
       
       await registerNewUser({
         id: response.localId,
-        username: schoolUsername.trim(),
         name: schoolName.trim(),
         emailContact: schoolEmail.trim(),
         website: schoolWebsite.trim(),
@@ -64,7 +62,6 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
 
       navigation.navigate('Login');
     } catch (error) {
-      console.log(error);
       setIsAuthenticating(false);
       Alert.alert('Something is wrong', 'Try it later');
     }
@@ -85,19 +82,16 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
             onChangeText={setSchoolName}                    
           />
           <SimpleFillInfoInput 
-            text='Username' 
-            onChangeText={setSchoolUserName}
-            autoCapitalize='none'
-          />
-          <SimpleFillInfoInput 
             text='Email' 
             onChangeText={setSchoolEmail}
             autoCapitalize='none'
+            keyboardType='email-address'
           />
           <SimpleFillInfoInput 
             text='Website' 
             onChangeText={setSchoolWebsite}
             autoCapitalize='none'
+            keyboardType='url'
           />
           <SimpleFillInfoInput 
             text='Adress' 

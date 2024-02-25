@@ -51,6 +51,7 @@ function LoginScreen({navigation}){
 
         }
         catch (error){
+            console.log(error);
             setIsAuthenticating(false);
             Alert.alert('Something is wrong', 'Your email or password is incorrect');
         }             

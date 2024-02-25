@@ -1,10 +1,10 @@
 class Parent {
-    constructor(id, name, username, students, email) {
+    constructor(id, name, username, students, emailContact) {
       this.id = id;
       this.name = name;
       this.username = username;
       this.students = students;
-      this.email = email;
+      this.emailContact = emailContact;
     }
   }
   

@@ -7,6 +7,10 @@ import {
 
 import { StatusBar } from 'expo-status-bar';
 
+import { useContext} from 'react';
+
+import { AuthContext } from '../../store/auth-context';
+
 import { GROUPS} from '../../data/dummy-data';
 
 import Colors from '../../constants/colors';
@@ -33,18 +37,16 @@ export default function TeacherHomeScreen({navigation}) {
                 <View style={styles.generalContainer}>
                     <View style={styles.topContainer}>
                         <View style={styles.topTextContainer}>
-                            <Text style={styles.nameText}>{user.name}</Text>
-                            <Text style={styles.usernameText}>{user.username}</Text>
-                        </View>
+                            <Text style={styles.nameText}>{user.name}</Text>                        </View>
                     </View> 
 
                     <View style={styles.contactContainer}>
                         <Text style={styles.contactText}>Contact: {user.emailContact}</Text>
                     </View>
-
-                    <View style={styles.subjectsContainer}>
+                        
+                    {/* <View style={styles.subjectsContainer}>
                         <Text style={styles.subjectsText}>Subjects: {user.subjects.join(', ')}</Text>
-                    </View>
+                    </View> */}
 
                     <View style={styles.descriptionContainer}>
                         <Text style={styles.descriptionText}>{user.description}</Text>
@@ -71,10 +73,6 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: 'bold',
         color: Colors.color_lightGreen,
-    },
-    usernameText: {
-        fontStyle: 'italic',
-        color: Colors.color_darkGreen
     },
     topContainer: {
         flexDirection: 'row',

@@ -33,13 +33,7 @@ export default function SchoolHomeScreen({navigation}) {
     // },[]);
 
     function toGroups(){
-        const filterGroups = GROUPS.filter(
-            group => group.school === user.id
-        );
-
-        navigation.navigate('Groups', {
-            filterGroups: filterGroups
-        });
+        navigation.navigate('Groups');
     }
 
     function toStudents(){
@@ -75,7 +69,6 @@ export default function SchoolHomeScreen({navigation}) {
                         <View style={styles.topContainer}>
                             <View style={styles.topTextContainer}>
                                 <Text style={styles.nameText}>{user.name}</Text>
-                                <Text style={styles.usernameText}>{user.username}</Text>
                             </View>
                             <View style={styles.topRatingContainer}>
                                 <Text style={styles.ratingText}>9.8</Text>
@@ -128,10 +121,6 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: 'bold',
         color: Colors.color_lightGreen,
-    },
-    usernameText: {
-        fontStyle: 'italic',
-        color: Colors.color_darkGreen
     },
     topContainer: {
         flexDirection: 'row',
