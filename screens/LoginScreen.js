@@ -7,7 +7,7 @@ import {
 
 import { useContext, useEffect, useState } from 'react';
 
-//import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 
 import Colors from '../constants/colors';
 
@@ -16,7 +16,7 @@ import ButtonInfoInput from '../components/ButtonComponents/ButtonInfoInput';
 import MicroPressText from '../components/PressableTextComponents/MicroPressText';
 import LoadingOverlay from '../components/LoadingOverlay';
 
-import { login } from '../util/auth';
+import { deleteAccount, login } from '../util/auth';
 import { AuthContext } from '../store/auth-context';
 import { fetchUser } from '../util/http';
 
@@ -27,13 +27,13 @@ function LoginScreen({navigation}){
     const [enteredPassword, setEnteredPassword] = useState('');
 
     const [isAuthenticating, setIsAuthenticating] = useState(false);
-    //const isFocused = useIsFocused();
+    const isFocused = useIsFocused();
 
-    // useEffect(() => {
-    //     if(isFocused) {
-    //         setIsAuthenticating(false);
-    //     };
-    // }, [isFocused]);
+    useEffect(() => {
+        if(isFocused) {
+            setIsAuthenticating(false);
+        };
+    }, [isFocused]);
 
     async function toHome(){
         setIsAuthenticating(true);
@@ -43,12 +43,16 @@ function LoginScreen({navigation}){
                 enteredPassword.trim()
             );            
             
-            const userInfo = await fetchUser(tokenData.localId); 
-            userInfo.tokenId = tokenData.idToken;
-
-            authCtx.currentUser(userInfo);   
-            authCtx.authenticate(tokenData.idToken);         
-
+            try {
+                const userInfo = await fetchUser(tokenData.localId); 
+                userInfo.tokenId = tokenData.idToken;
+                authCtx.currentUser(userInfo);
+                authCtx.authenticate(tokenData.idToken);  
+            } catch {
+                Alert.alert('Oh no!', 'You did not complete the register, try again please.');
+                await deleteAccount(tokenData.idToken);
+                navigation.navigate('Register');
+            }                                    
         }
         catch (error){
             console.log(error);

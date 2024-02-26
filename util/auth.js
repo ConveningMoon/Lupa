@@ -10,18 +10,26 @@ async function authenticate(mode, email, password) {
     password: password,
     returnSecureToken: true,
   });
-//   .catch(error => {
-//     if (error.response) {
-//       console.log(error.response.data);
-//     } else if (error.request) {
-//       console.log(error.request);
-//     } else {
-//       console.log("Error with login: ", error.message);
-//     }
+  // .catch(error => {
+  //   if (error.response) {
+  //     console.log(error.response.data);
+  //   } else if (error.request) {
+  //     console.log(error.request);
+  //   } else {
+  //     console.log("Error with login: ", error.message);
+  //   }
 
-//   });
+  // });
 
   return response.data;
+}
+
+async function deleteSomeAccount (id) {
+  const url = `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${API_KEY}`;
+
+  await axios.post(url, {
+    idToken: id,
+  });
 }
 
 export async function createUser(email, password) {
@@ -30,4 +38,8 @@ export async function createUser(email, password) {
 
 export async function login(email, password) {
   return authenticate('signInWithPassword', email, password);
+}
+
+export async function deleteAccount(id) {
+  return deleteSomeAccount(id);
 }

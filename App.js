@@ -24,6 +24,7 @@ import LoginScreen from './screens/LoginScreen';
 import FillRegisterSchoolScreen from './screens/FillRegisterScreens/FillRegisterSchoolScreen';
 
 import SchoolHomeScreen from './screens/HomesScreens/SchoolHomeScreen';
+import SchoolsOptionsScreen from './screens/DisplayOptionsScreens/SchoolsOptionsScreen';
 
 import GroupsOptionsScreen from './screens/DisplayOptionsScreens/GroupsOptionsScreen';
 import GroupsInfoScreen from './screens/InfoScreens/GroupsInfoScreen';
@@ -177,6 +178,12 @@ function UserNavigationStack() {
         options={{               
           headerShown: false
         }}
+      />
+
+      {/* Schools*/}
+      <Stack.Screen 
+        name='Schools' 
+        component={SchoolsOptionsScreen}
       />
       
       {/* Groups */}

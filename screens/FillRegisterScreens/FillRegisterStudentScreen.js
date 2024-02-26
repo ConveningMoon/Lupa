@@ -2,17 +2,17 @@ import {
   View, 
   StyleSheet, 
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import SimpleFillInfoInput from '../../components/InputComponents/SimpleFillInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
 import { registerNewUser } from '../../util/http';
-import { createUser, login } from '../../util/auth';
 
 export default function FillRegisterStudentScreen({navigation, route}) {
   const [studentName, setStudentName] = useState('');
@@ -20,39 +20,21 @@ export default function FillRegisterStudentScreen({navigation, route}) {
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  useEffect(() => {
-    async function emailExistsHandler (){
-      try{
-        await login(
-          route.params.email,
-          route.params.password
-        );
-
-        Alert.alert('Ups!', 'This email already exists');
-        navigation.navigate('Register');
-      }
-      catch {
-      }
-    }
-    emailExistsHandler();    
-  }, []);
-
   async function newRegister(){
     setIsAuthenticating(true);
 
-    try {
-      const response = await createUser(
-        route.params.email,
-        route.params.password
-      );
-      
-      await registerNewUser({
-        id: response.localId,
-        name: studentName.trim(),
-        emailContact: studentEmail.trim(),
-      }, "Student");
+    try {       
+        await registerNewUser({
+          id: route.params.id,
+          name: studentName.trim(),
+          username: route.params.username,
+          emailContact: studentEmail.trim(),
+          group: '',
+          parents: [],
+          school: ''
+        }, "Student");
 
-      navigation.navigate('Login');
+        navigation.navigate('Login');
     } catch (error) {
       setIsAuthenticating(false);
       Alert.alert('Something is wrong', 'Try it later');
@@ -73,8 +55,9 @@ export default function FillRegisterStudentScreen({navigation, route}) {
             text='Name' 
             onChangeText={setStudentName}
           />
+
           <SimpleFillInfoInput 
-            text='Email' 
+            text='Email to contact' 
             onChangeText={setStudentEmail}
             autoCapitalize='none'
             keyboardType='email-address'

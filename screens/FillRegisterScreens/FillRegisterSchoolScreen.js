@@ -6,7 +6,7 @@ import {
   Alert
 } from 'react-native';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import SimpleFillInfoInput from '../../components/InputComponents/SimpleFillInfoInput';
@@ -14,7 +14,6 @@ import SimpleMultilineFillInfoInput from '../../components/InputComponents/Simpl
 import LoadingOverlay from '../../components/LoadingOverlay';
 
 import { registerNewUser } from '../../util/http';
-import { createUser, login } from '../../util/auth';
 
 export default function FillRegisterSchoolScreen({navigation, route}) {
   const [schoolName, setSchoolName] = useState('');
@@ -25,38 +24,17 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  useEffect(() => {
-    async function emailExistsHandler (){
-      try{
-        await login(
-          route.params.email,
-          route.params.password
-        );
-
-        Alert.alert('Ups!', 'This email already exists');
-        navigation.navigate('Register');
-      }
-      catch {
-      }
-    }
-    emailExistsHandler();    
-  }, []);
-
   async function newRegister(){
     setIsAuthenticating(true);
 
-    try {
-      const response = await createUser(
-        route.params.email,
-        route.params.password
-      );
-      
+    try {   
       await registerNewUser({
-        id: response.localId,
+        id: route.params.id,
         name: schoolName.trim(),
+        username: route.params.username,
         emailContact: schoolEmail.trim(),
         website: schoolWebsite.trim(),
-        adress: schoolAdress,
+        adress: schoolAdress.trim(),
         description: schoolDescription
       }, "School");
 
@@ -82,7 +60,7 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
             onChangeText={setSchoolName}                    
           />
           <SimpleFillInfoInput 
-            text='Email' 
+            text='Contact email' 
             onChangeText={setSchoolEmail}
             autoCapitalize='none'
             keyboardType='email-address'

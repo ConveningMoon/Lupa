@@ -2,8 +2,6 @@ import {
     View, 
     StyleSheet, 
     Text,
-    Platform,
-    TextInput,
     Alert
 } from 'react-native';
 
@@ -25,8 +23,13 @@ import MicroPressText from '../components/PressableTextComponents/MicroPressText
 import TypeUser from '../components/TypeUser';
 import LoadingOverlay from '../components/LoadingOverlay';
 
+import { createUser } from '../util/auth';
+
+import { existUsername } from '../util/http';
+
 function RegisterScreen({navigation}){
     const [enteredEmail, setEnteredEmail] = useState('');
+    const [enteredUsername, setEnteredUsername] = useState('');
     const [enteredPassword, setEnteredPassword] = useState('');
     const [enteredRepeatPassword, setEnteredRepeatPassword] = useState('');
     const [typeUser, setTypeUser] = useState('None');
@@ -64,11 +67,27 @@ function RegisterScreen({navigation}){
             setErrorMessage('The passwords do not match.');
         } else {
             if (typeUser !== 'None') {
-                navigation.navigate(`NewRegister${typeUser}`, {
-                    email: enteredEmail.trim(),
-                    password: enteredPassword.trim()
-                });
-                
+                try {
+                    const checkUsername = await existUsername(enteredUsername);
+                    if(!checkUsername) {   
+                        const response = await createUser(enteredEmail.trim(), enteredPassword.trim());
+                                        
+                        navigation.navigate(`NewRegister${typeUser}`, {
+                            id: response.localId,
+                            username: enteredUsername.trim(),
+                        });
+                    } else {
+                        setIsAuthenticating(false);
+                        Alert.alert('Username already exists', 'Please, use another one');
+                    }
+
+                } catch (error) {
+                    setIsAuthenticating(false);
+                    if(error.response.data.error.message === 'EMAIL_EXISTS') {
+                        setIsAuthenticating(false);
+                        Alert.alert('Oops!', 'Email already exists');
+                    }
+                }                         
             } else {
                 setErrorMessage('Select user type please');
             }            
@@ -108,6 +127,14 @@ function RegisterScreen({navigation}){
                 onSaveInfo = {setEnteredEmail}
                 value = {enteredEmail}
                 keyboardType = 'email-address'
+            />
+
+            <InfoInputWithLogo
+                name='person'
+                placeholder='Enter your username'
+                color={Colors.gray_placeholder}
+                onSaveInfo = {setEnteredUsername}
+                value = {enteredUsername}
             />
 
             <InfoInputWithLogo

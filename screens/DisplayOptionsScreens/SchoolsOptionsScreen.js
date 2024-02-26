@@ -17,7 +17,7 @@ import { fetchGroup } from '../../util/http';
 
 import { AuthContext } from '../../store/auth-context';
 
-export default function GroupsOptionsScreen({navigation}) {
+export default function SchoolsOptionsScreen({navigation}) {
     const authCtx = useContext(AuthContext);
 
     const [filterGroups, setFilterGroups] = useState([]);
@@ -44,7 +44,7 @@ export default function GroupsOptionsScreen({navigation}) {
     useEffect(() => {
         if (searchText.trim() !== '') {
             const searchGroups = filterGroups.filter(
-                group => group.data.name.toLowerCase().includes(searchText.toLowerCase())
+                group => group.toLowerCase().includes(searchText.toLowerCase())
             );
             setFoundGroups(searchGroups);
         } else {
@@ -63,7 +63,7 @@ export default function GroupsOptionsScreen({navigation}) {
     
         return (
             <TableOptions
-                text={itemData.item.data.name}
+                text={itemData.item}
                 onPressGeneral={pressHandler}
             />          
         );
