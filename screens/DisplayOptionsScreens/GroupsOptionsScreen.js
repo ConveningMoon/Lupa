@@ -13,7 +13,7 @@ import SearchInputText from '../../components/SearchSystemComponent/SearchInputT
 import ButtonToAdd from '../../components/ButtonComponents/ButtonToAdd';
 import NewGroupInfo from '../../components/ModalComponents/NewGroupInfo';
 
-import { fetchGroup } from '../../util/http';
+import { fetchGroups } from '../../util/http';
 
 import { AuthContext } from '../../store/auth-context';
 
@@ -29,7 +29,7 @@ export default function GroupsOptionsScreen({navigation}) {
 
     async function initialGroupsData() {
         try{
-            const groups = await fetchGroup(authCtx.infoUser.data.id);
+            const groups = await fetchGroups(authCtx.infoUser.data.id);
 
             setFilterGroups(groups);
             setFoundGroups(groups);

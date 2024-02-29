@@ -7,18 +7,44 @@ import {
 
 import { StatusBar } from 'expo-status-bar';
 
-import { useContext} from 'react';
+import { useContext, useEffect, useState} from 'react';
+
+import { useIsFocused } from '@react-navigation/native';
 
 import { AuthContext } from '../../store/auth-context';
 
 import { GROUPS} from '../../data/dummy-data';
 
 import Colors from '../../constants/colors';
+
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
+import LoadingOverlay from '../../components/LoadingOverlay';
+
+import { Ionicons } from '@expo/vector-icons';
+
+import { fetchAllNotifications } from '../../util/http';
 
 export default function TeacherHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);
     const user = authCtx.infoUser.data;
+
+    const [profileIsLoading, setProfileIsLoading] = useState(true);
+    const [existNotifications, setExistNotifications] = useState(false);
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        async function getNotifications() {
+            const response = await fetchAllNotifications(user.id);
+
+            if(response.data.length === 0) {
+                setExistNotifications(false);
+            } else {
+                setExistNotifications(true);
+            }
+            
+        }
+
+    },[isFocused])
 
     function toGroups(){
         const filterGroups = GROUPS.filter(
@@ -28,6 +54,10 @@ export default function TeacherHomeScreen({navigation}) {
         navigation.navigate('Groups', {
             filterGroups: filterGroups
         });
+    }
+
+    if (profileIsLoading) {
+        return <LoadingOverlay message="Loading information..." />;
     }
 
     return (

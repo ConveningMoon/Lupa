@@ -3,97 +3,100 @@ import {
     View,
     StyleSheet,
     ScrollView,
-    RefreshControl
+    RefreshControl,
+    Alert
 } from 'react-native';
 
 import { useState, useEffect, useContext, useCallback } from 'react';
 
-import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
+import SendRequestOptions from '../../components/DisplayOptionsToPressComponents/SendRequestOptions';
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
-import ButtonToAdd from '../../components/ButtonComponents/ButtonToAdd';
-import NewGroupInfo from '../../components/ModalComponents/NewGroupInfo';
 
-import { fetchGroup } from '../../util/http';
+import { createNewNotification, fetchSchools } from '../../util/http';
 
 import { AuthContext } from '../../store/auth-context';
 
 export default function SchoolsOptionsScreen({navigation}) {
     const authCtx = useContext(AuthContext);
 
-    const [filterGroups, setFilterGroups] = useState([]);
+    const [filterSchools, setFilterSchools] = useState([]);
     const [searchText, setSearchText] = useState('');
-    const [foundGroups, setFoundGroups] = useState([]);
-    const [addGroupVisible, setAddNewGroupVisible] = useState(false);
+    const [foundSchools, setFoundSchools] = useState([]);
 
     const [refreshing, setRefreshing] = useState(false);
 
-    async function initialGroupsData() {
+    async function initialSchoolsData() {
         try{
-            const groups = await fetchGroup(authCtx.infoUser.data.id);
+            const schools = await fetchSchools();
 
-            setFilterGroups(groups);
-            setFoundGroups(groups);
-        } catch(error) {}
-        
+            setFilterSchools(schools);
+            setFoundSchools(schools);
+        } catch(error) {}        
     }
 
     useEffect(() => {
-        initialGroupsData();
+        initialSchoolsData();
     }, []);
 
     useEffect(() => {
         if (searchText.trim() !== '') {
-            const searchGroups = filterGroups.filter(
-                group => group.toLowerCase().includes(searchText.toLowerCase())
+            console.log(filterSchools);
+            const searchSchools = filterSchools.filter(
+                school => school.username.toLowerCase().includes(searchText.toLowerCase())
             );
-            setFoundGroups(searchGroups);
+            setFoundSchools(searchSchools);
         } else {
-            setFoundGroups(filterGroups);
+            setFoundSchools(filterSchools);
         }
 
     }, [searchText]);
     
+    async function joinToSchool(data) {
+        await createNewNotification(data);
+        navigation.goBack();
 
-    function renderGroupItem(itemData) {
+    }
+
+    function renderSchoolItem(itemData) {
         function pressHandler() {
-          navigation.navigate('GroupsInfo', {
-            groupId: itemData.item.id
-          });
+            Alert.alert('Joined to new school?', `Are you sure to join into ${itemData.item.name} school as your school?`, [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes', onPress: () => joinToSchool({
+                        type: 'studentJoinSchool',
+                        toId: itemData.item.id,
+                        fromId: authCtx.infoUser.data.id,
+                        toUsername: itemData.item.username,
+                        fromUsername: authCtx.infoUser.data.username,
+                        status: 1.
+                    })
+                }
+            ]);
         }
-    
         return (
-            <TableOptions
-                text={itemData.item}
-                onPressGeneral={pressHandler}
-            />          
+            <SendRequestOptions
+                name={itemData.item.name}
+                username={itemData.item.username}
+                onPress={pressHandler}
+            />        
         );
-    }
-
-    function addNewGroup() {
-        setAddNewGroupVisible(true);
-    }
-
-    function onBackHandler(){
-        setAddNewGroupVisible(false);
     }
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        initialGroupsData();
+        initialSchoolsData();
         setRefreshing(false);
     }, []);
     
     return (  
         <View style={styles.globalContainer}>    
             <SearchInputText onChangeText={setSearchText} value={searchText}/>
-            <ButtonToAdd text='Add New Group' onPressGeneral={addNewGroup}/>
-            <NewGroupInfo 
-                visible={addGroupVisible}
-                onBack={onBackHandler}
-            />
             <FlatList
-                data={foundGroups}
-                renderItem={renderGroupItem}
+                data={foundSchools}
+                renderItem={renderSchoolItem}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }

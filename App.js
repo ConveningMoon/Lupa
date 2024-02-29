@@ -21,8 +21,9 @@ import IndexScreen from './screens/IndexScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
 
-import FillRegisterSchoolScreen from './screens/FillRegisterScreens/FillRegisterSchoolScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
 
+import FillRegisterSchoolScreen from './screens/FillRegisterScreens/FillRegisterSchoolScreen';
 import SchoolHomeScreen from './screens/HomesScreens/SchoolHomeScreen';
 import SchoolsOptionsScreen from './screens/DisplayOptionsScreens/SchoolsOptionsScreen';
 
@@ -53,6 +54,8 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { fetchAllNotifications } from './util/http';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -67,19 +70,29 @@ function UserNavigation(){
   const authCtx = useContext(AuthContext);
 
   const userHome = authCtx.infoUser.type;
-  const user = authCtx.infoUser.data;
 
   return (
     <Tab.Navigator>
         <Tab.Screen 
           name={userHome} 
           component={homeScreens[userHome]} 
-          initialParams={{user: user}}
+          //initialParams={{user: user}}
           options={{
             tabBarLabel: 'Home',
             tabBarLabelStyle: {color: Colors.color_darkGreen},
             tabBarIcon: () => (
               <Ionicons name="home-sharp" size={24} color={Colors.color_darkGreen} />
+            )
+          }}  
+        />
+        <Tab.Screen 
+          name='NotificationsScreens' 
+          component={NotificationsScreen} 
+          options={{
+            tabBarLabel: 'Notifications',
+            tabBarLabelStyle: {color: Colors.color_darkGreen},
+            tabBarIcon: () => (
+              <Ionicons name="notifications-sharp" size={24} color={Colors.color_darkGreen}/> 
             )
           }}  
         />

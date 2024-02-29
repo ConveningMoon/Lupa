@@ -8,9 +8,12 @@ import {
 
 import { useContext, useEffect, useState} from 'react';
 
+import { useIsFocused } from '@react-navigation/native';
+
 import { AuthContext } from '../../store/auth-context';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 import Colors from '../../constants/colors';
 
@@ -18,23 +21,70 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import {PARENTS, TEACHERS, GROUPS} from '../../data/dummy-data';
 
+import { deleteRequestNotification, fetchRequestToJoin, fetchUser } from '../../util/http';
+
 export default function StudentHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);
     const user = authCtx.infoUser.data;
+
+    const [userSchoolName, setUserSchoolName] = useState('');
     
     const [joinedSchool, setJoinedSchool] = useState(false);
+    const [disabledRequest, setDisabledRequest] = useState(false);
+    const [requestMessage, setRequestMessage] = useState('JOIN TO YOUR SCHOOL');
+
+    const [profileIsLoading, setProfileIsLoading] = useState(true);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
-        if(user.school) {
-            setJoinedSchool(true);
+        async function checkRquestToJoin() {
+            try {
+                const response = await fetchRequestToJoin(user.id);
+
+                if (response.data.status === 2) {
+                    setJoinedSchool(true);
+                    await deleteRequestNotification(response.id);
+                } else if(response.data.status === 1){
+                    setJoinedSchool(false);
+                    setRequestMessage('YOUR REQUEST IS IN PROCESS...');
+                    setDisabledRequest(true);
+                } else {
+                    await deleteRequestNotification(response.id);
+                    setJoinedSchool(false);
+                    setDisabledRequest(false);
+                    setRequestMessage('JOIN TO YOUR SCHOOL')
+                }
+
+                setProfileIsLoading(false);
+
+            } catch {
+                setProfileIsLoading(false);
+            }
+
         }
-    },[])
+
+        async function findSchool(idSchool) {
+            const response = await fetchUser(idSchool);
+
+            setUserSchoolName(response.data.name);
+        }
+
+        if (isFocused) {            
+            if (user.school !== '') {
+                setJoinedSchool(true);
+                findSchool(user.school);
+                setProfileIsLoading(false);
+            } else {
+                checkRquestToJoin();
+            }
+        };
+    },[isFocused])
 
     // const parents = PARENTS.filter(parent => 
     //     user.parents.includes(parent.id));
 
     function toShool() {
-        
+        navigation.navigate('Schools');
     }
 
     function toTeachers(){
@@ -69,12 +119,18 @@ export default function StudentHomeScreen({navigation}) {
         );
     }
 
+    if (profileIsLoading) {
+        return <LoadingOverlay message="Loading information..." />;
+    }
+
     return (
         <View style={styles.globalContainer}>
             <View style={styles.topInfoContainer}>
                 <View style={styles.nameUsernameContainer}>
                     <Text style={styles.userName}>{user.name}</Text>
                     <Text style={styles.usernameText}>{user.username}</Text>
+                    <Text style={styles.usernameText}>{userSchoolName}</Text>
+
                 </View>
                 {/* <Pressable onPress={toGroup}>
                     <Text style={styles.userGroup}>{user.group}</Text>
@@ -95,10 +151,11 @@ export default function StudentHomeScreen({navigation}) {
                     <Pressable
                         style={styles.joinSchoolPressableContainer}
                         onPress={toShool}
+                        disabled={disabledRequest}
                     >
                         <MaterialIcons name="school" size={24} color={Colors.color_lightGreen} />
                         <Text style={styles.joinSchoolText}>
-                            JOIN TO SOME SCHOOL
+                            {requestMessage}
                         </Text>
                     </Pressable>
                 </View>

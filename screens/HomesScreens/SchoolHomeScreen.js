@@ -9,28 +9,40 @@ import {
 
 import { StatusBar } from 'expo-status-bar';
 
-import { useContext, useState} from 'react';
+import { useContext, useState, useLayoutEffect, useEffect} from 'react';
 
 import { AuthContext } from '../../store/auth-context';
-
-import { useLayoutEffect } from 'react';
 
 import { Entypo } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
+
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
+import LoadingOverlay from '../../components/LoadingOverlay'; 
 
 import { GROUPS, STUDENTS, TEACHERS } from '../../data/dummy-data';
+
+import { useIsFocused } from '@react-navigation/native';
+import { fetchAllNotifications } from '../../util/http';
 
 export default function SchoolHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);
     const user = authCtx.infoUser.data;
+
+    // const [profileIsLoading, setProfileIsLoading] = useState(true);
+    const isFocused = useIsFocused();
+
     // useLayoutEffect (() => {
         // navigation.setOptions({
         //     title: 'Users name'
         // });
 
     // },[]);
+
+    // useEffect(() => {
+        
+    // },[isFocused])
+
     function toGroups(){
         navigation.navigate('Groups');
     }
@@ -58,6 +70,10 @@ export default function SchoolHomeScreen({navigation}) {
     function toSubjects(){
         navigation.navigate('Subjects');
     }
+
+    // if (profileIsLoading) {
+    //     return <LoadingOverlay message="Loading information..." />;
+    // }
 
     return (
         <>
