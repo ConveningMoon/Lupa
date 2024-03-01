@@ -141,3 +141,24 @@ export async function fetchUser(id){
 
     return findUserById(id);
 }
+
+export async function fetchGroupInfo(idGroup) {
+    const response = await axios.get(BACKEND_URL + '/groups.json');
+
+    for(let key in response.data) {
+        if(key === idGroup) {
+            return {id: key, data: response.data[key]};
+        }
+    }
+}
+
+export async function fetchSchoolInfo(idSchool) {
+    const response = await axios.get(BACKEND_URL + '/users/School.json');
+
+    for(let key in response.data) {
+        if(response.data[key].id === idSchool) {
+            return response.data[key];
+        }
+    }
+
+}

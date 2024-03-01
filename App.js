@@ -26,6 +26,7 @@ import NotificationsScreen from './screens/NotificationsScreen';
 import FillRegisterSchoolScreen from './screens/FillRegisterScreens/FillRegisterSchoolScreen';
 import SchoolHomeScreen from './screens/HomesScreens/SchoolHomeScreen';
 import SchoolsOptionsScreen from './screens/DisplayOptionsScreens/SchoolsOptionsScreen';
+import SchoolsInfoScreen from './screens/InfoScreens/SchoolsInfoScreen';
 
 import GroupsOptionsScreen from './screens/DisplayOptionsScreens/GroupsOptionsScreen';
 import GroupsInfoScreen from './screens/InfoScreens/GroupsInfoScreen';
@@ -198,7 +199,11 @@ function UserNavigationStack() {
         name='Schools' 
         component={SchoolsOptionsScreen}
       />
-      
+      <Stack.Screen 
+        name='SchoolsInfo' 
+        component={SchoolsInfoScreen}
+      />
+
       {/* Groups */}
       <Stack.Screen 
         name='Groups' 

@@ -13,13 +13,13 @@ import { AuthContext } from '../store/auth-context';
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { changeStatusRequest, fetchAllNotifications, linkStudentWithSchool } from '../util/http';
+import { changeStatusRequest, createNewNotification, deleteRequestNotification, fetchAllNotifications, fetchUser, linkStudentWithSchool } from '../util/http';
 
 import LoadingOverlay from '../components/LoadingOverlay';
 import NotificationsStructure from '../components/NotificationsComponents/NotificationsStructure';
 import LinkStudentWithGroup from '../components/ModalComponents/LinkStudentWithGroup';
 
-export default function NotificationsScreen() {
+export default function NotificationsScreen({navigation}) {
     const authCtx = useContext(AuthContext);
     const user = authCtx.infoUser.data;
 
@@ -30,7 +30,7 @@ export default function NotificationsScreen() {
 
     const [usernameStudentToLink, setUsernameStudentToLink] = useState('');
     const [idStudentToLink, setIdStudentToLink] = useState('');
-    const [nameGroupToLink, setNameGroupToLink] = useState('');
+    const [groupToLink, setGroupToLink] = useState();
     const [visibleLinkStudent, setVisibleLinkStudent] = useState(false);
 
     const [profileIsLoading, setProfileIsLoading] = useState(false);
@@ -58,8 +58,16 @@ export default function NotificationsScreen() {
         //  
         // }
 
-        function goToUser() {
-            console.log(itemData.item.data.fromId);
+        const seeInfo = {
+            'Student': 'StudentsInfo',
+            'School': 'SchoolsInfo'
+        };
+
+        async function goToUser() {
+            const response = await fetchUser(itemData.item.data.fromId)
+            navigation.navigate(seeInfo[response.type], {
+                student: response.data
+            })
         }
         
         async function acceptRequest() {
@@ -70,7 +78,7 @@ export default function NotificationsScreen() {
         }
 
         async function rejectRequest() {
-            await changeStatusRequest(itemData.item.id, 0);
+            await deleteRequestNotification(itemData.item.id);
         }
 
         return (
@@ -86,12 +94,20 @@ export default function NotificationsScreen() {
 
     async function addStudentToGroup() {
             await changeStatusRequest(notificationId, 2);
-            await linkStudentWithSchool(idStudentToLink, user.id, nameGroupToLink);
+            await linkStudentWithSchool(idStudentToLink, user.id, groupToLink.value);
+            await createNewNotification({
+                type: 'requestToJoinAccepted',
+                toId: idStudentToLink,
+                fromId: user.id,
+                toUsername: usernameStudentToLink,
+                fromUsername: user.username,
+                status: 1
+            });
             setVisibleLinkStudent(false);
     }
 
     function alertToLinkStudent() {
-        Alert.alert('Add a new student?', `Are you sure to add ${usernameStudentToLink} in the group ${nameGroupToLink} ?`, [
+        Alert.alert('Add a new student?', `Are you sure to add ${usernameStudentToLink} in the group ${groupToLink.label} ?`, [
             {
                 text: 'Cancel',
                 style: 'cancel',
@@ -118,7 +134,8 @@ export default function NotificationsScreen() {
                 visible={visibleLinkStudent}
                 onBack={() => setVisibleLinkStudent(false)}
                 onAdd={alertToLinkStudent}
-                onChangeText={setNameGroupToLink}
+                onSelectItem={setGroupToLink}
+                idSchool={user.id}
             /> 
             <FlatList
                 data={notificationData}

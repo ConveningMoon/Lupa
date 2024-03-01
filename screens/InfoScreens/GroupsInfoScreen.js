@@ -10,7 +10,7 @@ import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import Colors from '../../constants/colors';
 
 export default function GroupsInfoScreen({navigation, route}) {  
-    const groupId = route.params.groupId;
+    const group = route.params.group;
 
     function toStudents(){    
         const filterStudents = STUDENTS.filter(
@@ -36,7 +36,7 @@ export default function GroupsInfoScreen({navigation, route}) {
     return (
         <View style={styles.globalContainer}>
 
-            <Text style={styles.textGroupName}>{groupId}</Text>
+            <Text style={styles.textGroupName}>{group.data.name}</Text>
 
             <ButtonInfoInput 
                 text='SHOW STUDENTS'

@@ -29,7 +29,7 @@ export default function BadgeDropDown(props) {
             //style = {styles.dropStudentsContainer}     
             
             onChangeValue={props.onChangeValue}
-            //onSelectItem={props.onSelectItem}
+            onSelectItem={props.onSelectItem}
         />
     )
 }

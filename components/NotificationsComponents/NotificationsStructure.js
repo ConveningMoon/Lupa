@@ -15,6 +15,7 @@ export default function NotificationsStructure(props) {
     //Add more possible options for types notifications
     const notificationMessage = {
         'studentJoinSchool' : ['New join request!', ' wants to join to your school'],
+        'requestToJoinAccepted' : ['Request to join accepted!', ' accepted your request to join this school']
     };
 
     function alertToReject() {

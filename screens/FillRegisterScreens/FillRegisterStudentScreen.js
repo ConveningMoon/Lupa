@@ -30,7 +30,7 @@ export default function FillRegisterStudentScreen({navigation, route}) {
           username: route.params.username,
           emailContact: studentEmail.trim(),
           group: '',
-          parents: [],
+          parents: '',
           school: ''
         }, "Student");
 

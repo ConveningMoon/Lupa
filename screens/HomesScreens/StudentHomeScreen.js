@@ -21,13 +21,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import {PARENTS, TEACHERS, GROUPS} from '../../data/dummy-data';
 
-import { deleteRequestNotification, fetchRequestToJoin, fetchUser } from '../../util/http';
+import { deleteRequestNotification, fetchGroupInfo, fetchRequestToJoin, fetchUser } from '../../util/http';
 
 export default function StudentHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);
     const user = authCtx.infoUser.data;
 
-    const [userSchoolName, setUserSchoolName] = useState('');
+    const [studentSchoolInfo, setStudentSchoolInfo] = useState({name: 'MySchool'});
+    const [studentGroupInfo, setStudentGroupInfo] = useState({data: {name: 'MyGroup'}});
     
     const [joinedSchool, setJoinedSchool] = useState(false);
     const [disabledRequest, setDisabledRequest] = useState(false);
@@ -66,14 +67,21 @@ export default function StudentHomeScreen({navigation}) {
         async function findSchool(idSchool) {
             const response = await fetchUser(idSchool);
 
-            setUserSchoolName(response.data.name);
+            setStudentSchoolInfo(response.data);
+        }
+
+        async function findGroup(idGroup) {
+            const response = await fetchGroupInfo(idGroup);
+            
+            setStudentGroupInfo(response);
         }
 
         if (isFocused) {            
             if (user.school !== '') {
                 setJoinedSchool(true);
                 findSchool(user.school);
-                setProfileIsLoading(false);
+                findGroup(user.group);
+                checkRquestToJoin();
             } else {
                 checkRquestToJoin();
             }
@@ -83,8 +91,14 @@ export default function StudentHomeScreen({navigation}) {
     // const parents = PARENTS.filter(parent => 
     //     user.parents.includes(parent.id));
 
-    function toShool() {
+    function schoolOptions() {
         navigation.navigate('Schools');
+    }
+
+    function toSchool() {
+        navigation.navigate('SchoolsInfo', {
+            school: studentSchoolInfo
+        });
     }
 
     function toTeachers(){
@@ -98,10 +112,8 @@ export default function StudentHomeScreen({navigation}) {
     }
 
     function toGroup(){
-        const findGroup = GROUPS.find(group => group.name === user.group);
-        
         navigation.navigate('GroupsInfo', {
-            groupId: findGroup.id
+            group: studentGroupInfo
         });
     }
 
@@ -129,12 +141,23 @@ export default function StudentHomeScreen({navigation}) {
                 <View style={styles.nameUsernameContainer}>
                     <Text style={styles.userName}>{user.name}</Text>
                     <Text style={styles.usernameText}>{user.username}</Text>
-                    <Text style={styles.usernameText}>{userSchoolName}</Text>
-
+                    <View style={styles.schoolContainer}>
+                        <Text 
+                            style={{
+                                fontSize: 20,
+                                color: Colors.color_darkGreen
+                            }}
+                        >
+                            School: 
+                        </Text>
+                        <Pressable onPress={toSchool} disabled={!joinedSchool}> 
+                            <Text style={styles.schoolText}>  {studentSchoolInfo.name}</Text>
+                        </Pressable>
+                    </View>
                 </View>
-                {/* <Pressable onPress={toGroup}>
-                    <Text style={styles.userGroup}>{user.group}</Text>
-                </Pressable> */}
+                <Pressable onPress={toGroup} disabled={!joinedSchool}>
+                    <Text style={styles.userGroup}>{studentGroupInfo.data.name}</Text>
+                </Pressable>
             </View>
 
             {/* <View style={styles.parentsContainer}>
@@ -150,7 +173,7 @@ export default function StudentHomeScreen({navigation}) {
                 <View style={styles.joinSchoolContainer}>
                     <Pressable
                         style={styles.joinSchoolPressableContainer}
-                        onPress={toShool}
+                        onPress={schoolOptions}
                         disabled={disabledRequest}
                     >
                         <MaterialIcons name="school" size={24} color={Colors.color_lightGreen} />
@@ -210,6 +233,16 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         color: Colors.color_darkGreen,
         paddingHorizontal: 10
+    },
+    schoolContainer: {
+        paddingHorizontal: 10,
+        paddingTop: 10,
+        flexDirection: 'row'
+    },
+    schoolText: {
+        textDecorationLine: 'underline',
+        color: Colors.color_darkGreen,
+        fontSize: 20
     },
     userGroup: {
         color: Colors.color_darkBlue,

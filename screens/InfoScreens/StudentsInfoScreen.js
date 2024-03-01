@@ -12,10 +12,10 @@ import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import Colors from '../../constants/colors';
 
 export default function StudentsInfoScreen({navigation, route}) { 
-    const student = route.params.user;
+    const student = route.params.student;
     
-    const parents = PARENTS.filter(parent => 
-        student.parents.includes(parent.id));
+    // const parents = PARENTS.filter(parent => 
+    //     student.parents.includes(parent.id));
 
     function toTeachers(){
         const filterTeachers = TEACHERS.filter(
@@ -57,11 +57,11 @@ export default function StudentsInfoScreen({navigation, route}) {
                     <Text style={styles.textStudentUsername}>{student.username}</Text>
                 </View>
                 <Pressable onPress={toGroup}>
-                    <Text style={styles.textStudentGroup}>{student.group}</Text>
+                    <Text style={styles.textStudentGroup}>{student.group ? student.group : 'No Group'}</Text>
                 </Pressable>
             </View>
 
-            <View style={styles.parentsContainer}>
+            {/* <View style={styles.parentsContainer}>
                 <Text style={styles.parentsText}>Parents:   </Text>
                 <FlatList
                     data={parents}
@@ -69,14 +69,9 @@ export default function StudentsInfoScreen({navigation, route}) {
                     keyExtractor={(item) => item.id}
                     renderItem={renderParentsItem}
                 />
-            </View>
+            </View> */}
 
-            <View style={styles.allButtonsContainer}>
-                <ButtonInfoInput 
-                    text='SHOW TEACHERS'
-                    onPressGeneral={toTeachers}
-                />        
-
+            <View style={styles.allButtonsContainer}>     
                 <ButtonInfoInput 
                     text='GRADES'
                     //onPressGeneral={searchTeachers}

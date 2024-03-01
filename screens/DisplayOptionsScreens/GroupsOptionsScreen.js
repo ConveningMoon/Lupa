@@ -57,7 +57,7 @@ export default function GroupsOptionsScreen({navigation}) {
     function renderGroupItem(itemData) {
         function pressHandler() {
           navigation.navigate('GroupsInfo', {
-            groupId: itemData.item.id
+            group: itemData.item
           });
         }
     
