@@ -17,7 +17,7 @@ import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import Colors from '../../constants/colors';
 
 export default function SchoolsInfoScreen({navigation, route}) {
-    const school = route.params.school;
+    const school = route.params.user;
 
     function toGroups(){
         const filterGroups = GROUPS.filter(

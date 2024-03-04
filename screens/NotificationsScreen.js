@@ -34,9 +34,11 @@ export default function NotificationsScreen({navigation}) {
     const [visibleLinkStudent, setVisibleLinkStudent] = useState(false);
 
     const [profileIsLoading, setProfileIsLoading] = useState(false);
+    const [addingNewStudent, setAddingNewStudent] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
     async function getNotifications(){
+        setRefreshing(true);
         try {
             const response = await fetchAllNotifications(user.id);
             for (let notification in response) {
@@ -46,7 +48,8 @@ export default function NotificationsScreen({navigation}) {
             }
             setNotificationsData(response);
             setProfileIsLoading(false);
-        } catch {}
+            setRefreshing(false);
+        } catch {setRefreshing(false);}
     }
 
     useEffect(() => {
@@ -66,7 +69,7 @@ export default function NotificationsScreen({navigation}) {
         async function goToUser() {
             const response = await fetchUser(itemData.item.data.fromId)
             navigation.navigate(seeInfo[response.type], {
-                student: response.data
+                user: response.data
             })
         }
         
@@ -93,17 +96,20 @@ export default function NotificationsScreen({navigation}) {
     }
 
     async function addStudentToGroup() {
-            await changeStatusRequest(notificationId, 2);
-            await linkStudentWithSchool(idStudentToLink, user.id, groupToLink.value);
-            await createNewNotification({
-                type: 'requestToJoinAccepted',
-                toId: idStudentToLink,
-                fromId: user.id,
-                toUsername: usernameStudentToLink,
-                fromUsername: user.username,
-                status: 1
-            });
-            setVisibleLinkStudent(false);
+        setAddingNewStudent(true);
+        await changeStatusRequest(notificationId, 2);
+        await linkStudentWithSchool(idStudentToLink, user.id, groupToLink.value);
+        await createNewNotification({
+            type: 'requestToJoinAccepted',
+            toId: idStudentToLink,
+            fromId: user.id,
+            toUsername: usernameStudentToLink,
+            fromUsername: user.username,
+            status: 1
+        });
+        setVisibleLinkStudent(false);
+        getNotifications();
+        setAddingNewStudent(false);
     }
 
     function alertToLinkStudent() {
@@ -126,6 +132,10 @@ export default function NotificationsScreen({navigation}) {
     
     if (profileIsLoading) {
         return <LoadingOverlay message="Loading information..." />;
+    }
+
+    if (addingNewStudent) {
+        return <LoadingOverlay message="Adding a new student..." />;
     }
 
     return (

@@ -88,6 +88,15 @@ export async function fetchSchools() {
     return schools;
 }
 
+export async function fetchStudents(idSchool, idGroup) {
+    const response = await axios.get(`${BACKEND_URL}/users/Student.json`);
+    
+    return Object.values(response.data).filter(student => 
+        (idSchool && student.school === idSchool) || 
+        (idGroup && student.group === idGroup)
+    );
+}
+
 export async function fetchGroups(id) {
     const response = await axios.get(BACKEND_URL + '/groups.json');
 

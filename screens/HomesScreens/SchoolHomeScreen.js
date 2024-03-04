@@ -4,7 +4,8 @@ import {
     StyleSheet,
     SafeAreaView,
     ScrollView,
-    Platform
+    Platform,
+    RefreshControl
 } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
@@ -23,13 +24,15 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 import { GROUPS, STUDENTS, TEACHERS } from '../../data/dummy-data';
 
 import { useIsFocused } from '@react-navigation/native';
-import { fetchAllNotifications } from '../../util/http';
+
+import { fetchAllNotifications, fetchUser } from '../../util/http';
 
 export default function SchoolHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);
     const user = authCtx.infoUser.data;
 
-    // const [profileIsLoading, setProfileIsLoading] = useState(true);
+    const [profileIsLoading, setProfileIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const isFocused = useIsFocused();
 
     // useLayoutEffect (() => {
@@ -39,22 +42,18 @@ export default function SchoolHomeScreen({navigation}) {
 
     // },[]);
 
-    // useEffect(() => {
-        
-    // },[isFocused])
+    useEffect(() => {
+        if(isFocused) {
+            refreshProfile();
+        }
+    }, [isFocused])
 
     function toGroups(){
         navigation.navigate('Groups');
     }
 
     function toStudents(){
-        const filterStudents = STUDENTS.filter(
-            student => student.school === user.id
-        );
-
-        navigation.navigate('Students', {
-            filterStudents: filterStudents
-        });
+        navigation.navigate('Students');
     }
 
     function toTeachers(){
@@ -71,16 +70,44 @@ export default function SchoolHomeScreen({navigation}) {
         navigation.navigate('Subjects');
     }
 
-    // if (profileIsLoading) {
-    //     return <LoadingOverlay message="Loading information..." />;
-    // }
+    async function refreshProfile() {
+        setRefreshing(true);
+        try {
+            const response = await fetchUser(user.id); 
+            
+            for (let key in response.data) {
+                if (response.data[key] !== user[key]) {
+                    Alert.alert('Something change!', 'Please login again to update your profile.');
+                    authCtx.logout();
+                    setRefreshing(false);
+                    setProfileIsLoading(false);
+                    return;
+                }
+            }
+
+            setRefreshing(false);
+            setProfileIsLoading(false);
+
+        } catch (error){
+            setRefreshing(false);
+            console.log(error);
+        }                  
+    }
+
+    if (profileIsLoading) {
+        return <LoadingOverlay message="Loading information..." />;
+    }
 
     return (
         <>
             <StatusBar style='dark'/>
-            <SafeAreaView style={styles.saveAreaContainer}>                   
-                <View style={styles.generalContainer}>
-                    <ScrollView> 
+            <SafeAreaView style={styles.saveAreaContainer}>       
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={refreshProfile} />
+                    }                   
+                >             
+                    <View style={styles.generalContainer}>
                         <View style={styles.topContainer}>
                             <View style={styles.topTextContainer}>
                                 <Text style={styles.nameText}>{user.name}</Text>
@@ -118,8 +145,8 @@ export default function SchoolHomeScreen({navigation}) {
                             />
                             <ButtonInfoInput text='FEEDBACKS'/>
                         </View>   
-                    </ScrollView>              
-                </View>                                              
+                    </View>    
+                </ScrollView>                                           
             </SafeAreaView>
         </>
     )

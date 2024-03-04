@@ -12,7 +12,7 @@ import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import Colors from '../../constants/colors';
 
 export default function StudentsInfoScreen({navigation, route}) { 
-    const student = route.params.student;
+    const student = route.params.user;
     
     // const parents = PARENTS.filter(parent => 
     //     student.parents.includes(parent.id));

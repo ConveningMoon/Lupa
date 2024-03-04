@@ -3,10 +3,14 @@ import {
     Text, 
     StyleSheet, 
     FlatList,    
-    Pressable
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    RefreshControl,
+    Alert
 } from 'react-native';
 
-import { useContext, useEffect, useState} from 'react';
+import { useState, useEffect, useContext } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
@@ -23,6 +27,8 @@ import {PARENTS, TEACHERS, GROUPS} from '../../data/dummy-data';
 
 import { deleteRequestNotification, fetchGroupInfo, fetchRequestToJoin, fetchUser } from '../../util/http';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function StudentHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);
     const user = authCtx.infoUser.data;
@@ -35,6 +41,8 @@ export default function StudentHomeScreen({navigation}) {
     const [requestMessage, setRequestMessage] = useState('JOIN TO YOUR SCHOOL');
 
     const [profileIsLoading, setProfileIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
     const isFocused = useIsFocused();
 
     useEffect(() => {
@@ -76,7 +84,8 @@ export default function StudentHomeScreen({navigation}) {
             setStudentGroupInfo(response);
         }
 
-        if (isFocused) {            
+        if (isFocused) {        
+            refreshProfile();    
             if (user.school !== '') {
                 setJoinedSchool(true);
                 findSchool(user.school);
@@ -97,7 +106,7 @@ export default function StudentHomeScreen({navigation}) {
 
     function toSchool() {
         navigation.navigate('SchoolsInfo', {
-            school: studentSchoolInfo
+            user: studentSchoolInfo
         });
     }
 
@@ -131,91 +140,123 @@ export default function StudentHomeScreen({navigation}) {
         );
     }
 
+    async function refreshProfile() {
+        setRefreshing(true);
+        try {
+            const response = await fetchUser(user.id); 
+            
+            for (let key in response.data) {
+                if (response.data[key] !== user[key]) {
+                    Alert.alert('Something change!', 'Please login again to update your profile.');
+                    authCtx.logout();
+                    setRefreshing(false);
+                    return;
+                }
+            }
+
+            setRefreshing(false);
+
+        } catch (error){
+            setRefreshing(false);
+            console.log(error);
+        }                  
+    }
+
     if (profileIsLoading) {
         return <LoadingOverlay message="Loading information..." />;
     }
 
     return (
-        <View style={styles.globalContainer}>
-            <View style={styles.topInfoContainer}>
-                <View style={styles.nameUsernameContainer}>
-                    <Text style={styles.userName}>{user.name}</Text>
-                    <Text style={styles.usernameText}>{user.username}</Text>
-                    <View style={styles.schoolContainer}>
-                        <Text 
-                            style={{
-                                fontSize: 20,
-                                color: Colors.color_darkGreen
-                            }}
-                        >
-                            School: 
-                        </Text>
-                        <Pressable onPress={toSchool} disabled={!joinedSchool}> 
-                            <Text style={styles.schoolText}>  {studentSchoolInfo.name}</Text>
+        <SafeAreaView>
+            <ScrollView 
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={refreshProfile} />
+                }
+            >
+                <View style={styles.globalContainer}>
+                    <View style={styles.topInfoContainer}>
+                        <View style={styles.nameUsernameContainer}>
+                            <Text style={styles.userName}>{user.name}</Text>
+                            <Text style={styles.usernameText}>{user.username}</Text>
+                            <View style={styles.schoolContainer}>
+                                <Text 
+                                    style={{
+                                        fontSize: 20,
+                                        color: Colors.color_darkGreen
+                                    }}
+                                >
+                                    School: 
+                                </Text>
+                                <Pressable onPress={toSchool} disabled={!joinedSchool}> 
+                                    <Text style={styles.schoolText}>  {studentSchoolInfo.name}</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                        <Pressable onPress={toGroup} disabled={!joinedSchool}>
+                            <Text style={styles.userGroup}>{studentGroupInfo.data.name}</Text>
                         </Pressable>
                     </View>
-                </View>
-                <Pressable onPress={toGroup} disabled={!joinedSchool}>
-                    <Text style={styles.userGroup}>{studentGroupInfo.data.name}</Text>
-                </Pressable>
-            </View>
 
-            {/* <View style={styles.parentsContainer}>
-                <Text style={styles.parentsText}>Parents:   </Text>
-                <FlatList
-                    data={parents}
-                    horizontal={true}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderParentsItem}
-                />
-            </View> */}
-            {!joinedSchool &&
-                <View style={styles.joinSchoolContainer}>
-                    <Pressable
-                        style={styles.joinSchoolPressableContainer}
-                        onPress={schoolOptions}
-                        disabled={disabledRequest}
-                    >
-                        <MaterialIcons name="school" size={24} color={Colors.color_lightGreen} />
-                        <Text style={styles.joinSchoolText}>
-                            {requestMessage}
-                        </Text>
-                    </Pressable>
+                    {/* <View style={styles.parentsContainer}>
+                        <Text style={styles.parentsText}>Parents:   </Text>
+                        <FlatList
+                            data={parents}
+                            horizontal={true}
+                            keyExtractor={(item) => item.id}
+                            renderItem={renderParentsItem}
+                        />
+                    </View> */}
+                    {!joinedSchool &&
+                        <View style={styles.joinSchoolContainer}>
+                            <Pressable
+                                style={styles.joinSchoolPressableContainer}
+                                onPress={schoolOptions}
+                                disabled={disabledRequest}
+                            >
+                                <MaterialIcons name="school" size={24} color={Colors.color_lightGreen} />
+                                <Text style={styles.joinSchoolText}>
+                                    {requestMessage}
+                                </Text>
+                            </Pressable>
+                        </View>
+                    }
+                    {joinedSchool &&
+                        <View style={styles.allButtonsContainer}>
+                            <ButtonInfoInput 
+                                text='MY TEACHERS'
+                                onPressGeneral={toTeachers}
+                            /> 
+                            <ButtonInfoInput 
+                                text='GRADES'
+                                //onPressGeneral={searchTeachers}
+                            />
+                            <ButtonInfoInput 
+                                text='SUBJECTS'
+                                //onPressGeneral={searchTeachers}
+                            />
+                            <ButtonInfoInput
+                                text='SCHEDULE'
+                                //onPressGeneral={searchTeachers}
+                            />
+                            <ButtonInfoInput
+                                text='FEEDBACK'
+                                //onPressGeneral={searchTeachers}
+                            />
+                            
+                        </View>
+                    }
                 </View>
-            }
-            {joinedSchool &&
-                <View style={styles.allButtonsContainer}>
-                    <ButtonInfoInput 
-                        text='MY TEACHERS'
-                        onPressGeneral={toTeachers}
-                    /> 
-                    <ButtonInfoInput 
-                        text='GRADES'
-                        //onPressGeneral={searchTeachers}
-                    />
-                    <ButtonInfoInput 
-                        text='SUBJECTS'
-                        //onPressGeneral={searchTeachers}
-                    />
-                    <ButtonInfoInput
-                        text='SHEDULE'
-                        //onPressGeneral={searchTeachers}
-                    />
-                    <ButtonInfoInput
-                        text='FEEDBACK'
-                        //onPressGeneral={searchTeachers}
-                    />
-                    
-                </View>
-            }
-        </View>
+
+            </ScrollView>
+        </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     globalContainer: {
         flex: 1,
-        margin: 10
+        margin: 10,
+        paddingBottom: 500
     },
     topInfoContainer: {
         flexDirection: 'row'
@@ -265,10 +306,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     joinSchoolContainer: {
-        flex: 1,
+        marginTop: 200,
         alignItems: 'center',
         justifyContent: 'center',
-       // backgroundColor: Colors.gray_placeholder
     },
     joinSchoolPressableContainer: {
         flexDirection: 'row'
