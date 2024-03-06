@@ -19,7 +19,7 @@ import { fetchGroups } from '../../util/http';
 
 import { AuthContext } from '../../store/auth-context';
 
-export default function GroupsOptionsScreen({navigation}) {
+export default function GroupsOptionsScreen({navigation, route}) {
     const authCtx = useContext(AuthContext);
     const user = authCtx.infoUser.data;
 
@@ -35,7 +35,7 @@ export default function GroupsOptionsScreen({navigation}) {
     async function initialGroupsData() {
         setRefreshing(true);
         try{
-            const groups = await fetchGroups(user.id);
+            const groups = await fetchGroups(user.id, route.params.fromSchool, route.params.idGroups, route.params.fromTeacher);
 
             setFilterGroups(groups);
             setFoundGroups(groups);
@@ -102,10 +102,13 @@ export default function GroupsOptionsScreen({navigation}) {
     return (  
         <View style={styles.globalContainer}>    
             <SearchInputText onChangeText={setSearchText} value={searchText}/>
-            <ButtonToAdd text='Add New Group' onPressGeneral={addNewGroup}/>
+            {route.params.fromSchool &&
+                <ButtonToAdd text='Add New Group' onPressGeneral={addNewGroup}/>
+            }
             <NewGroupInfo 
                 visible={addGroupVisible}
                 onBack={onBackHandler}
+                reloadData={initialGroupsData}
             />
             <FlatList
                 data={foundGroups}

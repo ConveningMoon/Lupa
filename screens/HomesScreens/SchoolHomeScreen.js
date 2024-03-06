@@ -49,20 +49,28 @@ export default function SchoolHomeScreen({navigation}) {
     }, [isFocused])
 
     function toGroups(){
-        navigation.navigate('Groups');
+        navigation.navigate('Groups', {
+            fromSchool: true,
+            fromTeacher: false,
+            idGroups: []
+        });
     }
 
     function toStudents(){
-        navigation.navigate('Students');
+        navigation.navigate('Students', {
+            id: user.id,
+            fromSchool: true,
+            fromGroup: false,
+            fromParent: false,
+            fromNewParent: false,
+        });
     }
 
     function toTeachers(){
-        const filterTeachers = TEACHERS.filter(
-            teacher => teacher.school.includes(user.id)
-        );    
-
-        navigation.navigate('Teachers',{
-            filterTeachers: filterTeachers
+        navigation.navigate('Teachers', {
+            id: user.id,
+            fromSchool: true,
+            fromGroup: false
         });
     }
 

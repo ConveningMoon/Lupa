@@ -3,61 +3,53 @@ import {
     StyleSheet, 
     Modal,
     Text, 
-    Alert
+    Alert,
+    Button
 } from 'react-native';
-
-import { useContext, useState } from 'react';
 
 import MicroPressText from '../PressableTextComponents/MicroPressText';
 import LittleButton from '../ButtonComponents/LittleButton';
-import SimpleFillInfoInput from '../InputComponents/SimpleFillInfoInput';
+import BadgeDropDown from '../DropDownSystemComponents/BadgeDropDown';
 
 import Colors from '../../constants/colors';
+import { fetchGroups } from '../../util/http';
+import { useEffect, useState } from 'react';
 
-import { registerNewGroup } from '../../util/http';
+export default function LinkTeacherWithGroups(props) {
+    const [groupsData, setGroupsData] = useState([]);
 
-import { AuthContext } from '../../store/auth-context';
-
-
-export default function NewGroupInfo(props) {
-    const authCtx = useContext(AuthContext)
-
-    const [nameGroup, setNameGroup] = useState('');
-
-    async function addNewGroup() {
-        await registerNewGroup({
-            name: nameGroup,
-            school: authCtx.infoUser.data.id
-        });
-        props.onBack();
-        props.reloadData();
-    }
-
-    function addHandler() {
-        Alert.alert('Add a new group?', `Are you sure to add ${nameGroup} as new group?`, [
-            {
-                text: 'Cancel',
-                style: 'cancel',
-            },
-            {
-                text: 'Yes', onPress: () => addNewGroup()
+    useEffect(() => {
+        async function getGroups() {
+            const response = await fetchGroups(props.idSchool)
+    
+            const groups = [];
+    
+            for (let group in response) {
+                groups.push({label: response[group].data.name, value: response[group].id});
             }
-        ]);
-    }
+    
+            setGroupsData(groups);
+        }
+
+        getGroups();
+    }, [])
+    
 
     return (
         <Modal visible={props.visible} animationType='slide'>
             <View style={styles.globalContainer}>
-                <Text style={styles.titleText}>ADD NEW GROUP</Text>
+                <Text style={styles.titleText}>ADD NEW TEACHER'S GROUPS</Text>
                 <View style={styles.contentContainer}>
-                    <SimpleFillInfoInput 
-                        text='Name'
-                        onChangeText={setNameGroup}
+                    <BadgeDropDown
+                        elements={groupsData}
+                        multiple={true}
+                        placeholder='Your groups...'
+                        onSelectItem={props.onSelectItem}
                     />
                  </View>
                 <View style={styles.buttonsContainer}>
                     <MicroPressText text='CANCEL' onNewPress={props.onBack}/>
-                    <LittleButton text='ADD' onPressGeneral={addHandler}/>
+                    <LittleButton text='ADD' onPressGeneral={props.onAdd}/>
                 </View>                
             </View>            
         </Modal>
@@ -85,5 +77,6 @@ const styles = StyleSheet.create({
         width: '45%',
         marginTop: 30,
         flexDirection: 'row',
+        marginTop: 120
     }
 });

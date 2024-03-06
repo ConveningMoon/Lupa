@@ -11,6 +11,7 @@ import { useState, useEffect, useContext, useCallback } from 'react';
 
 import SendRequestOptions from '../../components/DisplayOptionsToPressComponents/SendRequestOptions';
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 import { createNewNotification, fetchSchools } from '../../util/http';
 
@@ -23,15 +24,19 @@ export default function SchoolsOptionsScreen({navigation}) {
     const [searchText, setSearchText] = useState('');
     const [foundSchools, setFoundSchools] = useState([]);
 
+    const [profileIsLoading, setProfileIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
     async function initialSchoolsData() {
+        setProfileIsLoading(true);
         try{
             const schools = await fetchSchools();
 
             setFilterSchools(schools);
             setFoundSchools(schools);
-        } catch(error) {}        
+
+            setProfileIsLoading(false);
+        } catch(error) {setProfileIsLoading(true);}        
     }
 
     useEffect(() => {
@@ -71,6 +76,7 @@ export default function SchoolsOptionsScreen({navigation}) {
                         fromId: authCtx.infoUser.data.id,
                         toUsername: itemData.item.username,
                         fromUsername: authCtx.infoUser.data.username,
+                        fromType: authCtx.infoUser.type,
                         status: 1.
                     })
                 }
@@ -91,6 +97,10 @@ export default function SchoolsOptionsScreen({navigation}) {
         setRefreshing(false);
     }, []);
     
+    if (profileIsLoading) {
+        return <LoadingOverlay message="Loading information..." />;
+    }
+
     return (  
         <View style={styles.globalContainer}>    
             <SearchInputText onChangeText={setSearchText} value={searchText}/>

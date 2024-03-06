@@ -122,16 +122,19 @@ export const GROUPS = [
     new Group(
         'Group_1',
         'Group_1', 
-        'sc1'
+        'sc1',
+        ['sb1', 'sb2']
     ),
     new Group(
         'Group_2',
         'Group_2', 
-        'sc1'
+        'sc1',
+        ['sb2', 'sb3']
     ),
     new Group(
         'Group_3',
         'Group_3',
-        'sc2'
+        'sc2',
+        ['sb4', 'sb5']
     )
 ];

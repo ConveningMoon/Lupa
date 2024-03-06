@@ -15,11 +15,13 @@ export default function NotificationsStructure(props) {
     //Add more possible options for types notifications
     const notificationMessage = {
         'studentJoinSchool' : ['New join request!', ' wants to join to your school'],
-        'requestToJoinAccepted' : ['Request to join accepted!', ' accepted your request to join this school']
+        'requestToJoinAccepted' : ['Request to join accepted!', ' accepted your request to join this school'],
+        'addNewStudent' : ['New request!',' requested to be your parent'],
+        'requestToAddAccepted' : ['Request accepted!', ' accepted you as a parent'],
     };
 
-    function alertToReject() {
-        Alert.alert('Reject an student?', `Are you sure you want to reject the request from ${props.fromUsername} to join to your school?`, [
+    function alertToRejectToJoin() {
+        Alert.alert('Reject a new user?', `Are you sure you want to reject the request from ${props.fromUsername} to join to your school?`, [
             {
                 text: 'Cancel',
                 style: 'cancel',
@@ -31,15 +33,41 @@ export default function NotificationsStructure(props) {
         ]);
     }
 
-    function alertToAccept() {
-        Alert.alert('Accept an student?', `Are you sure you want to accept ${props.fromUsername} as student from your school?`, [
+    function alertToAcceptToJoin() {
+        Alert.alert('Accept a new user?', `Are you sure you want to accept ${props.fromUsername} as member from your school?`, [
             {
                 text: 'Cancel',
                 style: 'cancel',
             },
             {
                 text: 'Yes', 
-                onPress: props.onPressToAccept
+                onPress: props.onPressToAcceptToJoin
+            }
+        ]);
+    }
+
+    function alertToRejectToAdd() {
+        Alert.alert('Reject?', `Are you sure you want to reject the request from ${props.fromUsername} to be your parent?`, [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'Yes', 
+                onPress: props.onPressToReject
+            }
+        ]);
+    }
+
+    function alertToAcceptToAdd() {
+        Alert.alert('Accept?', `Are you sure you want to accept ${props.fromUsername} to be your parent?`, [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'Yes', 
+                onPress: props.onPressToAcceptToAdd
             }
         ]);
     }
@@ -70,14 +98,28 @@ export default function NotificationsStructure(props) {
                 {props.type === 'studentJoinSchool' &&
                     <View style={styles.buttonsContainer}>
                         <Pressable
-                            onPress={alertToReject}
+                            onPress={alertToRejectToJoin}
                         >
                             <AntDesign name="closesquare" size={40} color="red" />
                         </Pressable>
                         <Pressable
-                            onPress={alertToAccept}
+                            onPress={alertToAcceptToJoin}
                         >
                              <AntDesign name="checksquare" size={40} color="green" />
+                        </Pressable>
+                    </View>
+                }
+                { props.type === 'addNewStudent' &&
+                    <View style={styles.buttonsContainer}>
+                        <Pressable
+                            onPress={alertToRejectToAdd}
+                        >
+                            <AntDesign name="closesquare" size={40} color="red" />
+                        </Pressable>
+                        <Pressable
+                            onPress={alertToAcceptToAdd}
+                        >
+                            <AntDesign name="checksquare" size={40} color="green" />
                         </Pressable>
                     </View>
                 }

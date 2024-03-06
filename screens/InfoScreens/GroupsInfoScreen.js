@@ -12,24 +12,22 @@ import Colors from '../../constants/colors';
 export default function GroupsInfoScreen({navigation, route}) {  
     const group = route.params.group;
 
-    function toStudents(){    
-        const filterStudents = STUDENTS.filter(
-            student => student.group.includes(groupId)
-        );
- 
+    function toStudents(){ 
         navigation.navigate('Students',{
-            filterStudents: filterStudents
+            id: group.id,
+            fromSchool: false,
+            fromGroup: true,
+            fromParent: false,
+            fromNewParent: false
         }); 
         
     }
 
     function toTeachers(){
-        const filterTeachers = TEACHERS.filter(
-            teacher => teacher.groups.includes(groupId)
-        );
-
         navigation.navigate('Teachers',{
-            filterTeachers: filterTeachers
+            id: group.id,
+            fromSchool: false,
+            fromGroup: true
         }); 
     }
 
@@ -46,6 +44,11 @@ export default function GroupsInfoScreen({navigation, route}) {
             <ButtonInfoInput 
                 text='SHOW TEACHERS'
                 onPressGeneral={toTeachers}
+            />
+
+            <ButtonInfoInput 
+                text='SHOW SUBJECTS'
+                //onPressGeneral={toTeachers}
             />
         </View>
     )

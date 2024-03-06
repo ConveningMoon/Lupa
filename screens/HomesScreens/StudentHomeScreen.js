@@ -97,11 +97,14 @@ export default function StudentHomeScreen({navigation}) {
         };
     },[isFocused])
 
-    // const parents = PARENTS.filter(parent => 
-    //     user.parents.includes(parent.id));
-
     function schoolOptions() {
         navigation.navigate('Schools');
+    }
+
+    function displayMyParents() {
+        navigation.navigate('Parents' ,{
+            id: user.id
+        });
     }
 
     function toSchool() {
@@ -110,34 +113,10 @@ export default function StudentHomeScreen({navigation}) {
         });
     }
 
-    function toTeachers(){
-        const filterTeachers = TEACHERS.filter(
-            teacher => teacher.groups.includes(user.group)
-        );
-
-        navigation.navigate('Teachers',{
-            filterTeachers: filterTeachers
-        }); 
-    }
-
     function toGroup(){
         navigation.navigate('GroupsInfo', {
             group: studentGroupInfo
         });
-    }
-
-    function renderParentsItem(itemData){    
-        function pressHandler(){
-            navigation.navigate('ParentsInfo',{
-                user: itemData.item
-            });
-        }
-
-        return (
-            <Pressable onPress={pressHandler}>
-                <Text style={styles.userParents}>{itemData.item.name}      </Text>
-            </Pressable>
-        );
     }
 
     async function refreshProfile() {
@@ -146,11 +125,20 @@ export default function StudentHomeScreen({navigation}) {
             const response = await fetchUser(user.id); 
             
             for (let key in response.data) {
-                if (response.data[key] !== user[key]) {
-                    Alert.alert('Something change!', 'Please login again to update your profile.');
-                    authCtx.logout();
-                    setRefreshing(false);
-                    return;
+                if(key === 'parents') {
+                    if (JSON.stringify(response.data[key]) !== JSON.stringify(user[key])) {
+                        Alert.alert('Something change!', 'Please login again to update your profile.');
+                        authCtx.logout();
+                        setRefreshing(false);
+                        return;
+                    }
+                } else {
+                    if (response.data[key] !== user[key]) {
+                        Alert.alert('Something change!', 'Please login again to update your profile.');
+                        authCtx.logout();
+                        setRefreshing(false);
+                        return;
+                    }
                 }
             }
 
@@ -178,6 +166,7 @@ export default function StudentHomeScreen({navigation}) {
                         <View style={styles.nameUsernameContainer}>
                             <Text style={styles.userName}>{user.name}</Text>
                             <Text style={styles.usernameText}>{user.username}</Text>
+                            <Text style={styles.emailText}>Contact: {user.emailContact}</Text>
                             <View style={styles.schoolContainer}>
                                 <Text 
                                     style={{
@@ -188,7 +177,7 @@ export default function StudentHomeScreen({navigation}) {
                                     School: 
                                 </Text>
                                 <Pressable onPress={toSchool} disabled={!joinedSchool}> 
-                                    <Text style={styles.schoolText}>  {studentSchoolInfo.name}</Text>
+                                    <Text style={styles.schoolText}>{studentSchoolInfo.name}</Text>
                                 </Pressable>
                             </View>
                         </View>
@@ -196,16 +185,7 @@ export default function StudentHomeScreen({navigation}) {
                             <Text style={styles.userGroup}>{studentGroupInfo.data.name}</Text>
                         </Pressable>
                     </View>
-
-                    {/* <View style={styles.parentsContainer}>
-                        <Text style={styles.parentsText}>Parents:   </Text>
-                        <FlatList
-                            data={parents}
-                            horizontal={true}
-                            keyExtractor={(item) => item.id}
-                            renderItem={renderParentsItem}
-                        />
-                    </View> */}
+                    
                     {!joinedSchool &&
                         <View style={styles.joinSchoolContainer}>
                             <Pressable
@@ -223,15 +203,7 @@ export default function StudentHomeScreen({navigation}) {
                     {joinedSchool &&
                         <View style={styles.allButtonsContainer}>
                             <ButtonInfoInput 
-                                text='MY TEACHERS'
-                                onPressGeneral={toTeachers}
-                            /> 
-                            <ButtonInfoInput 
                                 text='GRADES'
-                                //onPressGeneral={searchTeachers}
-                            />
-                            <ButtonInfoInput 
-                                text='SUBJECTS'
                                 //onPressGeneral={searchTeachers}
                             />
                             <ButtonInfoInput
@@ -241,12 +213,18 @@ export default function StudentHomeScreen({navigation}) {
                             <ButtonInfoInput
                                 text='FEEDBACK'
                                 //onPressGeneral={searchTeachers}
+                            />                            
+                        </View>
+                    }
+                    { user.parents.length !== 0 &&
+                        <View style={styles.parentsContainer}>
+                            <ButtonInfoInput 
+                                text='MY PARENTS'
+                                onPressGeneral={displayMyParents}
                             />
-                            
                         </View>
                     }
                 </View>
-
             </ScrollView>
         </SafeAreaView>
     )
@@ -275,6 +253,12 @@ const styles = StyleSheet.create({
         color: Colors.color_darkGreen,
         paddingHorizontal: 10
     },
+    emailText: {
+        marginLeft: 10,
+        paddingTop: 10,
+        fontSize: 12,
+        paddingBottom: 10
+    },
     schoolContainer: {
         paddingHorizontal: 10,
         paddingTop: 10,
@@ -283,7 +267,8 @@ const styles = StyleSheet.create({
     schoolText: {
         textDecorationLine: 'underline',
         color: Colors.color_darkGreen,
-        fontSize: 20
+        fontSize: 20,
+        paddingLeft: 5
     },
     userGroup: {
         color: Colors.color_darkBlue,
@@ -293,9 +278,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     parentsContainer: {
-        flexDirection: 'row',
-        paddingTop: 10,
-        paddingHorizontal: 10,
+        
     },
     parentsText: {
         color: Colors.color_darkBlue,

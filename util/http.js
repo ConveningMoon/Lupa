@@ -47,6 +47,20 @@ export async function fetchRequestToJoin(idUser) {
     }
 }
 
+export async function fetchRequestToAddStudent(idUser) {
+    try {
+        const response = await axios.get(`${BACKEND_URL}/notifications.json`);
+        
+        for(let key in response.data) {
+            if (response.data[key].type === 'addNewStudent' && response.data[key].fromId === idUser) {
+                return {id: key, data: response.data[key]};
+            } 
+        }
+    } catch {
+        return null;
+    }
+}
+
 export async function changeStatusRequest(id, status) {
     await axios.patch(
         `${BACKEND_URL}/notifications/${id}.json`,
@@ -75,6 +89,63 @@ export async function linkStudentWithSchool(idStudent, idSchool, nameGroup) {
 
 }
 
+export async function linkTeacherWithSchool(idTeacher, idSchool, listGroups) {
+    const response = await axios.get(`${BACKEND_URL}/users/Teacher.json`);
+
+    function findTeacher () {
+        for(let key in response.data) {
+            if (response.data[key].id === idTeacher) {
+                return key;
+            }
+        }
+    }
+
+    await axios.patch(
+        `${BACKEND_URL}/users/Teacher/${findTeacher()}.json`, {
+            school: idSchool,
+            groups: listGroups        
+        }
+    );
+
+}
+
+export async function linkStudentWithParent(idStudent, idParent) {
+    const responseStudent = await axios.get(`${BACKEND_URL}/users/Student.json`);
+    const responseParent = await axios.get(`${BACKEND_URL}/users/Parent.json`);
+
+    function findStudent () {
+        for(let key in responseStudent.data) {
+            if (responseStudent.data[key].id === idStudent) {
+                return {key: key, data: responseStudent.data[key]};
+            }
+        }
+    }
+
+    function findParent () {
+        for(let key in responseParent.data) {
+            if (responseParent.data[key].id === idParent) {
+                return {key: key, data: responseParent.data[key]};
+            }
+        }
+    }
+
+    const student = findStudent();
+    const parent = findParent();
+
+    await axios.patch(
+        `${BACKEND_URL}/users/Student/${student.key}.json`, {
+            parents: [parent.data.id],       
+        }
+    );
+
+    await axios.patch(
+        `${BACKEND_URL}/users/Parent/${parent.key}.json`, {
+            students: [student.data.id],       
+        }
+    );
+
+}
+
 export async function deleteRequestNotification(id) {
     await axios.delete(
         `${BACKEND_URL}/notifications/${id}.json`,
@@ -88,33 +159,41 @@ export async function fetchSchools() {
     return schools;
 }
 
-export async function fetchStudents(idSchool, idGroup) {
+export async function fetchStudents(id, fromSchool, fromGroup, fromParent, fromNewParent) {
     const response = await axios.get(`${BACKEND_URL}/users/Student.json`);
     
     return Object.values(response.data).filter(student => 
-        (idSchool && student.school === idSchool) || 
-        (idGroup && student.group === idGroup)
+        (fromSchool && student.school === id) || 
+        (fromGroup && student.group === id) ||
+        (fromParent && student.parents.includes(id)) ||
+        (fromNewParent)
     );
 }
 
-export async function fetchGroups(id) {
+export async function fetchTeachers(id, fromSchool, fromGroup) {
+    const response = await axios.get(`${BACKEND_URL}/users/Teacher.json`);
+    return Object.values(response.data).filter(teacher => 
+        (fromSchool && teacher.school === id) || 
+        (fromGroup && teacher.groups.includes(id))
+    );
+}
+
+export async function fetchParents(idStudent) {
+    const response = await axios.get(`${BACKEND_URL}/users/Parent.json`);
+    return Object.values(response.data).filter(parent => 
+        parent.students.includes(idStudent)
+    );
+}
+
+export async function fetchGroups(id, fromSchool, idGroups, fromTeacher) {
     const response = await axios.get(BACKEND_URL + '/groups.json');
 
-    const getGroups = (id) => Object.entries(response.data)
-    .filter(([_, group]) => group.school === id)
+    const getGroups = (id, idGroups) => Object.entries(response.data)
+    .filter(([key, group]) => (fromSchool && group.school === id) || (fromTeacher && idGroups.includes(key)))
     .map(([groupId, groupData]) => ({ id: groupId, data: groupData }));
 
-    return getGroups(id);
+    return getGroups(id, idGroups);
 } 
-
-// export async function fetchStudent(id) {
-//     const response = await axios.get(BACKEND_URL + '/users/Student.json');
-
-//     const groups = Object.values(response.data)
-//         .reduce((acc, item) => item.school === id ? [...acc, item.name] : acc, []);
-
-//     return groups;
-// } 
 
 
 export async function existUsername(username) {
@@ -132,6 +211,13 @@ export async function existUsername(username) {
     }
 
     return findUsername(username);
+}
+
+export async function fetchAllUsersFromSomeType(type) {
+    const { data } = await axios.get(`${BACKEND_URL}/users/${type}.json`);
+    const users = Object.values(data);
+
+    return users;
 }
 
 export async function fetchUser(id){

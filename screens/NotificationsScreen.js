@@ -13,11 +13,12 @@ import { AuthContext } from '../store/auth-context';
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { changeStatusRequest, createNewNotification, deleteRequestNotification, fetchAllNotifications, fetchUser, linkStudentWithSchool } from '../util/http';
+import { changeStatusRequest, createNewNotification, deleteRequestNotification, fetchAllNotifications, fetchUser, linkStudentWithParent, linkStudentWithSchool, linkTeacherWithSchool } from '../util/http';
 
 import LoadingOverlay from '../components/LoadingOverlay';
 import NotificationsStructure from '../components/NotificationsComponents/NotificationsStructure';
 import LinkStudentWithGroup from '../components/ModalComponents/LinkStudentWithGroup';
+import LinkTeacherWithGroups from '../components/ModalComponents/LinkTeacherWithGroups';
 
 export default function NotificationsScreen({navigation}) {
     const authCtx = useContext(AuthContext);
@@ -33,20 +34,28 @@ export default function NotificationsScreen({navigation}) {
     const [groupToLink, setGroupToLink] = useState();
     const [visibleLinkStudent, setVisibleLinkStudent] = useState(false);
 
+    const [usernameTeacherToLink, setUsernameTeacherToLink] = useState('');
+    const [idTeacherToLink, setIdTeacherToLink] = useState('');
+    const [groupsToLink, setGroupsToLink] = useState();
+    const [visibleLinkTeacher, setVisibleLinkTeacher] = useState(false);
+
     const [profileIsLoading, setProfileIsLoading] = useState(false);
     const [addingNewStudent, setAddingNewStudent] = useState(false);
+    const [addingNewTeacher, setAddingNewTeacher] = useState(false);
+    const [addingNewParent, setAddingNewParent] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
     async function getNotifications(){
         setRefreshing(true);
         try {
             const response = await fetchAllNotifications(user.id);
+            const filterResponse = [];
             for (let notification in response) {
-                if(response[notification].data.status === 2) {
-                    response.splice(response.indexOf(notification));
+                if(response[notification].data.status !== 2) {
+                    filterResponse.push(response[notification]);
                 }
             }
-            setNotificationsData(response);
+            setNotificationsData(filterResponse);
             setProfileIsLoading(false);
             setRefreshing(false);
         } catch {setRefreshing(false);}
@@ -63,25 +72,55 @@ export default function NotificationsScreen({navigation}) {
 
         const seeInfo = {
             'Student': 'StudentsInfo',
-            'School': 'SchoolsInfo'
+            'School': 'SchoolsInfo',
+            'Teacher': 'TeachersInfo'
         };
 
         async function goToUser() {
+            setProfileIsLoading(true);
             const response = await fetchUser(itemData.item.data.fromId)
             navigation.navigate(seeInfo[response.type], {
                 user: response.data
             })
+            //setProfileIsLoading(false);
         }
         
-        async function acceptRequest() {
-            setUsernameStudentToLink(itemData.item.data.fromUsername);
-            setIdStudentToLink(itemData.item.data.fromId);
-            setNotificationId(itemData.item.id);
-            setVisibleLinkStudent(true);
+        async function acceptRequestToJoin() {
+            if (itemData.item.data.fromType === 'Student') {
+                setUsernameStudentToLink(itemData.item.data.fromUsername);
+                setIdStudentToLink(itemData.item.data.fromId);
+                setNotificationId(itemData.item.id);
+                setVisibleLinkStudent(true);
+            }
+            if (itemData.item.data.fromType === 'Teacher') {
+                setUsernameTeacherToLink(itemData.item.data.fromUsername);
+                setIdTeacherToLink(itemData.item.data.fromId);
+                setNotificationId(itemData.item.id);
+                setVisibleLinkTeacher(true);
+            }
+        }
+
+        async function acceptRequestToAdd() {
+            setAddingNewParent(true);
+            await changeStatusRequest(itemData.item.id, 2);
+            await linkStudentWithParent(itemData.item.data.toId, itemData.item.data.fromId);
+            await createNewNotification({
+                type: 'requestToAddAccepted',
+                toId: itemData.item.data.fromId,
+                fromId: itemData.item.data.toId,
+                toUsername: itemData.item.data.fromUsername,
+                fromUsername: itemData.item.data.toUsername,
+                fromType: authCtx.infoUser.type,
+                status: 1
+            });
+            getNotifications();
+            setAddingNewParent(false);
+            
         }
 
         async function rejectRequest() {
             await deleteRequestNotification(itemData.item.id);
+            getNotifications();
         }
 
         return (
@@ -90,7 +129,8 @@ export default function NotificationsScreen({navigation}) {
                 fromUsername={itemData.item.data.fromUsername}
                 onPressToUser = {goToUser}
                 onPressToReject = {rejectRequest}
-                onPressToAccept = {acceptRequest}
+                onPressToAcceptToJoin = {acceptRequestToJoin}
+                onPressToAcceptToAdd = {acceptRequestToAdd}
             />        
         );
     }
@@ -105,11 +145,30 @@ export default function NotificationsScreen({navigation}) {
             fromId: user.id,
             toUsername: usernameStudentToLink,
             fromUsername: user.username,
+            fromType: authCtx.infoUser.type,
             status: 1
         });
         setVisibleLinkStudent(false);
         getNotifications();
         setAddingNewStudent(false);
+    }
+
+    async function addTeacherToGroups() {
+        setAddingNewTeacher(true);
+        await changeStatusRequest(notificationId, 2);
+        await linkTeacherWithSchool(idTeacherToLink, user.id, groupsToLink.map(item => item.value));
+        await createNewNotification({
+            type: 'requestToJoinAccepted',
+            toId: idTeacherToLink,
+            fromId: user.id,
+            toUsername: usernameTeacherToLink,
+            fromUsername: user.username,
+            fromType: authCtx.infoUser.type,
+            status: 1
+        });
+        setVisibleLinkTeacher(false);
+        getNotifications();
+        setAddingNewTeacher(false);
     }
 
     function alertToLinkStudent() {
@@ -120,6 +179,18 @@ export default function NotificationsScreen({navigation}) {
             },
             {
                 text: 'Yes', onPress: () => addStudentToGroup()
+            }
+        ]);
+    }
+
+    function alertToLinkTeacher() {
+        Alert.alert('Add a new teacher?', `Are you sure to add ${usernameTeacherToLink} in the groups ${groupsToLink.map(item => item.label).join(', ')} ?`, [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'Yes', onPress: () => addTeacherToGroups()
             }
         ]);
     }
@@ -138,6 +209,15 @@ export default function NotificationsScreen({navigation}) {
         return <LoadingOverlay message="Adding a new student..." />;
     }
 
+    if (addingNewTeacher) {
+        return <LoadingOverlay message="Adding a new teacher..." />;
+    }
+
+    if (addingNewParent) {
+        return <LoadingOverlay message="Adding a new parent..." />;
+    }
+
+
     return (
         <View style={styles.globalContainer}>   
             <LinkStudentWithGroup
@@ -146,7 +226,15 @@ export default function NotificationsScreen({navigation}) {
                 onAdd={alertToLinkStudent}
                 onSelectItem={setGroupToLink}
                 idSchool={user.id}
+            />
+            <LinkTeacherWithGroups
+                visible={visibleLinkTeacher}
+                onBack={() => setVisibleLinkTeacher(false)}
+                onAdd={alertToLinkTeacher}
+                onSelectItem={setGroupsToLink}
+                idSchool={user.id}
             /> 
+            {/* Add new element LinkParentToStudent */}
             <FlatList
                 data={notificationData}
                 renderItem={renderNotificationItem}

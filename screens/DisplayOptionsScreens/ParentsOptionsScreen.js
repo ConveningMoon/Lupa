@@ -2,66 +2,71 @@ import {
     FlatList, 
     View,
     StyleSheet,
+    ScrollView,
     RefreshControl
 } from 'react-native';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 
 import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
+import ButtonToAdd from '../../components/ButtonComponents/ButtonToAdd';
+import NewGroupInfo from '../../components/ModalComponents/NewGroupInfo';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { fetchStudents, fetchTeachers } from '../../util/http';
+import { fetchGroups, fetchParents } from '../../util/http';
 
-export default function TeachersOptionsScreen({navigation, route}) {
-    const [filterTeachers, setFilterTeachers] = useState([]);
+import { AuthContext } from '../../store/auth-context';
+
+export default function ParentsOptionsScreen({navigation, route}) {
+    const [filterParents, setFilterParents] = useState([]);
     const [searchText, setSearchText] = useState('');
-    const [foundTeachers, setFoundTeachers] = useState([]);
+    const [foundParents, setFoundParents] = useState([]);
 
-    const [teachersAreLoading, setTeachersAreLoading] = useState(true);
+    const [parentsAreLoading, setParentsAreLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const isFocused = useIsFocused();
 
-    async function initialTeachersData() {
+    async function initialParentsData() {
         setRefreshing(true);
         try{
-            const teachers = await fetchTeachers(route.params.id, route.params.fromSchool, route.params.fromGroup);
+            const parents = await fetchParents(route.params.id);
 
-            setFilterTeachers(teachers);
-            setFoundTeachers(teachers);
+            setFilterParents(parents);
+            setFoundParents(parents);
 
             setRefreshing(false);
-            setTeachersAreLoading(false);
+            setParentsAreLoading(false);
         } catch {
             setRefreshing(false);
-            setTeachersAreLoading(false);
+            setParentsAreLoading(false);
         }
         
     }
 
     useEffect(() => {
         if (isFocused) {
-            initialTeachersData();
+            initialParentsData();
         }
     }, [isFocused]);
 
     useEffect(() => {
         if (searchText.trim() !== '') {
-            const searchTeachers = filterTeachers.filter(
-                teacher => teacher.name.toLowerCase().includes(searchText.toLowerCase())
+            const searchParents = filterParents.filter(
+                parent => parent.name.toLowerCase().includes(searchText.toLowerCase())
             );
-            setFoundTeachers(searchTeachers);
+            setFoundParents(searchParents);
         } else {
-            setFoundTeachers(filterTeachers);
+            setFoundParents(filterParents);
         }
 
     }, [searchText]);
     
 
-    function renderStudentItem(itemData) {
+    function renderParentItem(itemData) {
         function pressHandler() {
-          navigation.navigate('TeachersInfo', {
+          navigation.navigate('ParentsInfo', {
             user: itemData.item
           });
         }
@@ -75,19 +80,19 @@ export default function TeachersOptionsScreen({navigation, route}) {
     }
 
     const onRefresh = useCallback(() => {
-        initialTeachersData();
+        initialParentsData();
     }, []);
     
-    if (teachersAreLoading) {
-        return <LoadingOverlay message="Loading teachers..." />;
+    if (parentsAreLoading) {
+        return <LoadingOverlay message="Loading your parents..." />;
     }
 
     return (  
         <View style={styles.globalContainer}>    
             <SearchInputText onChangeText={setSearchText} value={searchText}/>
             <FlatList
-                data={foundTeachers}
-                renderItem={renderStudentItem}
+                data={foundParents}
+                renderItem={renderParentItem}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }

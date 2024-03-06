@@ -2,23 +2,23 @@ import {
     FlatList, 
     View,
     StyleSheet,
-    RefreshControl
+    RefreshControl,
+    Alert
 } from 'react-native';
 
-import { useState, useEffect, useContext, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 
 import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
 import LoadingOverlay from '../../components/LoadingOverlay';
+import SendRequestOptions from '../../components/DisplayOptionsToPressComponents/SendRequestOptions';
 
-import { fetchStudents } from '../../util/http';
-
+import { createNewNotification, fetchStudents } from '../../util/http';
 import { AuthContext } from '../../store/auth-context';
 
-export default function StudentsOptionsScreen({navigation}) {
+export default function StudentsOptionsScreen({navigation, route}) {
     const authCtx = useContext(AuthContext);
-    const user = authCtx.infoUser.data;
 
     const [filterStudents, setFilterStudents] = useState([]);
     const [searchText, setSearchText] = useState('');
@@ -31,7 +31,7 @@ export default function StudentsOptionsScreen({navigation}) {
     async function initialStudentsData() {
         setRefreshing(true);
         try{
-            const students = await fetchStudents(user.id, '');
+            const students = await fetchStudents(route.params.id, route.params.fromSchool, route.params.fromGroup, route.params.fromParent);
 
             setFilterStudents(students);
             setFoundStudents(students);
@@ -63,20 +63,66 @@ export default function StudentsOptionsScreen({navigation}) {
 
     }, [searchText]);
     
+    async function addNewStudentNotification(data) {
+        await createNewNotification(data);
+        navigation.goBack();
+
+    }
 
     function renderStudentItem(itemData) {
-        function pressHandler() {
+        function normalHandler() {
           navigation.navigate('StudentsInfo', {
-            group: itemData.item
+            user: itemData.item
           });
         }
-    
-        return (
-            <TableOptions
-                text={itemData.item.name}
-                onPressGeneral={pressHandler}
-            />          
-        );
+
+        function requestHandler() {
+            Alert.alert('Add a new kid?', `Are you sure to request ${itemData.item.name} as your child?`, [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes', onPress: () => addNewStudentNotification({
+                        type: 'addNewStudent',
+                        toId: itemData.item.id,
+                        fromId: authCtx.infoUser.data.id,
+                        toUsername: itemData.item.username,
+                        fromUsername: authCtx.infoUser.data.username,
+                        fromType: authCtx.infoUser.type,
+                        status: 1.
+                    })
+                }
+            ]);
+        }
+        
+        if (route.params.fromSchool || route.params.fromGroup) {
+            return (
+                <TableOptions
+                    text={itemData.item.name}
+                    onPressGeneral={normalHandler}
+                />          
+            );
+        }
+
+        if (route.params.fromParent) {
+            return (
+                <TableOptions
+                    text={itemData.item.name}
+                    onPressGeneral={normalHandler}
+                />          
+            );
+        }
+
+        if (route.params.fromNewParent) {
+            return (
+                <SendRequestOptions
+                    name={itemData.item.name}
+                    username={itemData.item.username}
+                    onPress={requestHandler}
+                />        
+            );
+        }
     }
 
     const onRefresh = useCallback(() => {

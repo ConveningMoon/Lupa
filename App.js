@@ -34,6 +34,7 @@ import GroupsInfoScreen from './screens/InfoScreens/GroupsInfoScreen';
 import ParentsInfoScreen from './screens/InfoScreens/ParentsInfoScreen';
 import FillRegisterParentScreen from './screens/FillRegisterScreens/FillRegisterParentScreen';
 import ParentHomeScreen from './screens/HomesScreens/ParentHomeScreen';
+import ParentsOptionsScreen from './screens/DisplayOptionsScreens/ParentsOptionsScreen';
 
 import StudentsOptionsScreen from './screens/DisplayOptionsScreens/StudentsOptionsScreen';
 import StudentsInfoScreen from './screens/InfoScreens/StudentsInfoScreen';
@@ -218,6 +219,10 @@ function UserNavigationStack() {
       <Stack.Screen 
         name='ParentsInfo' 
         component={ParentsInfoScreen}
+      />
+      <Stack.Screen 
+        name='Parents' 
+        component={ParentsOptionsScreen}
       />
 
       {/* Students */}

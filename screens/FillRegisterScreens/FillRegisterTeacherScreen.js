@@ -23,41 +23,24 @@ export default function FillRegisterTeacherScreen({navigation, route}) {
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  useEffect(() => {
-    async function emailExistsHandler (){
-      try{
-        await login(
-          route.params.email,
-          route.params.password
-        );
-
-        Alert.alert('Ups!', 'This email already exists');
-        navigation.navigate('Register');
-      }
-      catch {
-      }
-    }
-    emailExistsHandler();    
-  }, []);
-
   async function newRegister(){
     setIsAuthenticating(true);
 
     try {
-      const tokenData = await createUser(
-        route.params.email, 
-        route.params.password,
-      );
-
       await registerNewUser({
-        id: tokenData.localId,
+        id: route.params.id,
         name: teacherName.trim(),
+        username: route.params.username,
         emailContact: teacherEmail.trim(),
-        description: teacherDescription
+        description: teacherDescription,
+        groups: '',
+        subjects: '',
+        school: ''
       }, "Teacher");
       
       navigation.navigate('Login');
     } catch (error) {
+      console.log(error.response.data);
       setIsAuthenticating(false);
       Alert.alert('Something is wrong', 'Try it later');
     }
