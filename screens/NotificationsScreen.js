@@ -32,6 +32,7 @@ export default function NotificationsScreen({navigation}) {
     const [usernameStudentToLink, setUsernameStudentToLink] = useState('');
     const [idStudentToLink, setIdStudentToLink] = useState('');
     const [groupToLink, setGroupToLink] = useState();
+    const [subjectToLink, setSubjectToLink] = useState();
     const [visibleLinkStudent, setVisibleLinkStudent] = useState(false);
 
     const [usernameTeacherToLink, setUsernameTeacherToLink] = useState('');
@@ -156,7 +157,7 @@ export default function NotificationsScreen({navigation}) {
     async function addTeacherToGroups() {
         setAddingNewTeacher(true);
         await changeStatusRequest(notificationId, 2);
-        await linkTeacherWithSchool(idTeacherToLink, user.id, groupsToLink.map(item => item.value));
+        await linkTeacherWithSchool(idTeacherToLink, user.id, groupsToLink.map(item => item.value), subjectToLink.value);
         await createNewNotification({
             type: 'requestToJoinAccepted',
             toId: idTeacherToLink,
@@ -184,7 +185,7 @@ export default function NotificationsScreen({navigation}) {
     }
 
     function alertToLinkTeacher() {
-        Alert.alert('Add a new teacher?', `Are you sure to add ${usernameTeacherToLink} in the groups ${groupsToLink.map(item => item.label).join(', ')} ?`, [
+        Alert.alert('Add a new teacher?', `Are you sure to add ${usernameTeacherToLink} in the groups ${groupsToLink.map(item => item.label).join(', ')}  as ${subjectToLink.label} teacher?`, [
             {
                 text: 'Cancel',
                 style: 'cancel',
@@ -231,7 +232,8 @@ export default function NotificationsScreen({navigation}) {
                 visible={visibleLinkTeacher}
                 onBack={() => setVisibleLinkTeacher(false)}
                 onAdd={alertToLinkTeacher}
-                onSelectItem={setGroupsToLink}
+                onSelectItemGroup={setGroupsToLink}
+                onSelectItemSubject={setSubjectToLink}
                 idSchool={user.id}
             /> 
             {/* Add new element LinkParentToStudent */}

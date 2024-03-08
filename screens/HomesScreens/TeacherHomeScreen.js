@@ -50,8 +50,10 @@ export default function StudentHomeScreen({navigation}) {
                 const response = await fetchRequestToJoin(user.id);
 
                 if (response.data.status === 2) {
-                    setJoinedSchool(true);
-                    await deleteRequestNotification(response.id);
+                    if(user.school !== '') {
+                        setJoinedSchool(true);
+                        await deleteRequestNotification(response.id);
+                    }
                 } else if(response.data.status === 1){
                     setJoinedSchool(false);
                     setRequestMessage('YOUR REQUEST IS IN PROCESS...');

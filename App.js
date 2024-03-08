@@ -49,6 +49,7 @@ import TeacherHomeScreen from './screens/HomesScreens/TeacherHomeScreen';
 import SettingScreen from './screens/SettingScreen';
 
 import SubjectsOptionsScreen from './screens/DisplayOptionsScreens/SubjectsOptionsScreen';
+import SubjectsInfoScreen from './screens/InfoScreens/SubjectsInfoScreen';
 
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 
@@ -249,6 +250,10 @@ function UserNavigationStack() {
       <Stack.Screen 
         name='Subjects' 
         component={SubjectsOptionsScreen}
+      />
+      <Stack.Screen 
+        name='SubjectsInfo' 
+        component={SubjectsInfoScreen}
       />
 
     </Stack.Navigator>

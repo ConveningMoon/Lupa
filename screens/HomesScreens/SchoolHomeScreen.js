@@ -75,7 +75,9 @@ export default function SchoolHomeScreen({navigation}) {
     }
 
     function toSubjects(){
-        navigation.navigate('Subjects');
+        navigation.navigate('Subjects', {
+            fromSchool: true
+        });
     }
 
     async function refreshProfile() {

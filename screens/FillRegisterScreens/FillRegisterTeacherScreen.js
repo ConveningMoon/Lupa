@@ -34,7 +34,7 @@ export default function FillRegisterTeacherScreen({navigation, route}) {
         emailContact: teacherEmail.trim(),
         description: teacherDescription,
         groups: '',
-        subjects: '',
+        subject: '',
         school: ''
       }, "Teacher");
       

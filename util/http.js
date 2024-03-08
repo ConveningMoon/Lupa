@@ -16,6 +16,13 @@ export async function registerNewGroup(newGroupData) {
     );
 }
 
+export async function registerNewSubject(newSubjectData) {
+    await axios.post(
+        `${BACKEND_URL}/subjects.json`,
+        newSubjectData
+    );
+}
+
 export async function deleteGroup(idGroup) {
     await axios.delete(
         `${BACKEND_URL}/groups/${idGroup}.json`,
@@ -95,7 +102,7 @@ export async function linkStudentWithSchool(idStudent, idSchool, nameGroup) {
 
 }
 
-export async function linkTeacherWithSchool(idTeacher, idSchool, listGroups) {
+export async function linkTeacherWithSchool(idTeacher, idSchool, listGroups, subject) {
     const response = await axios.get(`${BACKEND_URL}/users/Teacher.json`);
 
     function findTeacher () {
@@ -109,7 +116,8 @@ export async function linkTeacherWithSchool(idTeacher, idSchool, listGroups) {
     await axios.patch(
         `${BACKEND_URL}/users/Teacher/${findTeacher()}.json`, {
             school: idSchool,
-            groups: listGroups        
+            groups: listGroups,
+            subject: subject     
         }
     );
 
@@ -129,7 +137,8 @@ export async function unlinkTeacherWithSchool(idTeacher) {
     await axios.patch(
         `${BACKEND_URL}/users/Teacher/${findTeacher()}.json`, {
             school: '',   
-            groups: ''    
+            groups: '',
+            subject: ''    
         }
     );
 
@@ -313,6 +322,16 @@ export async function fetchGroups(id, fromSchool, idGroups, fromTeacher) {
     .map(([groupId, groupData]) => ({ id: groupId, data: groupData }));
 
     return getGroups(id, idGroups);
+} 
+
+export async function fetchSubjects(idSchool) {
+    const response = await axios.get(BACKEND_URL + '/subjects.json');
+
+    const getSubjects = (idSchool) => Object.entries(response.data)
+    .filter(([_, subject]) => (subject.school === idSchool))
+    .map(([subjectId, subjectData]) => ({ id: subjectId, data: subjectData }));
+
+    return getSubjects(idSchool);
 } 
 
 
