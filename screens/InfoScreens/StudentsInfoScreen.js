@@ -3,7 +3,8 @@ import {
     Text, 
     StyleSheet, 
     FlatList, 
-    Pressable
+    Pressable,
+    Alert
 } from 'react-native';
 
 import { TEACHERS, PARENTS, GROUPS } from '../../data/dummy-data';
@@ -13,45 +14,88 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 
 import Colors from '../../constants/colors';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { fetchGroupInfo, fetchUser } from '../../util/http';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+import { fetchGroupInfo, fetchUser, unlinkStudentWithParent, unlinkStudentWithSchool } from '../../util/http';
+import { AuthContext } from '../../store/auth-context';
 
 export default function StudentsInfoScreen({navigation, route}) { 
+    const authCtx = useContext(AuthContext);
+
     const student = route.params.user;
 
     const [studentSchoolInfo, setStudentSchoolInfo] = useState({name: 'No School'});
     const [studentGroupInfo, setStudentGroupInfo] = useState({data: {name: 'No Group'}});
 
-    const [profileIsLoading, setProfileIsLoading] = useState(false);
+    const [checkParentUser, setCheckParentUser] = useState(false);
+
+    const [profileIsLoading, setProfileIsLoading] = useState(true);
     const isFocused = useIsFocused();
 
-    async function findSchool(idSchool) {  
-        const response = await fetchUser(idSchool);
-
-        setStudentSchoolInfo(response.data);
-        setProfileIsLoading(false);
-    }
-
-    async function findGroup(idGroup) {
-        setProfileIsLoading(true);
-        const response = await fetchGroupInfo(idGroup);
-        
-        setStudentGroupInfo(response);
-    }
-
     useEffect(() => {
-        if(isFocused) {
-            if(student.school !== '') {
-                findGroup(student.group);
-                findSchool(student.school);
-            } else {
-                setProfileIsLoading(false);
-            } 
-        }
+        async function initialData () {
+            if(isFocused) {
+                if(student.school !== '') {
+                    try {
+                        const responseSchool = await fetchUser(student.school);
+                        const responseGroup = await fetchGroupInfo(student.group);
+
+                        setStudentSchoolInfo(responseSchool.data);
+                        setStudentGroupInfo(responseGroup);
+
+                        setProfileIsLoading(false);
+                    } catch {
+                        setProfileIsLoading(false);
+                    }
+                }
+                if(authCtx.infoUser.type === 'Parent' && authCtx.infoUser.data.students.includes(student.id)) {
+                    setCheckParentUser(true);
+                }
+            }    
+        }    
+        initialData();
     }, [isFocused])
+
+
+    async function unlinkChildFromParent() {
+        Alert.alert('Remove this child?', `Are you sure to unlink ${student.name} from your kids?`, [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'Yes', onPress: async () => {
+                    await unlinkStudentWithParent(student.id, authCtx.infoUser.data.id);
+                    
+                    Alert.alert('Remove child', 'Please, login again to save the changes.');
+                    navigation.navigate("Login");
+                }
+
+            }
+        ]);
+    }
+
+    function unlinkStudentFromSchool() {
+        Alert.alert('Remove this student?', `Are you sure to delete the student ${student.name} from your school?`, [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'Yes', onPress: async () => {
+                    await unlinkStudentWithSchool(student.id);
+
+                    Alert.alert('Remove student', 'Please, login again to save the changes.');
+                    navigation.navigate("Login");
+                }
+
+            }
+        ]);
+    }
 
     function toGroup(){
         navigation.navigate('GroupsInfo', {
@@ -98,8 +142,25 @@ export default function StudentsInfoScreen({navigation, route}) {
                     <Text style={styles.userGroup}>{studentGroupInfo.data.name}</Text>
                 </Pressable>
             </View>
-
-            <View style={styles.allButtonsContainer}>     
+            {checkParentUser &&
+                <Pressable
+                    style={styles.deleteStudentPressableContainer}
+                    onPress={unlinkChildFromParent}
+                >
+                    <MaterialCommunityIcons name="account-minus" size={24} color={Colors.error_red}/>
+                    <Text style={styles.deleteStudentText}>  Unlink from my kids</Text>
+                </Pressable>
+            }
+            {authCtx.infoUser.type === 'School' &&
+                <Pressable
+                    style={styles.deleteStudentPressableContainer}
+                    onPress={unlinkStudentFromSchool}
+                >
+                    <MaterialCommunityIcons name="account-minus" size={24} color={Colors.error_red}/>
+                    <Text style={styles.deleteStudentText}>  Unlink from the school</Text>
+                </Pressable>
+            }
+            <View style={styles.allButtonsContainer}> 
                 <ButtonInfoInput 
                     text='GRADES'
                     //onPressGeneral={searchTeachers}
@@ -177,6 +238,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     allButtonsContainer: {
-        paddingTop: 30
-    }
+        paddingTop: 30,
+    },
+    deleteStudentPressableContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+        marginLeft: 10,
+        alignSelf: 'flex-start'
+    },
+    deleteStudentText: {
+        color: Colors.error_red
+    },
 });

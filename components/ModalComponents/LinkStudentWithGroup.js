@@ -20,7 +20,7 @@ export default function LinkStudentWithGroup(props) {
 
     useEffect(() => {
         async function getGroups() {
-            const response = await fetchGroups(props.idSchool)
+            const response = await fetchGroups(props.idSchool,true)
     
             const groups = [];
     

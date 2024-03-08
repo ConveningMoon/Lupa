@@ -31,7 +31,7 @@ export default function StudentsOptionsScreen({navigation, route}) {
     async function initialStudentsData() {
         setRefreshing(true);
         try{
-            const students = await fetchStudents(route.params.id, route.params.fromSchool, route.params.fromGroup, route.params.fromParent);
+            const students = await fetchStudents(route.params.id, route.params.fromSchool, route.params.fromGroup, route.params.fromParent, route.params.fromNewParent);
 
             setFilterStudents(students);
             setFoundStudents(students);

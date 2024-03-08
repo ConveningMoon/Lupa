@@ -1,15 +1,27 @@
 import { 
     View, 
     Text, 
-    StyleSheet
+    StyleSheet,
+    Pressable,
+    Alert
 } from 'react-native';
 
 import { STUDENTS, TEACHERS} from '../../data/dummy-data';
+
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
+
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
 
+import { useContext } from 'react';
+
+import { AuthContext } from '../../store/auth-context';
+import { deleteGroup } from '../../util/http';
+
 export default function GroupsInfoScreen({navigation, route}) {  
+    const authCtx = useContext(AuthContext)
+
     const group = route.params.group;
 
     function toStudents(){ 
@@ -31,25 +43,55 @@ export default function GroupsInfoScreen({navigation, route}) {
         }); 
     }
 
+    function deleteGroupHandler() {
+        Alert.alert('Delete this group?', `Are you sure to delete the group: ${group.data.name} ?`, [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'Yes', onPress: async () => {
+                    await deleteGroup(group.id);
+
+                    Alert.alert('Done', 'Group deleted!');
+                    navigation.navigate('School');
+                }
+
+            }
+        ]);
+    }
+
     return (
         <View style={styles.globalContainer}>
 
             <Text style={styles.textGroupName}>{group.data.name}</Text>
 
-            <ButtonInfoInput 
-                text='SHOW STUDENTS'
-                onPressGeneral={toStudents}
-            />
+            {authCtx.infoUser.type === 'School' &&
+                <Pressable
+                    style={styles.deleteGroupPressableContainer}
+                    onPress={deleteGroupHandler}
+                >
+                    <MaterialCommunityIcons name="account-multiple-minus" size={24} color={Colors.error_red}/>
+                    <Text style={styles.deleteGroupsText}>  Delete this group</Text>
+                </Pressable>
+            }
 
-            <ButtonInfoInput 
-                text='SHOW TEACHERS'
-                onPressGeneral={toTeachers}
-            />
+            <View style={styles.allButtonsContainer}> 
+                <ButtonInfoInput 
+                    text='SHOW STUDENTS'
+                    onPressGeneral={toStudents}
+                />
 
-            <ButtonInfoInput 
-                text='SHOW SUBJECTS'
-                //onPressGeneral={toTeachers}
-            />
+                <ButtonInfoInput 
+                    text='SHOW TEACHERS'
+                    onPressGeneral={toTeachers}
+                />
+
+                <ButtonInfoInput 
+                    text='SHOW SUBJECTS'
+                    //onPressGeneral={toTeachers}
+                />
+            </View>
         </View>
     )
 }
@@ -64,5 +106,19 @@ const styles = StyleSheet.create({
         color: Colors.color_lightGreen,
         fontWeight: 'bold',
         padding: 10
+    },
+    allButtonsContainer: {
+        paddingTop: 30,
+    },
+    deleteGroupPressableContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+        marginLeft: 10,
+        alignSelf: 'flex-start'
+    },
+    deleteGroupsText: {
+        color: Colors.error_red
     }
 });

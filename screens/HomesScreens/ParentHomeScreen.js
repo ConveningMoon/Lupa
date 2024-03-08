@@ -167,6 +167,13 @@ export default function ParentHomeScreen({navigation}) {
                     }                    
                     {haveStudent &&
                         <View style={styles.allButtonsContainer}>
+                            <Pressable
+                                style={styles.addNewChildrenPressableContainer}
+                                onPress={studentsOptions}
+                            >
+                                <MaterialCommunityIcons name="account-plus" size={24} color={Colors.color_lightGreen}/>
+                                <Text style={styles.addNewChildText}>ADD NEW CHILD</Text>
+                            </Pressable>
                             <ButtonInfoInput 
                                 text='MY KIDS'
                                 onPressGeneral={displayMyKids}
@@ -184,10 +191,10 @@ const styles = StyleSheet.create({
     globalContainer: {
         flex: 1,
         margin: 10,
-        //paddingBottom: 500
+        paddingBottom: 500
     },
     topInfoContainer: {
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     nameUsernameContainer: {
         flex: 1
@@ -254,11 +261,19 @@ const styles = StyleSheet.create({
         fontSize: 20,
         paddingLeft: 5
     },
-    childrenContainer: {
-        backgroundColor: Colors.bg_pink
+    addNewChildrenPressableContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+        marginBottom: 30,
+        marginLeft: 10,
+        alignSelf: 'flex-start'
+    },
+    addNewChildText: {
+        color: Colors.color_lightGreen
     },
     allButtonsContainer: {
-        paddingTop: 30,
         alignItems: 'center' 
     },
 });

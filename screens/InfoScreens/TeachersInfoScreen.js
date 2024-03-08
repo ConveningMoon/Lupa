@@ -3,7 +3,8 @@ import {
     Text, 
     StyleSheet, 
     FlatList, 
-    Pressable
+    Pressable,
+    Alert
 } from 'react-native';
 
 import { TEACHERS, PARENTS, GROUPS } from '../../data/dummy-data';
@@ -13,13 +14,18 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 
 import Colors from '../../constants/colors';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { fetchGroupInfo, fetchUser } from '../../util/http';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+import { fetchGroupInfo, fetchUser, unlinkTeacherWithSchool } from '../../util/http';
+import { AuthContext } from '../../store/auth-context';
 
 export default function TeachersInfoScreen({navigation, route}) { 
+    const authCtx = useContext(AuthContext);
+
     const teacher = route.params.user;
 
     const [teacherSchoolInfo, setTeacherSchoolInfo] = useState({name: 'No School'});
@@ -57,6 +63,24 @@ export default function TeachersInfoScreen({navigation, route}) {
         });
     }
 
+    function removeTeacherHandler() {
+        Alert.alert('Unlink this teacher?', `Are you sure to remove the teacher: ${teacher.username}. From your school?`, [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'Yes', onPress: async () => {
+                    await unlinkTeacherWithSchool(teacher.id);
+
+                    Alert.alert('Done!', 'Teacher removed.');
+                    navigation.navigate('School');
+                }
+
+            }
+        ]);
+    }
+
     if (profileIsLoading) {
         return <LoadingOverlay message="Loading information..." />;
     }
@@ -83,6 +107,15 @@ export default function TeachersInfoScreen({navigation, route}) {
                     </View>
                 </View>
             </View>
+            {authCtx.infoUser.type === 'School' &&
+                <Pressable
+                    style={styles.deleteTeacherPressableContainer}
+                    onPress={removeTeacherHandler}
+                >
+                    <MaterialCommunityIcons name="account-minus" size={24} color={Colors.error_red}/>
+                    <Text style={styles.deleteTeacherText}>  Unlink from the school</Text>
+                </Pressable>
+            }
             <View style={styles.allButtonsContainer}>
                 <ButtonInfoInput 
                     text='GROUPS'
@@ -151,5 +184,16 @@ const styles = StyleSheet.create({
     allButtonsContainer: {
         paddingTop: 30,
         alignItems: 'center' 
+    },
+    deleteTeacherPressableContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+        marginLeft: 10,
+        alignSelf: 'flex-start'
+    },
+    deleteTeacherText: {
+        color: Colors.error_red
     }
 });
