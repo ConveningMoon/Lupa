@@ -3,8 +3,6 @@ import {
     StyleSheet, 
     Modal,
     Text, 
-    Alert,
-    Button
 } from 'react-native';
 
 import MicroPressText from '../PressableTextComponents/MicroPressText';
@@ -13,8 +11,12 @@ import BadgeDropDown from '../DropDownSystemComponents/BadgeDropDown';
 import LoadingOverlay from '../LoadingOverlay';
 
 import Colors from '../../constants/colors';
-import { fetchGroups, fetchSubjects } from '../../util/http';
+
+import { fetchGroups } from '../../util/group-http';
+import { fetchSubjects } from '../../util/subject-http';
+
 import { useEffect, useState } from 'react';
+
 import { useIsFocused } from '@react-navigation/native';
 
 

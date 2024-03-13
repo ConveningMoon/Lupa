@@ -6,8 +6,6 @@ import {
     Alert
 } from 'react-native';
 
-import { STUDENTS, TEACHERS} from '../../data/dummy-data';
-
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -17,7 +15,8 @@ import Colors from '../../constants/colors';
 import { useContext } from 'react';
 
 import { AuthContext } from '../../store/auth-context';
-import { deleteGroup } from '../../util/http';
+
+import { deleteGroup } from '../../util/group-http';
 
 export default function GroupsInfoScreen({navigation, route}) {  
     const authCtx = useContext(AuthContext)

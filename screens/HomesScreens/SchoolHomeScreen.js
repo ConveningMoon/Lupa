@@ -5,12 +5,13 @@ import {
     SafeAreaView,
     ScrollView,
     Platform,
-    RefreshControl
+    RefreshControl,
+    Alert
 } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 
-import { useContext, useState, useLayoutEffect, useEffect} from 'react';
+import { useContext, useState, useEffect} from 'react';
 
 import { AuthContext } from '../../store/auth-context';
 
@@ -21,11 +22,9 @@ import Colors from '../../constants/colors';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay'; 
 
-import { GROUPS, STUDENTS, TEACHERS } from '../../data/dummy-data';
-
 import { useIsFocused } from '@react-navigation/native';
 
-import { fetchAllNotifications, fetchUser } from '../../util/http';
+import { fetchUser } from '../../util/user-http';
 
 export default function SchoolHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);

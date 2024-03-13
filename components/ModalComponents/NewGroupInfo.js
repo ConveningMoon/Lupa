@@ -14,7 +14,7 @@ import SimpleFillInfoInput from '../InputComponents/SimpleFillInfoInput';
 
 import Colors from '../../constants/colors';
 
-import { registerNewGroup } from '../../util/http';
+import { registerNewGroup } from '../../util/group-http';
 
 import { AuthContext } from '../../store/auth-context';
 

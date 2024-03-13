@@ -13,8 +13,7 @@ import SimpleFillInfoInput from '../../components/InputComponents/SimpleFillInfo
 import SimpleMultilineFillInfoInput from '../../components/InputComponents/SimpleMultilineFillInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { createUser, login } from '../../util/auth';
-import { registerNewUser } from '../../util/http';
+import { registerNewUser } from '../../util/user-http';
 
 export default function FillRegisterTeacherScreen({navigation, route}) {
   const [teacherName, setTeacherName] = useState('');

@@ -14,7 +14,9 @@ import SearchInputText from '../../components/SearchSystemComponent/SearchInputT
 import LoadingOverlay from '../../components/LoadingOverlay';
 import SendRequestOptions from '../../components/DisplayOptionsToPressComponents/SendRequestOptions';
 
-import { createNewNotification, fetchStudents } from '../../util/http';
+import { createNewNotification } from '../../util/notification-http';
+import { fetchStudents } from '../../util/student-http';
+
 import { AuthContext } from '../../store/auth-context';
 
 export default function StudentsOptionsScreen({navigation, route}) {

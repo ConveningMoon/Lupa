@@ -2,22 +2,18 @@ import {
     FlatList, 
     View,
     StyleSheet,
-    ScrollView,
     RefreshControl
 } from 'react-native';
 
-import { useState, useEffect, useContext, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 
 import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
-import ButtonToAdd from '../../components/ButtonComponents/ButtonToAdd';
-import NewGroupInfo from '../../components/ModalComponents/NewGroupInfo';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { fetchGroups, fetchParents } from '../../util/http';
+import { fetchParents } from '../../util/parent-http';
 
-import { AuthContext } from '../../store/auth-context';
 
 export default function ParentsOptionsScreen({navigation, route}) {
     const [filterParents, setFilterParents] = useState([]);

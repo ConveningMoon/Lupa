@@ -2,7 +2,6 @@ import {
     View, 
     Text, 
     StyleSheet, 
-    FlatList,    
     Pressable,
     SafeAreaView,
     ScrollView,
@@ -10,7 +9,7 @@ import {
     Alert
 } from 'react-native';
 
-import { useState, useEffect, useContext, useCallback } from 'react';
+import { useState, useEffect, useContext } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
@@ -23,12 +22,8 @@ import Colors from '../../constants/colors';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import {PARENTS, TEACHERS, GROUPS} from '../../data/dummy-data';
-
-import { deleteRequestNotification, fetchGroupInfo, fetchRequestToAddStudent, fetchRequestToJoin, fetchUser } from '../../util/http';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import TableOptions from '../../components/DisplayOptionsToPressComponents/TableOptions';
+import { deleteRequestNotification, fetchRequestToAddStudent } from '../../util/request-http';
+import { fetchUser } from '../../util/user-http';
 
 export default function ParentHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);

@@ -12,7 +12,7 @@ import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import SimpleFillInfoInput from '../../components/InputComponents/SimpleFillInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { registerNewUser } from '../../util/http';
+import { registerNewUser } from '../../util/user-http';
 
 export default function FillRegisterStudentScreen({navigation, route}) {
   const [studentName, setStudentName] = useState('');

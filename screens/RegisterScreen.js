@@ -25,7 +25,7 @@ import LoadingOverlay from '../components/LoadingOverlay';
 
 import { createUser } from '../util/auth';
 
-import { existUsername } from '../util/http';
+import { existUsername } from '../util/user-http';
 
 function RegisterScreen({navigation}){
     const [enteredEmail, setEnteredEmail] = useState('');

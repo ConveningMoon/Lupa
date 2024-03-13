@@ -46,18 +46,19 @@ import TeachersOptionsScreen from './screens/DisplayOptionsScreens/TeachersOptio
 import TeachersInfoScreen from './screens/InfoScreens/TeachersInfoScreen';
 import TeacherHomeScreen from './screens/HomesScreens/TeacherHomeScreen';
 
-import SettingScreen from './screens/SettingScreen';
-
 import SubjectsOptionsScreen from './screens/DisplayOptionsScreens/SubjectsOptionsScreen';
 import SubjectsInfoScreen from './screens/InfoScreens/SubjectsInfoScreen';
+
+import SettingScreen from './screens/SettingsScreens/SettingScreen';
+import ChangeEmailScreen from './screens/SettingsScreens/ChangeEmailScreen';
+import ChangePasswordScreen from './screens/SettingsScreens/ChangePasswordScreen';
+import ChangeInfoScreen from './screens/SettingsScreens/ChangeInfoScreen';
 
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 
 import * as SplashScreen from 'expo-splash-screen';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { fetchAllNotifications } from './util/http';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -254,6 +255,20 @@ function UserNavigationStack() {
       <Stack.Screen 
         name='SubjectsInfo' 
         component={SubjectsInfoScreen}
+      />
+
+      {/* Settings */}
+      <Stack.Screen 
+        name='ChangeEmail' 
+        component={ChangeEmailScreen}
+      />
+      <Stack.Screen 
+        name='ChangePassword' 
+        component={ChangePasswordScreen}
+      />
+      <Stack.Screen 
+        name='ChangeInfo' 
+        component={ChangeInfoScreen}
       />
 
     </Stack.Navigator>

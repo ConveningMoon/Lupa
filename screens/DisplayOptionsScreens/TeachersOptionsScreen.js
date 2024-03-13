@@ -12,7 +12,7 @@ import TableOptions from '../../components/DisplayOptionsToPressComponents/Table
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { fetchStudents, fetchTeachers } from '../../util/http';
+import { fetchTeachers } from '../../util/teacher-http';
 
 export default function TeachersOptionsScreen({navigation, route}) {
     const [filterTeachers, setFilterTeachers] = useState([]);

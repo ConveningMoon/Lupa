@@ -24,7 +24,7 @@ async function authenticate(mode, email, password) {
   return response.data;
 }
 
-async function deleteSomeAccount (id) {
+export async function deleteAccount (id) {
   const url = `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${API_KEY}`;
 
   await axios.post(url, {
@@ -40,6 +40,22 @@ export async function login(email, password) {
   return authenticate('signInWithPassword', email, password);
 }
 
-export async function deleteAccount(id) {
-  return deleteSomeAccount(id);
+export async function changeEmail(idToken, newEmail) {
+  const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`;
+
+  await axios.post(url, {
+    idToken: idToken,
+    email: newEmail,
+    returnSecureToken: true
+  });
+}
+
+export async function changePassword(idToken, newPassword) {
+  const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`;
+
+  await axios.post(url, {
+    idToken: idToken,
+    password: newPassword,
+    returnSecureToken: true
+  });
 }

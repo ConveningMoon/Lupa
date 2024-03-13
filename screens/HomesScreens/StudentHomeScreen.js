@@ -1,8 +1,7 @@
 import { 
     View, 
     Text, 
-    StyleSheet, 
-    FlatList,    
+    StyleSheet,    
     Pressable,
     SafeAreaView,
     ScrollView,
@@ -23,11 +22,9 @@ import Colors from '../../constants/colors';
 
 import { MaterialIcons } from '@expo/vector-icons';
 
-import {PARENTS, TEACHERS, GROUPS} from '../../data/dummy-data';
-
-import { deleteRequestNotification, fetchGroupInfo, fetchRequestToJoin, fetchUser } from '../../util/http';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { deleteRequestNotification, fetchRequestToJoin } from '../../util/request-http';
+import { fetchGroupInfo } from '../../util/group-http';
+import { fetchUser } from '../../util/user-http';
 
 export default function StudentHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);

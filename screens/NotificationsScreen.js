@@ -13,7 +13,9 @@ import { AuthContext } from '../store/auth-context';
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { changeStatusRequest, createNewNotification, deleteRequestNotification, fetchAllNotifications, fetchUser, linkStudentWithParent, linkStudentWithSchool, linkTeacherWithSchool } from '../util/http';
+import { changeStatusRequest, deleteRequestNotification, fetchUser, linkStudentWithParent, linkStudentWithSchool, linkTeacherWithSchool } from '../util/request-http';
+import { createNewNotification, fetchAllNotifications } from '../util/notification-http';
+
 
 import LoadingOverlay from '../components/LoadingOverlay';
 import NotificationsStructure from '../components/NotificationsComponents/NotificationsStructure';

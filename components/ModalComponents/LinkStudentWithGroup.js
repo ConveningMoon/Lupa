@@ -3,8 +3,6 @@ import {
     StyleSheet, 
     Modal,
     Text, 
-    Alert,
-    Button
 } from 'react-native';
 
 import MicroPressText from '../PressableTextComponents/MicroPressText';
@@ -12,7 +10,9 @@ import LittleButton from '../ButtonComponents/LittleButton';
 import BadgeDropDown from '../DropDownSystemComponents/BadgeDropDown';
 
 import Colors from '../../constants/colors';
-import { fetchGroups } from '../../util/http';
+
+import { fetchGroups } from '../../util/group-http';
+
 import { useEffect, useState } from 'react';
 
 export default function LinkStudentWithGroup(props) {

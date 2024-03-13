@@ -6,10 +6,6 @@ import {
     Alert
 } from 'react-native';
 
-import { STUDENTS, TEACHERS} from '../../data/dummy-data';
-
-import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
-
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
@@ -17,7 +13,9 @@ import Colors from '../../constants/colors';
 import { useContext, useState, useEffect } from 'react';
 
 import { AuthContext } from '../../store/auth-context';
-import { deleteGroup } from '../../util/http';
+
+import { deleteSubject } from '../../util/subject-http';
+
 import { useIsFocused } from '@react-navigation/native';
 
 export default function SubjectsInfoScreen({navigation, route}) {  
@@ -37,7 +35,7 @@ export default function SubjectsInfoScreen({navigation, route}) {
             },
             {
                 text: 'Yes', onPress: async () => {
-                    await deleteGroup(subject.id);
+                    await deleteSubject(subject.id);
 
                     Alert.alert('Done', 'subject deleted!');
                     navigation.navigate('School');

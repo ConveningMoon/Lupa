@@ -17,6 +17,7 @@ function InfoInputWithLogo(props){
                 style={styles.inputContainer}
                 onChangeText={props.onChangeText}
                 multiline={true}
+                placeholder={props.placeholder}
             />
         </View>
     );

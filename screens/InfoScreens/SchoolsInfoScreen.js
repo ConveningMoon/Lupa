@@ -12,7 +12,6 @@ import { StatusBar } from 'expo-status-bar';
 import { Entypo } from '@expo/vector-icons';
 
 import { GROUPS } from '../../data/dummy-data';
-import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 
 import Colors from '../../constants/colors';
 

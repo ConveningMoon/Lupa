@@ -2,12 +2,9 @@ import {
     View, 
     Text, 
     StyleSheet, 
-    FlatList, 
     Pressable,
     Alert
 } from 'react-native';
-
-import { TEACHERS, PARENTS, GROUPS } from '../../data/dummy-data';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay';
@@ -20,7 +17,10 @@ import { useIsFocused } from '@react-navigation/native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { fetchGroupInfo, fetchUser, unlinkStudentWithParent, unlinkStudentWithSchool } from '../../util/http';
+import { fetchGroupInfo } from '../../util/group-http';
+import { fetchUser } from '../../util/user-http';
+import { unlinkStudentWithParent, unlinkStudentWithSchool } from '../../util/request-http';
+
 import { AuthContext } from '../../store/auth-context';
 
 export default function StudentsInfoScreen({navigation, route}) { 

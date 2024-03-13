@@ -16,6 +16,7 @@ export default function SimpleFillInfoInput(props){
                 onChangeText={props.onChangeText}
                 autoCapitalize={props.autoCapitalize}
                 keyboardType={props.keyboardType}
+                placeholder={props.placeholder}
             />
         </View>
     );

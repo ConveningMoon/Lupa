@@ -2,7 +2,6 @@ import {
     FlatList, 
     View,
     StyleSheet,
-    ScrollView,
     RefreshControl
 } from 'react-native';
 
@@ -15,7 +14,7 @@ import ButtonToAdd from '../../components/ButtonComponents/ButtonToAdd';
 import NewSubjectInfo from '../../components/ModalComponents/NewSubjectInfo';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { fetchGroups, fetchSubjects } from '../../util/http';
+import { fetchSubjects } from '../../util/subject-http';
 
 import { AuthContext } from '../../store/auth-context';
 

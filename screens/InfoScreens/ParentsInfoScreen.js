@@ -2,20 +2,15 @@ import {
     View, 
     Text, 
     StyleSheet, 
-    FlatList,    
-    Pressable,
     SafeAreaView,
     ScrollView,
-    RefreshControl,
-    Alert
 } from 'react-native';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
-import LoadingOverlay from '../../components/LoadingOverlay';
 
 import Colors from '../../constants/colors';
 

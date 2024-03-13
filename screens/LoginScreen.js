@@ -17,8 +17,10 @@ import MicroPressText from '../components/PressableTextComponents/MicroPressText
 import LoadingOverlay from '../components/LoadingOverlay';
 
 import { deleteAccount, login } from '../util/auth';
+
 import { AuthContext } from '../store/auth-context';
-import { fetchUser } from '../util/http';
+
+import { fetchUser } from '../util/user-http';
 
 function LoginScreen({navigation}){
     const authCtx = useContext(AuthContext);

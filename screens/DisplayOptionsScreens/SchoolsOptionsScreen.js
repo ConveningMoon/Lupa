@@ -2,7 +2,6 @@ import {
     FlatList, 
     View,
     StyleSheet,
-    ScrollView,
     RefreshControl,
     Alert
 } from 'react-native';
@@ -13,7 +12,8 @@ import SendRequestOptions from '../../components/DisplayOptionsToPressComponents
 import SearchInputText from '../../components/SearchSystemComponent/SearchInputText';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { createNewNotification, fetchSchools } from '../../util/http';
+import { createNewNotification } from '../../util/notification-http';
+import { fetchSchools } from '../../util/school-http';
 
 import { AuthContext } from '../../store/auth-context';
 
