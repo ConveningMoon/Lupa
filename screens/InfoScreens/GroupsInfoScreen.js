@@ -17,6 +17,8 @@ import { useContext } from 'react';
 import { AuthContext } from '../../store/auth-context';
 
 import { deleteGroup } from '../../util/group-http';
+import { fetchStudents } from '../../util/student-http';
+import { unlinkStudentWithSchool } from '../../util/request-http';
 
 export default function GroupsInfoScreen({navigation, route}) {  
     const authCtx = useContext(AuthContext)
@@ -50,6 +52,15 @@ export default function GroupsInfoScreen({navigation, route}) {
             },
             {
                 text: 'Yes', onPress: async () => {
+
+                    const response = await fetchStudents(group.id, false, true, false, false);
+                    
+                    if(response) {
+                        for(let key in response) {
+                            await unlinkStudentWithSchool(response[key].id);
+                        }
+                    }
+                    
                     await deleteGroup(group.id);
 
                     Alert.alert('Done', 'Group deleted!');

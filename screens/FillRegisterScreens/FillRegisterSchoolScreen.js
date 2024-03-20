@@ -35,7 +35,8 @@ export default function FillRegisterSchoolScreen({navigation, route}) {
         emailContact: schoolEmail.trim(),
         website: schoolWebsite.trim(),
         adress: schoolAdress.trim(),
-        description: schoolDescription
+        description: schoolDescription,
+        subjects: ''
       }, "School");
 
       navigation.navigate('Login');

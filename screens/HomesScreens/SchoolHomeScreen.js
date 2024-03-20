@@ -85,12 +85,22 @@ export default function SchoolHomeScreen({navigation}) {
             const response = await fetchUser(user.id); 
             
             for (let key in response.data) {
-                if (response.data[key] !== user[key]) {
-                    Alert.alert('Something change!', 'Please login again to update your profile.');
-                    authCtx.logout();
-                    setRefreshing(false);
-                    setProfileIsLoading(false);
-                    return;
+                if (key === 'subjects') {
+                    if (JSON.stringify(response.data[key]) !== JSON.stringify(user[key])) {
+                        Alert.alert('Something change!', 'Please login again to update your profile.');
+                        authCtx.logout();
+                        setRefreshing(false);
+                        setProfileIsLoading(false);
+                        return;
+                    }
+                } else {
+                    if (response.data[key] !== user[key]) {
+                        Alert.alert('Something change!', 'Please login again to update your profile.');
+                        authCtx.logout();
+                        setRefreshing(false);
+                        setProfileIsLoading(false);
+                        return;
+                    }
                 }
             }
 

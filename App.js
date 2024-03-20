@@ -49,6 +49,8 @@ import TeacherHomeScreen from './screens/HomesScreens/TeacherHomeScreen';
 import SubjectsOptionsScreen from './screens/DisplayOptionsScreens/SubjectsOptionsScreen';
 import SubjectsInfoScreen from './screens/InfoScreens/SubjectsInfoScreen';
 
+import MainReportScreen from './screens/ReportsScreens/MainReportScreen';
+
 import SettingScreen from './screens/SettingsScreens/SettingScreen';
 import ChangeEmailScreen from './screens/SettingsScreens/ChangeEmailScreen';
 import ChangePasswordScreen from './screens/SettingsScreens/ChangePasswordScreen';
@@ -255,6 +257,12 @@ function UserNavigationStack() {
       <Stack.Screen 
         name='SubjectsInfo' 
         component={SubjectsInfoScreen}
+      />
+
+      {/* Reports */}
+      <Stack.Screen 
+        name='MainReport' 
+        component={MainReportScreen}
       />
 
       {/* Settings */}

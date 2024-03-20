@@ -2,13 +2,6 @@ import axios from "axios";
 
 const BACKEND_URL = 'https://lupa-6edbe-default-rtdb.asia-southeast1.firebasedatabase.app';
 
-export async function registerNewSubject(newSubjectData) {
-    await axios.post(
-        `${BACKEND_URL}/subjects.json`,
-        newSubjectData
-    );
-}
-
 export async function fetchSubjects(idSchool) {
     const response = await axios.get(BACKEND_URL + '/subjects.json');
 
@@ -24,3 +17,13 @@ export async function deleteSubject(idSubject) {
         `${BACKEND_URL}/subjects/${idSubject}.json`,
     );
 }
+
+export async function findSubjects(idSubjects) {
+    const response = await axios.get(BACKEND_URL + '/subjects.json');
+
+    const getSubjects = (idSubjects) => Object.entries(response.data)
+    .filter(([key, _]) => (idSubjects.includes(key)))
+    .map(([subjectId, subjectData]) => ({ id: subjectId, data: subjectData }));
+
+    return getSubjects(idSubjects);
+} 

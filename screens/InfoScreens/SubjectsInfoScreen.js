@@ -14,9 +14,10 @@ import { useContext, useState, useEffect } from 'react';
 
 import { AuthContext } from '../../store/auth-context';
 
-import { deleteSubject } from '../../util/subject-http';
-
 import { useIsFocused } from '@react-navigation/native';
+
+import { findTeacherFromSubject } from '../../util/teacher-http';
+import { removeSubjectToSchool } from '../../util/school-http';
 
 export default function SubjectsInfoScreen({navigation, route}) {  
     const authCtx = useContext(AuthContext)
@@ -27,15 +28,27 @@ export default function SubjectsInfoScreen({navigation, route}) {
 
     const isFocused = useIsFocused();
 
+    useEffect(() => {
+        async function getTeacher() {
+            try {
+                const response = await findTeacherFromSubject(subject);
+
+                setTeacher(response.data.name);
+            } catch {}
+        }
+
+        getTeacher();
+    }, [isFocused])
+
     function deleteGroupHandler() {
-        Alert.alert('Delete this subject?', `Are you sure to delete the subject: ${subject.data.name} ?`, [
+        Alert.alert('Delete this subject?', `Are you sure to delete the subject: ${subject} ?`, [
             {
                 text: 'Cancel',
                 style: 'cancel',
             },
             {
                 text: 'Yes', onPress: async () => {
-                    await deleteSubject(subject.id);
+                    await removeSubjectToSchool(authCtx.infoUser.data.id, subject);
 
                     Alert.alert('Done', 'subject deleted!');
                     navigation.navigate('School');
@@ -45,16 +58,11 @@ export default function SubjectsInfoScreen({navigation, route}) {
         ]);
     }
 
-    useEffect(() => {
-        if (isFocused) {
-            //initialSubjectsData();
-        }
-    }, [isFocused]);
 
     return (
         <View style={styles.globalContainer}>
 
-            <Text style={styles.textGroupName}>{subject.data.name}</Text>
+            <Text style={styles.textGroupName}>{subject}</Text>
 
             {authCtx.infoUser.type === 'School' &&
                 <Pressable

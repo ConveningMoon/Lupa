@@ -108,6 +108,7 @@ export default function GroupsOptionsScreen({navigation, route}) {
                 visible={addGroupVisible}
                 onBack={onBackHandler}
                 reloadData={initialGroupsData}
+                idSchool={user.id}
             />
             <FlatList
                 data={foundGroups}

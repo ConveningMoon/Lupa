@@ -116,6 +116,13 @@ export default function StudentHomeScreen({navigation}) {
         });
     }
 
+    function toReports() {  
+        navigation.navigate('MainReport', {
+            student: authCtx.infoUser
+        });
+
+    }
+
     async function refreshProfile() {
         setRefreshing(true);
         try {
@@ -200,17 +207,13 @@ export default function StudentHomeScreen({navigation}) {
                     {joinedSchool &&
                         <View style={styles.allButtonsContainer}>
                             <ButtonInfoInput 
-                                text='GRADES'
-                                //onPressGeneral={searchTeachers}
+                                text='REPORTS'
+                                onPressGeneral={toReports}
                             />
                             <ButtonInfoInput
                                 text='SCHEDULE'
                                 //onPressGeneral={searchTeachers}
-                            />
-                            <ButtonInfoInput
-                                text='FEEDBACK'
-                                //onPressGeneral={searchTeachers}
-                            />                            
+                            />                  
                         </View>
                     }
                     { user.parents.length !== 0 &&

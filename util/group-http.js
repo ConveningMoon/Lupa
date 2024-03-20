@@ -16,13 +16,15 @@ export async function deleteGroup(idGroup) {
 }
 
 export async function fetchGroups(id, fromSchool, idGroups, fromTeacher) {
-    const response = await axios.get(BACKEND_URL + '/groups.json');
+    try {
+        const response = await axios.get(BACKEND_URL + '/groups.json');
+        
+        const getGroups = (id, idGroups) => Object.entries(response.data)
+        .filter(([key, group]) => (fromSchool && group.school === id) || (fromTeacher && idGroups.includes(key)))
+        .map(([groupId, groupData]) => ({ id: groupId, data: groupData }));
 
-    const getGroups = (id, idGroups) => Object.entries(response.data)
-    .filter(([key, group]) => (fromSchool && group.school === id) || (fromTeacher && idGroups.includes(key)))
-    .map(([groupId, groupData]) => ({ id: groupId, data: groupData }));
-
-    return getGroups(id, idGroups);
+        return getGroups(id, idGroups);
+    } catch {}
 } 
 
 export async function fetchGroupInfo(idGroup) {

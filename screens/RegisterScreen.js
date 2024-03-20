@@ -68,13 +68,13 @@ function RegisterScreen({navigation}){
         } else {
             if (typeUser !== 'None') {
                 try {
-                    const checkUsername = await existUsername(enteredUsername);
+                    const checkUsername = await existUsername(enteredUsername.trim().toLowerCase());
                     if(!checkUsername) {   
                         const response = await createUser(enteredEmail.trim(), enteredPassword.trim());
                                         
                         navigation.navigate(`NewRegister${typeUser}`, {
                             id: response.localId,
-                            username: enteredUsername.trim(),
+                            username: enteredUsername.trim().toLowerCase(),
                         });
                     } else {
                         setIsAuthenticating(false);

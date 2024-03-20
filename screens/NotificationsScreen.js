@@ -223,21 +223,25 @@ export default function NotificationsScreen({navigation}) {
 
     return (
         <View style={styles.globalContainer}>   
-            <LinkStudentWithGroup
-                visible={visibleLinkStudent}
-                onBack={() => setVisibleLinkStudent(false)}
-                onAdd={alertToLinkStudent}
-                onSelectItem={setGroupToLink}
-                idSchool={user.id}
-            />
-            <LinkTeacherWithGroups
-                visible={visibleLinkTeacher}
-                onBack={() => setVisibleLinkTeacher(false)}
-                onAdd={alertToLinkTeacher}
-                onSelectItemGroup={setGroupsToLink}
-                onSelectItemSubject={setSubjectToLink}
-                idSchool={user.id}
-            /> 
+            {authCtx.infoUser.type === 'School' &&
+                <LinkStudentWithGroup
+                    visible={visibleLinkStudent}
+                    onBack={() => setVisibleLinkStudent(false)}
+                    onAdd={alertToLinkStudent}
+                    onSelectItem={setGroupToLink}
+                    idSchool={user.id}
+                />
+            }
+            {authCtx.infoUser.type === 'School' &&
+                <LinkTeacherWithGroups
+                    visible={visibleLinkTeacher}
+                    onBack={() => setVisibleLinkTeacher(false)}
+                    onAdd={alertToLinkTeacher}
+                    onSelectItemGroup={setGroupsToLink}
+                    onSelectItemSubject={setSubjectToLink}
+                    idSchool={user.id}
+                /> 
+            }
             {/* Add new element LinkParentToStudent */}
             <FlatList
                 data={notificationData}

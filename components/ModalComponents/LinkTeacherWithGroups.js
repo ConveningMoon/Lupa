@@ -13,14 +13,18 @@ import LoadingOverlay from '../LoadingOverlay';
 import Colors from '../../constants/colors';
 
 import { fetchGroups } from '../../util/group-http';
-import { fetchSubjects } from '../../util/subject-http';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
+import { AuthContext } from '../../store/auth-context';
+
 
 export default function LinkTeacherWithGroups(props) {
+    const authCtx = useContext(AuthContext);
+    const user = authCtx.infoUser.data;
+
     const [groupsData, setGroupsData] = useState([]);
 
     const [infoIsLoading, setInfoIsLoading] = useState(true);
@@ -33,25 +37,29 @@ export default function LinkTeacherWithGroups(props) {
             setInfoIsLoading(true);
             async function getGroups() {
                 const response = await fetchGroups(props.idSchool, true);
-                const groups = [];
-        
-                for (let group in response) {
-                    groups.push({label: response[group].data.name, value: response[group].id});
-                }
 
-                setGroupsData(groups);
+                console.log(response);
+                if (!!response) {
+                    const groups = [];
+            
+                    for (let group in response) {
+                        groups.push({label: response[group].data.name, value: response[group].id});
+                    }
+
+                    setGroupsData(groups);
+                }   
             }
     
-            async function getSubjects() {
-                const response = await fetchSubjects(props.idSchool);
-    
+            async function getSubjects() {  
                 const subjects = [];
-    
-                for (let subject in response) {
-                    subjects.push({label: response[subject].data.name, value: response[subject].id});
+                
+                if(user.subjects.length !== 0) {
+                    for (let subject in user.subjects) {
+                        subjects.push({label: user.subjects[subject], value: user.subjects[subject]});
+                    }
+        
+                    setSubjectsData(subjects);
                 }
-    
-                setSubjectsData(subjects);
             }
 
             getGroups();

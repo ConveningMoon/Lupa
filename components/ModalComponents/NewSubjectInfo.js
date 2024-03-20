@@ -14,9 +14,9 @@ import SimpleFillInfoInput from '../InputComponents/SimpleFillInfoInput';
 
 import Colors from '../../constants/colors';
 
-import { registerNewSubject } from '../../util/subject-http';
-
 import { AuthContext } from '../../store/auth-context';
+
+import { addSubjectToSchool } from '../../util/school-http';
 
 
 export default function NewSubjectInfo(props) {
@@ -25,16 +25,16 @@ export default function NewSubjectInfo(props) {
     const [nameSubject, setNameSubject] = useState('');
 
     async function addNewSubject() {
-        await registerNewSubject({
-            name: nameSubject,
-            school: authCtx.infoUser.data.id
-        });
+        if (authCtx.infoUser.data.subjects.includes(nameSubject.trim())) {
+            Alert.alert('Subject already exists!', 'This subject already is in your subjects.');
+        } else {
+            await addSubjectToSchool(authCtx.infoUser.data.id, nameSubject.trim()); 
+        }
         props.onBack();
-        props.reloadData();
     }
 
     function addHandler() {
-        Alert.alert('Add a new subject?', `Are you sure to add ${nameSubject} as new subject?`, [
+        Alert.alert('Add a new subject?', `Are you sure to add ${nameSubject.trim()} as new subject?`, [
             {
                 text: 'Cancel',
                 style: 'cancel',
