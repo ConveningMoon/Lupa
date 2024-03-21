@@ -84,11 +84,12 @@ function UserNavigation(){
           component={homeScreens[userHome]} 
           //initialParams={{user: user}}
           options={{
+            title: 'Home',
             tabBarLabel: 'Home',
             tabBarLabelStyle: {color: Colors.color_darkGreen},
             tabBarIcon: () => (
               <Ionicons name="home-sharp" size={24} color={Colors.color_darkGreen} />
-            )
+            )            
           }}  
         />
         <Tab.Screen 

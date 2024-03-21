@@ -132,10 +132,10 @@ export default function SchoolHomeScreen({navigation}) {
                                 <Text style={styles.nameText}>{user.name}</Text>
                                 <Text style={styles.usernameText}>{user.username}</Text>
                             </View>
-                            <View style={styles.topRatingContainer}>
+                            {/* <View style={styles.topRatingContainer}>
                                 <Text style={styles.ratingText}>9.8</Text>
                                 <Entypo name="star" size={24} color={Colors.color_lightGreen} />
-                            </View>
+                            </View> */}
                         </View> 
                         <View style={styles.contactContainer}>
                             <Text style={styles.contactText}>Contact: {user.emailContact}</Text>
@@ -162,7 +162,7 @@ export default function SchoolHomeScreen({navigation}) {
                                 text='SUBJECTS'
                                 onPressGeneral={toSubjects}
                             />
-                            <ButtonInfoInput text='FEEDBACKS'/>
+                            {/* <ButtonInfoInput text='FEEDBACKS'/> */}
                         </View>   
                     </View>    
                 </ScrollView>                                           
@@ -174,7 +174,7 @@ export default function SchoolHomeScreen({navigation}) {
 const styles = StyleSheet.create({
     saveAreaContainer: {
         flex: 1,
-        marginTop: Platform.OS === 'android'? 15 : 0
+        marginTop: Platform.OS === 'android'? 10 : 0
     },
     generalContainer: {
         flex: 1,
