@@ -11,7 +11,7 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 
 import Colors from '../../constants/colors';
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
@@ -35,6 +35,13 @@ export default function StudentsInfoScreen({navigation, route}) {
 
     const [profileIsLoading, setProfileIsLoading] = useState(true);
     const isFocused = useIsFocused();
+
+    useLayoutEffect (() => {
+        navigation.setOptions({
+            title: `Information of ${student.name}`
+        });
+
+    },[]);
 
     useEffect(() => {
         async function initialData () {
@@ -162,14 +169,13 @@ export default function StudentsInfoScreen({navigation, route}) {
             }
             <View style={styles.allButtonsContainer}> 
                 <ButtonInfoInput 
-                    text='GRADES'
+                    text='REPORTS'
                     //onPressGeneral={searchTeachers}
                 />
-                <ButtonInfoInput
+                {/* <ButtonInfoInput
                     text='SHEDULE'
                     //onPressGeneral={searchTeachers}
-
-                />
+                /> */}
                 <ButtonInfoInput 
                     text='PARENTS'
                     onPressGeneral={displayParents}

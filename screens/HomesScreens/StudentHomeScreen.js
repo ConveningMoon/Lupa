@@ -210,10 +210,10 @@ export default function StudentHomeScreen({navigation}) {
                                 text='REPORTS'
                                 onPressGeneral={toReports}
                             />
-                            <ButtonInfoInput
+                            {/* <ButtonInfoInput
                                 text='SCHEDULE'
                                 //onPressGeneral={searchTeachers}
-                            />                  
+                            />                   */}
                         </View>
                     }
                     { user.parents.length !== 0 &&

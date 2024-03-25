@@ -11,7 +11,7 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 
 import Colors from '../../constants/colors';
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
@@ -39,6 +39,12 @@ export default function TeachersInfoScreen({navigation, route}) {
         setProfileIsLoading(false);
     }
 
+    useLayoutEffect (() => {
+        navigation.setOptions({
+            title: `Information of ${teacher.name}`
+        });
+
+    },[]);
 
     useEffect(() => {
         if(isFocused) {

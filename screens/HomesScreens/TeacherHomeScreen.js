@@ -199,14 +199,14 @@ export default function StudentHomeScreen({navigation}) {
                                 text='GROUPS'
                                 onPressGeneral={toGroups}
                             />
-                            <ButtonInfoInput
+                            {/* <ButtonInfoInput
                                 text='SCHEDULE'
                                 //onPressGeneral={searchTeachers}
                             />
                             <ButtonInfoInput
                                 text='FEEDBACK'
                                 //onPressGeneral={searchTeachers}
-                            />
+                            /> */}  
                             
                         </View>
                     }

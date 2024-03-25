@@ -98,6 +98,16 @@ export default function MainReportScreen({route}) {
                         maximumDate={new Date()} 
                     />
                 )}
+                <View style={styles.contentContainer}>
+                    <View style={styles.bestSubjectContainer}>
+                        <Text style={styles.bestSubjectGradeText}>10.0</Text>
+                        <Text style={styles.bestSubjectNameText}>Maths</Text>
+                    </View>
+                    <View style={styles.worstSubjectContainer}>
+                        <Text style={styles.worstSubjectGradeText}>5.0</Text>
+                        <Text style={styles.worstSubjectNameText}>Maths</Text>
+                    </View>
+                </View>
             </View>
         </ScrollView>
     )
@@ -132,5 +142,51 @@ const styles = StyleSheet.create({
     subjectText: {
         color: Colors.color_darkBlue,
         fontWeight: 'bold'
+    },
+    contentContainer: {
+        backgroundColor: Colors.bg_pink,
+        alignItems: 'center',
+        marginVertical: 30
+    },
+    bestSubjectContainer: {
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        marginBottom: 30
+        //backgroundColor: Colors.bg_blue,
+    },
+    bestSubjectGradeText: {
+        flex: 1,
+        //backgroundColor: Colors.bg_red,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 25,
+    },
+    bestSubjectNameText: {
+        flex: 1,
+        textAlign: 'center',
+        fontSize: 25,
+        fontWeight: 'bold',
+        color: Colors.color_lightGreen
+    },
+    worstSubjectContainer: {
+        flexDirection: 'row',
+        marginBottom: 30
+    },
+    worstSubjectGradeText: {
+        flex: 1,
+        //backgroundColor: Colors.bg_red,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 25,
+    },
+    worstSubjectNameText: {
+        flex: 1,
+        textAlign: 'center',
+        fontSize: 25,
+        fontWeight: 'bold',
+        color: Colors.color_lightGreen
+    },
+    emotionReportContainer: {
+
     }
 });

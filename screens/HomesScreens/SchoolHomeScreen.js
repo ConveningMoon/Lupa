@@ -149,7 +149,7 @@ export default function SchoolHomeScreen({navigation}) {
                                 text='GROUPS' 
                                 onPressGeneral={toGroups}
                             />
-                            <ButtonInfoInput text='POST'/>
+                            {/* <ButtonInfoInput text='POST'/> */}
                             <ButtonInfoInput 
                                 text='STUDENTS'
                                 onPressGeneral={toStudents}

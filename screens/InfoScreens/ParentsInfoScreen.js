@@ -6,7 +6,7 @@ import {
     ScrollView,
 } from 'react-native';
 
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
@@ -21,6 +21,13 @@ export default function ParentsInfoScreen({navigation, route}) {
     // const [refreshing, setRefreshing] = useState(false);
 
     const isFocused = useIsFocused();
+
+    useLayoutEffect (() => {
+        navigation.setOptions({
+            title: `Information of ${user.name}`
+        });
+
+    },[]);
 
     useEffect(() => {
         if (isFocused) {          

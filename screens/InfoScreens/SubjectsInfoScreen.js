@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
 
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useLayoutEffect } from 'react';
 
 import { AuthContext } from '../../store/auth-context';
 
@@ -27,6 +27,13 @@ export default function SubjectsInfoScreen({navigation, route}) {
     const [teacher, setTeacher] = useState('No teacher');
 
     const isFocused = useIsFocused();
+
+    useLayoutEffect (() => {
+        navigation.setOptions({
+            title: `Information of subject: ${subject}`
+        });
+
+    },[]);
 
     useEffect(() => {
         async function getTeacher() {

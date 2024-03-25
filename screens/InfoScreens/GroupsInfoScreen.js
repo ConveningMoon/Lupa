@@ -12,7 +12,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
 
-import { useContext } from 'react';
+import { useContext, useLayoutEffect } from 'react';
 
 import { AuthContext } from '../../store/auth-context';
 
@@ -24,6 +24,13 @@ export default function GroupsInfoScreen({navigation, route}) {
     const authCtx = useContext(AuthContext)
 
     const group = route.params.group;
+
+    useLayoutEffect (() => {
+        navigation.setOptions({
+            title: `${group.data.name}'s Information`
+        });
+
+    },[]);
 
     function toStudents(){ 
         navigation.navigate('Students',{
