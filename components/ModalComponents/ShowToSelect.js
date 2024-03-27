@@ -11,17 +11,15 @@ import TableOptions from '../DisplayOptionsToPressComponents/TableOptions';
 import MicroPressText from '../PressableTextComponents/MicroPressText';
 
 export default function ShowToSelect(props) {
-    //const 
-
     function renderElementItem(itemData) {
         function pressHandler() {
-            props.onSelect(itemData.item.data.name);
+            props.onSelect(itemData.item);
             props.onBack();
         }
 
         return (
             <TableOptions
-                text={itemData.item.data.name}
+                text={itemData.item}
                 onPressGeneral={pressHandler}
             /> 
         );

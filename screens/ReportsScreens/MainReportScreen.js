@@ -17,7 +17,6 @@ import { useEffect, useState } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
-import { findSubjects } from '../../util/subject-http';
 import { fetchGroupInfo } from '../../util/group-http';
 
 export default function MainReportScreen({route}) {
@@ -42,8 +41,7 @@ export default function MainReportScreen({route}) {
         async function getSubjects() {
             try{
                 const responseGroup = await fetchGroupInfo(student.data.group);
-                const responseSubjects = await findSubjects(responseGroup.data.subjects);
-                setOriginalSubjects(responseSubjects);
+                setOriginalSubjects(responseGroup.data.subjects);
             } catch{}
         }       
         
@@ -99,14 +97,34 @@ export default function MainReportScreen({route}) {
                     />
                 )}
                 <View style={styles.contentContainer}>
-                    <View style={styles.bestSubjectContainer}>
-                        <Text style={styles.bestSubjectGradeText}>10.0</Text>
-                        <Text style={styles.bestSubjectNameText}>Maths</Text>
+                    <Text style={styles.titleText}>Best subject</Text>
+                    <View style={styles.subjectContainer}>
+                        <Text style={styles.gradeText}>10.0</Text>
+                        <Text style={styles.subjectNameText}>Maths</Text>
                     </View>
-                    <View style={styles.worstSubjectContainer}>
-                        <Text style={styles.worstSubjectGradeText}>5.0</Text>
-                        <Text style={styles.worstSubjectNameText}>Maths</Text>
+                    <Text style={styles.titleText}>Worst subject</Text>
+                    <View style={styles.subjectContainer}>                        
+                        <Text style={styles.gradeText}>5.0</Text>
+                        <Text style={styles.subjectNameText}>Physics</Text>
                     </View>
+                    <Text style={styles.titleText}>Emotion report</Text>
+                    <Text style={styles.subjectTitleText}>{selectedSubject}</Text>
+                    <View style={styles.firstEmotionContainer}>
+                        <Text style={styles.emotionEmojiText}>&#x1F625;</Text>
+                        <Text style={styles.emotionNameText}>Sad</Text>
+                        <Text style={styles.emotionPercentageText}>47%</Text>
+                    </View>
+                    <View style={styles.secondEmotionContainer}>
+                        <Text style={styles.emotionEmojiText}>&#x1F620;</Text>
+                        <Text style={styles.emotionNameText}>Angry</Text>
+                        <Text style={styles.emotionPercentageText}>20%</Text>
+                    </View>
+                    <View style={styles.thirdEmotionContainer}>
+                        <Text style={styles.emotionEmojiText}>&#x1F634;</Text>
+                        <Text style={styles.emotionNameText}>Tired or bored</Text>
+                        <Text style={styles.emotionPercentageText}>5%</Text>
+                    </View>
+
                 </View>
             </View>
         </ScrollView>
@@ -144,49 +162,84 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     contentContainer: {
-        backgroundColor: Colors.bg_pink,
+        //backgroundColor: Colors.bg_pink,
         alignItems: 'center',
         marginVertical: 30
     },
-    bestSubjectContainer: {
+    subjectContainer: {
         flexDirection: 'row',
         alignSelf: 'stretch',
         marginBottom: 30
         //backgroundColor: Colors.bg_blue,
     },
-    bestSubjectGradeText: {
+    titleText: {
+        color: Colors.gray_placeholder,
+        fontWeight: 'bold',
+        fontSize: 20,
+        paddingBottom: 10
+    },
+    subjectTitleText: {
+        fontSize: 25,
+        color: Colors.color_darkGreen,
+        fontWeight: 'bold',
+        marginBottom: 10
+    },
+    gradeText: {
         flex: 1,
         //backgroundColor: Colors.bg_red,
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 25,
     },
-    bestSubjectNameText: {
+    subjectNameText: {
         flex: 1,
         textAlign: 'center',
         fontSize: 25,
         fontWeight: 'bold',
-        color: Colors.color_lightGreen
+        color: Colors.color_darkGreen
     },
-    worstSubjectContainer: {
+    firstEmotionContainer: {
         flexDirection: 'row',
-        marginBottom: 30
+        backgroundColor: '#a4bbbf',
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginHorizontal: 20,
+        padding: 10,
+        borderRadius: 20,
+        marginBottom: 10
     },
-    worstSubjectGradeText: {
-        flex: 1,
-        //backgroundColor: Colors.bg_red,
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 25,
+    secondEmotionContainer: {
+        flexDirection: 'row',
+        backgroundColor: '#bbcccf',
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginHorizontal: 20,
+        padding: 10,
+        borderRadius: 20,
+        marginBottom: 10
     },
-    worstSubjectNameText: {
-        flex: 1,
-        textAlign: 'center',
-        fontSize: 25,
-        fontWeight: 'bold',
-        color: Colors.color_lightGreen
+    thirdEmotionContainer: {
+        flexDirection: 'row',
+        backgroundColor: '#d2dddf',
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginHorizontal: 20,
+        padding: 10,
+        borderRadius: 20,
+        marginBottom: 10
     },
-    emotionReportContainer: {
-
+    emotionEmojiText: {
+        fontSize: 25
+    },
+    emotionNameText: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    emotionPercentageText: {
+        fontSize: 20,
+        fontWeight: 'bold'
     }
 });

@@ -17,13 +17,3 @@ export async function deleteSubject(idSubject) {
         `${BACKEND_URL}/subjects/${idSubject}.json`,
     );
 }
-
-export async function findSubjects(idSubjects) {
-    const response = await axios.get(BACKEND_URL + '/subjects.json');
-
-    const getSubjects = (idSubjects) => Object.entries(response.data)
-    .filter(([key, _]) => (idSubjects.includes(key)))
-    .map(([subjectId, subjectData]) => ({ id: subjectId, data: subjectData }));
-
-    return getSubjects(idSubjects);
-} 
