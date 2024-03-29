@@ -19,6 +19,7 @@ import { AuthContext } from '../../store/auth-context';
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import ButtonToClass from '../../components/ButtonComponents/ButtonToClass';
+import DailyGrades from '../../components/ModalComponents/DailyGrades';
 
 import Colors from '../../constants/colors';
 
@@ -26,7 +27,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import { deleteRequestNotification, fetchRequestToJoin } from '../../util/request-http';
 import { fetchUser } from '../../util/user-http';
-import { checkClass, createNewClass, deleteClass, startClassStatus } from '../../util/start_class-http';
+import { checkClass, createNewClass, deleteClass, startClassStatus } from '../../util/class-http';
 
 export default function StudentHomeScreen({navigation}) {
     const authCtx = useContext(AuthContext);
@@ -41,6 +42,8 @@ export default function StudentHomeScreen({navigation}) {
     const [classData, setClassData] = useState();
     const [classCreated, setClassCreated] = useState(false);
     const [classStarted, setClassStarted] = useState(false);
+
+    const [visibleGrades, setVisibleGrades] = useState(false);
 
     const [profileIsLoading, setProfileIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -82,16 +85,6 @@ export default function StudentHomeScreen({navigation}) {
             setTeacherSchoolInfo(response.data);
         }
 
-        async function checkClassStatus() {
-            const response = await checkClass(user.id);
-
-            if (response.existed) {
-                setClassData(response.info);
-                setClassCreated(true);      
-                response.info.data.started ? setClassStarted(true) : setClassStarted(false);
-            }                        
-        }
-
         if (isFocused) {        
             refreshProfile();    
             if (user.school !== '') {
@@ -104,6 +97,18 @@ export default function StudentHomeScreen({navigation}) {
             }
         };
     },[isFocused])
+
+    async function checkClassStatus() {
+        const response = await checkClass(user.id);
+
+        if (response.existed) {
+            setClassData(response.info);
+            setClassCreated(true);      
+            response.info.data.started ? setClassStarted(true) : setClassStarted(false);
+        } else {
+            setClassCreated(false);
+        }                       
+    }
 
     function schoolOptions() {
         navigation.navigate('Schools');
@@ -160,9 +165,10 @@ export default function StudentHomeScreen({navigation}) {
         const code = Math.random().toString(36).substring(2, 8);
 
         async function confirmNewClass() {
-            await createNewClass({code: code, teacherId: user.id, started: false});
+            await createNewClass({code: code, teacherId: user.id, subject: user.subject, started: false});
             setClassCreated(true); 
-            setProfileIsLoading(false)
+            setProfileIsLoading(false);
+            checkClassStatus();
         }
 
         Alert.alert('CREATE NEW CLASS?', `Are you sure you want to create a new class?`, [
@@ -204,9 +210,12 @@ export default function StudentHomeScreen({navigation}) {
 
         async function confirmFinishClass () {
             await deleteClass(classData.id);
+            checkClassStatus();
             setClassStarted(false);
             setClassCreated(false);
             setProfileIsLoading(false);
+
+            setVisibleGrades(true);
         }
 
         Alert.alert('FINISH THE CLASS?', `Are you sure you want to finish the class?`, [
@@ -248,15 +257,11 @@ export default function StudentHomeScreen({navigation}) {
                     </View>
                 </View>
             </View>
-            {/* <View style={styles.parentsContainer}>
-                <Text style={styles.parentsText}>Parents:   </Text>
-                <FlatList
-                    data={parents}
-                    horizontal={true}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderParentsItem}
-                />
-            </View> */}
+            <DailyGrades
+                visible={visibleGrades}
+                groupsIds={user.groups}
+                onUpload={() => setVisibleGrades(false)}
+            />
             {!joinedSchool &&
                 <View style={styles.joinSchoolContainer}>
                     <Pressable

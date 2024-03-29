@@ -12,6 +12,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import ButtonReport from '../../components/ButtonComponents/ButtonReport';
 import ShowToSelect from '../../components/ModalComponents/ShowToSelect';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 import { useEffect, useState } from 'react';
 
@@ -30,6 +31,13 @@ export default function MainReportScreen({route}) {
     const [originalSubjects, setOriginalSubjects] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState('No subject');
 
+    const [bestSubject, setBestSubject] = useState('Subject')
+    const [worstSubject, setWorstSubject] = useState('Subject')
+    const [firstEmotion, setFirstEmotion] = useState('First Emotion');
+    const [secondEmotion, setSecondEmotion] = useState('Second Emotion');
+    const [thirdEmotion, setThirdEmotion] = useState('Third Emotion');
+
+    const [infoIsLoading, setInfoIsLoading] = useState(true);
     const isFocused = useIsFocused();
 
     const monthNames = [
@@ -38,19 +46,27 @@ export default function MainReportScreen({route}) {
     ];
 
     useEffect(() => {
-        async function getSubjects() {
+        async function getInfo() {
             try{
                 const responseGroup = await fetchGroupInfo(student.data.group);
                 setOriginalSubjects(responseGroup.data.subjects);
-            } catch{}
+
+                
+            } catch (error){
+                console.log(error)
+            }
         }       
         
-        getSubjects();
+        getInfo();
     }, [isFocused]);
 
     function onSelectData(event, selectedDate){
         setShowCalendar(false);
         setMonth(monthNames[selectedDate.getMonth()]);
+    }
+
+    if (infoIsLoading) {
+        return <LoadingOverlay message="Loading information..." />;
     }
 
     return (
@@ -99,19 +115,19 @@ export default function MainReportScreen({route}) {
                 <View style={styles.contentContainer}>
                     <Text style={styles.titleText}>Best subject</Text>
                     <View style={styles.subjectContainer}>
-                        <Text style={styles.gradeText}>10.0</Text>
+                        <Text style={styles.gradeText}>0.0</Text>
                         <Text style={styles.subjectNameText}>Maths</Text>
                     </View>
                     <Text style={styles.titleText}>Worst subject</Text>
                     <View style={styles.subjectContainer}>                        
-                        <Text style={styles.gradeText}>5.0</Text>
+                        <Text style={styles.gradeText}>0.0</Text>
                         <Text style={styles.subjectNameText}>Physics</Text>
                     </View>
                     <Text style={styles.titleText}>Emotion report</Text>
                     <Text style={styles.subjectTitleText}>{selectedSubject}</Text>
                     <View style={styles.firstEmotionContainer}>
                         <Text style={styles.emotionEmojiText}>&#x1F625;</Text>
-                        <Text style={styles.emotionNameText}>Sad</Text>
+                        <Text style={styles.emotionNameText}>{firstEmotion}</Text>
                         <Text style={styles.emotionPercentageText}>47%</Text>
                     </View>
                     <View style={styles.secondEmotionContainer}>
