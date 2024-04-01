@@ -94,7 +94,7 @@ export default function DailyGrades(props) {
                 const value = listStudents[key].grade.toString().replaceAll(',', '.');
                 const parseValue = Number.parseFloat(value);
                 if(value.split('.').length - 1 <= 1 && !Number.isNaN(parseValue)) {
-                    if(parseValue <= 10.0 && parseValue >= 0) {
+                    if(parseValue <= 10.0 && parseValue >= 0) { //change if the grades system changes
                         listStudents[key].grade = parseValue;
                         check = true;
                     }  else {
@@ -119,7 +119,8 @@ export default function DailyGrades(props) {
             for (let key in  listStudents) {
                 finalGrades.push({
                     'studentId': listStudents[key].id,
-                    'grade': listStudents[key].grade
+                    'grade': listStudents[key].grade,
+                    'subject': props.subject
                 })
             }
 

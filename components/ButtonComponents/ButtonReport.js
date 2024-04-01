@@ -34,8 +34,9 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 2},
         shadowRadius: 5,
         shadowOpacity: 0.25,   
-        width: '100%',
-        marginBottom: 5  
+        //width: '100%',
+        flex: 1,
+        marginHorizontal: 5
     },
     generalButtonIOS: {
         opacity: 0.5,
@@ -43,10 +44,11 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.color_darkGreen
     },
     generalText: {
-        color: '#ffffff',
-        fontSize: 12,
+        color: Colors.color_darkBlue,
+        fontSize: 15,
         textAlign: 'center',
         paddingVertical: 12,
+        fontWeight: 'bold'
         //backgroundColor: Colors.bg_red
     }
 });

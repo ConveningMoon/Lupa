@@ -260,6 +260,7 @@ export default function StudentHomeScreen({navigation}) {
             <DailyGrades
                 visible={visibleGrades}
                 groupsIds={user.groups}
+                subject={user.subject}
                 onUpload={() => setVisibleGrades(false)}
             />
             {!joinedSchool &&

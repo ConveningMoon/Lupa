@@ -14,30 +14,45 @@ import ButtonReport from '../../components/ButtonComponents/ButtonReport';
 import ShowToSelect from '../../components/ModalComponents/ShowToSelect';
 import LoadingOverlay from '../../components/LoadingOverlay';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
 import { useIsFocused } from '@react-navigation/native';
 
 import { fetchGroupInfo } from '../../util/group-http';
+import { fetchReport } from '../../util/report-http';
 
 export default function MainReportScreen({route}) {
     const student = route.params.student
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [showSubjects, setShowSubjects] = useState(false);
-    const [showReport, setShowReport] = useState(false);
+    const [showContent, setShowContent] = useState(false);
 
-    const [month, setMonth] = useState('No month');
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const [originalSubjects, setOriginalSubjects] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState('No subject');
+    const [selectedSubjectGrade, setSelectedSubjectGrade] = useState(0);
 
-    const [bestSubject, setBestSubject] = useState('Subject')
-    const [worstSubject, setWorstSubject] = useState('Subject')
-    const [firstEmotion, setFirstEmotion] = useState('First Emotion');
-    const [secondEmotion, setSecondEmotion] = useState('Second Emotion');
-    const [thirdEmotion, setThirdEmotion] = useState('Third Emotion');
+    const [switchedToDay, setSwitchedToDay] = useState(true);
+
+    const [bestSubject, setBestSubject] = useState('No subject');
+    const [bestGrade, setBestGrade] = useState(0);
+
+    const [worstSubject, setWorstSubject] = useState('No subject');
+    const [worstGrade, setWorstGrade] = useState(0);
+
+    const [firstEmotion, setFirstEmotion] = useState('First emotion');
+    const [firstPercentage, setFirstPercentage] = useState(0);
+
+    const [secondEmotion, setSecondEmotion] = useState('Second emotion');
+    const [secondPercentage, setSecondPercentage] = useState(0);
+
+    const [thirdEmotion, setThirdEmotion] = useState('Third emotion');
+    const [thirdPercentage, setThirdPercentage] = useState(0);
+
 
     const [infoIsLoading, setInfoIsLoading] = useState(true);
+    const [updateInfo, setUpdateInfo] = useState(false);
     const isFocused = useIsFocused();
 
     const monthNames = [
@@ -46,12 +61,13 @@ export default function MainReportScreen({route}) {
     ];
 
     useEffect(() => {
+        setInfoIsLoading(true);
         async function getInfo() {
             try{
                 const responseGroup = await fetchGroupInfo(student.data.group);
-                setOriginalSubjects(responseGroup.data.subjects);
-
+                setOriginalSubjects(responseGroup.data.subjects);      
                 
+                setInfoIsLoading(false); 
             } catch (error){
                 console.log(error)
             }
@@ -60,9 +76,48 @@ export default function MainReportScreen({route}) {
         getInfo();
     }, [isFocused]);
 
-    function onSelectData(event, selectedDate){
-        setShowCalendar(false);
-        setMonth(monthNames[selectedDate.getMonth()]);
+    function onSelectData(event, valueDate){
+        setShowCalendar(false);        
+        setSelectedDate(valueDate);
+    }
+
+    async function showHandler(modeDay) {
+        setUpdateInfo(true);
+        setSwitchedToDay(modeDay);
+        try {
+            const response = await fetchReport(selectedDate, student.data.id, selectedSubject, modeDay);
+            
+            setBestSubject(response.bestGrade.subject);
+            setBestGrade(parseFloat(response.bestGrade.grade).toFixed(2));
+
+            setWorstSubject(response.worstGrade.subject);
+            setWorstGrade(parseFloat(response.worstGrade.grade).toFixed(2));
+
+            setSelectedSubject(response.choosenGrade.subject);
+            setSelectedSubjectGrade(parseFloat(response.choosenGrade.grade).toFixed(2));
+
+            setFirstEmotion(Object.keys(response.choosenReport[0])[0]);
+            setFirstPercentage(parseFloat(Object.values(response.choosenReport[0])[0]).toFixed(3));
+
+            setSecondEmotion(Object.keys(response.choosenReport[1])[0]);
+            setSecondPercentage(parseFloat(Object.values(response.choosenReport[1])[0]).toFixed(3));
+
+            setThirdEmotion(Object.keys(response.choosenReport[2])[0]);
+            setThirdPercentage(parseFloat(Object.values(response.choosenReport[2])[0]).toFixed(3));
+
+            setShowContent(true);
+            setUpdateInfo(false);
+        } catch {}
+    }
+
+    function onShowHandler () {
+        showHandler(true);
+    }
+    function switchToDayHandler() {
+        showHandler(true);
+    }
+    function switchToMonthHandler() {
+        showHandler(false);
     }
 
     if (infoIsLoading) {
@@ -70,30 +125,24 @@ export default function MainReportScreen({route}) {
     }
 
     return (
-        <ScrollView>
+        <ScrollView style={showContent ? {backgroundColor: 'white'} : {backgroundColor: Colors.color_darkBlue}}>
             <View style={styles.globalContainer}>
                 <View style={styles.buttonContainer}>
                     <View style={styles.chooseButtonsContainer}>
                         <ButtonReport
-                            text='CHOOSE MONTH'
+                            text='CHANGE DATE'
                             onPressGeneral={() => setShowCalendar(true)}
                         />
                         <ButtonReport
-                            text='CHOOSE SUBJECT'
+                            text='CHANGE SUBJECT'
                             onPressGeneral={() => setShowSubjects(true)}
                         />
                     </View>
-                    <View style={styles.showContainer}>
-                        <View style={styles.showButton}>
-                            <ButtonReport
-                                text='SHOW REPORT'
-                                onPressGeneral={() => setShowReport(true)}
-                            />
-                        </View>
-                        <View style={styles.selectionsContainer}>
-                            <Text style={styles.monthText}>Month: {month}</Text>
-                            <Text style={styles.subjectText}>Subject: {selectedSubject}</Text>
-                        </View>
+                    <View style={styles.showButton}>
+                        <ButtonReport
+                            text='SHOW REPORT'
+                            onPressGeneral={onShowHandler}
+                        />
                     </View>
                     <ShowToSelect
                         visible={showSubjects}
@@ -101,9 +150,8 @@ export default function MainReportScreen({route}) {
                         onSelect={setSelectedSubject}
                         onBack={() => setShowSubjects(false)}
                     />
-                </View>
-            
-                {showCalendar && (
+                </View>            
+                {showCalendar && 
                     <DateTimePicker
                         testID="dateTimePicker"
                         value={new Date()}
@@ -111,37 +159,72 @@ export default function MainReportScreen({route}) {
                         onChange={onSelectData}
                         maximumDate={new Date()} 
                     />
-                )}
-                <View style={styles.contentContainer}>
-                    <Text style={styles.titleText}>Best subject</Text>
-                    <View style={styles.subjectContainer}>
-                        <Text style={styles.gradeText}>0.0</Text>
-                        <Text style={styles.subjectNameText}>Maths</Text>
+                }
+                {showContent && 
+                    <View style={styles.datesButtonsContainer}>
+                        <Pressable
+                            onPress={switchToDayHandler}
+                            style={{flex: 1}}
+                        >
+                            <Text style={switchedToDay ? styles.dayOnButtonText : styles.dayOffButtonText}>
+                                Day: {selectedDate.getUTCDate().toString()}.{(selectedDate.getUTCMonth() + 1).toString()}
+                            </Text>
+                        </Pressable>
+                        <Pressable
+                            onPress={switchToMonthHandler}
+                            style={{flex: 1}}
+                        >
+                            <Text style={!switchedToDay ? styles.monthOnButtonText : styles.monthOffButtonText}>
+                                Month: {monthNames[selectedDate.getUTCMonth()].toString()}
+                            </Text>
+                        </Pressable>
                     </View>
-                    <Text style={styles.titleText}>Worst subject</Text>
-                    <View style={styles.subjectContainer}>                        
-                        <Text style={styles.gradeText}>0.0</Text>
-                        <Text style={styles.subjectNameText}>Physics</Text>
+                }
+                {showContent &&
+                    <View>
+                        {updateInfo &&
+                            <View style={styles.loadingContainer}>
+                                <Text style={styles.loadingText}>LOADING REPORT...</Text>
+                            </View>
+                        }
+                        {!updateInfo && 
+                            <View style={styles.contentContainer}>
+                                <Text style={styles.titleText}>Best subject</Text>
+                                <View style={styles.subjectContainer}>
+                                    <Text style={styles.gradeText}>{bestGrade}</Text>
+                                    <Text style={styles.subjectNameText}>{bestSubject}</Text>
+                                </View>
+                                <Text style={styles.titleText}>Worst subject</Text>
+                                <View style={styles.subjectContainer}>                        
+                                    <Text style={styles.gradeText}>{worstGrade}</Text>
+                                    <Text style={styles.subjectNameText}>{worstSubject}</Text>
+                                </View>
+                                <Text style={styles.titleText}>Emotions and grade of:</Text>
+                                <View style={styles.subjectContainer}>                        
+                                    <Text style={styles.gradeText}>{selectedSubjectGrade}</Text>
+                                    <Text style={styles.subjectNameText}>{selectedSubject}</Text>
+                                </View>
+                                <View style={styles.firstEmotionContainer}>
+                                    <Text style={styles.emotionEmojiText}>&#x1F620;</Text>
+                                    {/* <Text style={styles.emotionNameText}>{firstEmotion}</Text>  */}
+                                    <Text style={styles.emotionNameText}>ANGRY</Text> 
+                                    <Text style={styles.emotionPercentageText}>{firstPercentage}%</Text>
+                                </View>
+                                <View style={styles.secondEmotionContainer}>
+                                    <Text style={styles.emotionEmojiText}>&#x1F614;</Text>
+                                    <Text style={styles.emotionNameText}>{secondEmotion}</Text>
+                                    <Text style={styles.emotionPercentageText}>{secondPercentage}%</Text>
+                                </View>
+                                <View style={styles.thirdEmotionContainer}>
+                                    <Text style={styles.emotionEmojiText}>&#x1F604;</Text>
+                                    {/* <Text style={styles.emotionNameText}>{thirdEmotion}</Text> */}
+                                    <Text style={styles.emotionNameText}>HAPPY</Text>
+                                    <Text style={styles.emotionPercentageText}>{thirdPercentage}%</Text>
+                                </View>
+                            </View>
+                        }   
                     </View>
-                    <Text style={styles.titleText}>Emotion report</Text>
-                    <Text style={styles.subjectTitleText}>{selectedSubject}</Text>
-                    <View style={styles.firstEmotionContainer}>
-                        <Text style={styles.emotionEmojiText}>&#x1F625;</Text>
-                        <Text style={styles.emotionNameText}>{firstEmotion}</Text>
-                        <Text style={styles.emotionPercentageText}>47%</Text>
-                    </View>
-                    <View style={styles.secondEmotionContainer}>
-                        <Text style={styles.emotionEmojiText}>&#x1F620;</Text>
-                        <Text style={styles.emotionNameText}>Angry</Text>
-                        <Text style={styles.emotionPercentageText}>20%</Text>
-                    </View>
-                    <View style={styles.thirdEmotionContainer}>
-                        <Text style={styles.emotionEmojiText}>&#x1F634;</Text>
-                        <Text style={styles.emotionNameText}>Tired or bored</Text>
-                        <Text style={styles.emotionPercentageText}>5%</Text>
-                    </View>
-
-                </View>
+                }
             </View>
         </ScrollView>
     )
@@ -152,19 +235,18 @@ const styles = StyleSheet.create({
         //backgroundColor: Colors.bg_pink
     },
     buttonContainer: {
-        flexDirection: 'row',
-        paddingTop: 10,
-        paddingLeft: 10,
+        backgroundColor: Colors.color_darkBlue,
+        paddingVertical: 10,
+        paddingHorizontal: 10
     },
     chooseButtonsContainer: {
-        flex: 1
+        //backgroundColor: Colors.bg_blue,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
         //paddingRight: '40%'
     },
-    showContainer: {
-        flex: 1,
-    },
     showButton: {
-        paddingHorizontal: 25
+        marginVertical: 10
     },
     selectionsContainer: {
         alignItems: 'center'
@@ -178,9 +260,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     contentContainer: {
-        //backgroundColor: Colors.bg_pink,
         alignItems: 'center',
-        marginVertical: 30
+        marginTop: 10
     },
     subjectContainer: {
         flexDirection: 'row',
@@ -193,12 +274,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 20,
         paddingBottom: 10
-    },
-    subjectTitleText: {
-        fontSize: 25,
-        color: Colors.color_darkGreen,
-        fontWeight: 'bold',
-        marginBottom: 10
     },
     gradeText: {
         flex: 1,
@@ -256,6 +331,55 @@ const styles = StyleSheet.create({
     },
     emotionPercentageText: {
         fontSize: 20,
+        fontWeight: 'bold'
+    },
+    datesButtonsContainer: {
+        flexDirection: 'row',
+        backgroundColor: Colors.color_darkBlue
+    },
+    dayOnButtonText: {
+        color: Colors.color_darkBlue,
+        backgroundColor: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderTopRightRadius: 20,
+    }, 
+    dayOffButtonText: {
+        color: 'white',
+        backgroundColor: Colors.color_darkBlue,
+        fontSize: 20,
+        fontWeight: 'bold',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderTopRightRadius: 20
+    },
+    monthOnButtonText: {
+        color: Colors.color_darkBlue,
+        backgroundColor: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20
+    }, 
+    monthOffButtonText: {
+        color: 'white',
+        backgroundColor: Colors.color_darkBlue,
+        fontSize: 20,
+        fontWeight: 'bold',
+        paddingVertical: 10,
+        paddingHorizontal: 20
+    },
+    loadingContainer: {
+        marginTop: 200,
+        alignItems: 'center'
+    },
+    loadingText: {
+        color: Colors.color_lightGreen,
+        fontSize: 25,
         fontWeight: 'bold'
     }
 });

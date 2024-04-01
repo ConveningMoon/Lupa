@@ -264,6 +264,11 @@ function UserNavigationStack() {
       <Stack.Screen 
         name='MainReport' 
         component={MainReportScreen}
+        options={{               
+          title: 'Main Report',
+          headerStyle: {backgroundColor: Colors.color_darkBlue},
+          headerTintColor: Colors.color_lightGreen
+        }}
       />
 
       {/* Settings */}
