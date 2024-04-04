@@ -19,6 +19,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { findTeacherFromSubject } from '../../util/teacher-http';
 import { removeSubjectToSchool } from '../../util/school-http';
 
+import ButtonToClass from '../../components/ButtonComponents/ButtonToClass';
+
 export default function SubjectsInfoScreen({navigation, route}) {  
     const authCtx = useContext(AuthContext)
 
@@ -65,6 +67,11 @@ export default function SubjectsInfoScreen({navigation, route}) {
         ]);
     }
 
+    function reportHandler() {
+        navigation.navigate('SubjectReport', {
+            subject: subject
+        });
+    }
 
     return (
         <View style={styles.globalContainer}>
@@ -84,6 +91,12 @@ export default function SubjectsInfoScreen({navigation, route}) {
             <Pressable style={styles.teacherPressableContainer}>
                 <Text>Teacher: {teacher}</Text>
             </Pressable>
+            <ButtonToClass
+                text='REPORT'
+                onPressGeneral={reportHandler}
+                colors={[Colors.color_lightGreen, Colors.color_darkBlue]}
+                start={{x: 0, y: 0}}
+            />
         </View>
     )
 }
@@ -114,7 +127,9 @@ const styles = StyleSheet.create({
         color: Colors.error_red
     },
     teacherPressableContainer: {
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        marginTop: 10,
+        flex: 1
     },
     teacherText: {
 

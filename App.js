@@ -49,7 +49,9 @@ import TeacherHomeScreen from './screens/HomesScreens/TeacherHomeScreen';
 import SubjectsOptionsScreen from './screens/DisplayOptionsScreens/SubjectsOptionsScreen';
 import SubjectsInfoScreen from './screens/InfoScreens/SubjectsInfoScreen';
 
-import MainReportScreen from './screens/ReportsScreens/MainReportScreen';
+import StudentReportScreen from './screens/ReportsScreens/StudentReportScreen';
+import GroupReportScreen from './screens/ReportsScreens/GroupReportScreen';
+import SubjectReportScreen from './screens/ReportsScreens/SubjectReportScreen';
 
 import SettingScreen from './screens/SettingsScreens/SettingScreen';
 import ChangeEmailScreen from './screens/SettingsScreens/ChangeEmailScreen';
@@ -262,10 +264,28 @@ function UserNavigationStack() {
 
       {/* Reports */}
       <Stack.Screen 
-        name='MainReport' 
-        component={MainReportScreen}
+        name='StudentReport' 
+        component={StudentReportScreen}
         options={{               
-          title: 'Main Report',
+          title: 'Student Report',
+          headerStyle: {backgroundColor: Colors.color_darkBlue},
+          headerTintColor: Colors.color_lightGreen
+        }}
+      />
+      <Stack.Screen 
+        name='GroupReport' 
+        component={GroupReportScreen}
+        options={{               
+          title: 'Group Report',
+          headerStyle: {backgroundColor: Colors.color_darkBlue},
+          headerTintColor: Colors.color_lightGreen
+        }}
+      />
+      <Stack.Screen 
+        name='SubjectReport' 
+        component={SubjectReportScreen}
+        options={{               
+          title: 'Subject Report',
           headerStyle: {backgroundColor: Colors.color_darkBlue},
           headerTintColor: Colors.color_lightGreen
         }}

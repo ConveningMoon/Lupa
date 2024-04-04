@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 
 import ButtonInfoInput from '../../components/ButtonComponents/ButtonInfoInput';
+import ButtonToClass from '../../components/ButtonComponents/ButtonToClass';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -78,6 +79,12 @@ export default function GroupsInfoScreen({navigation, route}) {
         ]);
     }
 
+    function reportHandler() {
+        navigation.navigate('GroupReport', {
+            group: group
+        });
+    }
+
     return (
         <View style={styles.globalContainer}>
 
@@ -109,6 +116,12 @@ export default function GroupsInfoScreen({navigation, route}) {
                     //onPressGeneral={toTeachers}
                 />
             </View>
+            <ButtonToClass
+                text='REPORT'
+                onPressGeneral={reportHandler}
+                colors={[Colors.color_lightGreen, Colors.color_darkBlue]}
+                start={{x: 0, y: 0}}
+            />
         </View>
     )
 }
@@ -126,6 +139,7 @@ const styles = StyleSheet.create({
     },
     allButtonsContainer: {
         paddingTop: 30,
+        flex: 1
     },
     deleteGroupPressableContainer: {
         flexDirection: 'row',

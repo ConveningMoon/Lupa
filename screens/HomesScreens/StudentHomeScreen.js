@@ -117,7 +117,7 @@ export default function StudentHomeScreen({navigation}) {
     }
 
     function toReports() {  
-        navigation.navigate('MainReport', {
+        navigation.navigate('StudentReport', {
             student: authCtx.infoUser
         });
 

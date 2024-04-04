@@ -3,9 +3,6 @@ import {
     Text,
     StyleSheet,
     SafeAreaView,
-    ScrollView,
-    Platform,
-    RefreshControl,
     Alert
 } from 'react-native';
 
@@ -14,8 +11,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useContext, useState, useEffect} from 'react';
 
 import { AuthContext } from '../../store/auth-context';
-
-import { Entypo } from '@expo/vector-icons';
 
 import Colors from '../../constants/colors';
 
@@ -31,7 +26,6 @@ export default function SchoolHomeScreen({navigation}) {
     const user = authCtx.infoUser.data;
 
     const [profileIsLoading, setProfileIsLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
     const isFocused = useIsFocused();
 
     // useLayoutEffect (() => {
@@ -80,7 +74,6 @@ export default function SchoolHomeScreen({navigation}) {
     }
 
     async function refreshProfile() {
-        setRefreshing(true);
         try {
             const response = await fetchUser(user.id); 
             
@@ -89,7 +82,6 @@ export default function SchoolHomeScreen({navigation}) {
                     if (JSON.stringify(response.data[key]) !== JSON.stringify(user[key])) {
                         Alert.alert('Something change!', 'Please login again to update your profile.');
                         authCtx.logout();
-                        setRefreshing(false);
                         setProfileIsLoading(false);
                         return;
                     }
@@ -97,18 +89,14 @@ export default function SchoolHomeScreen({navigation}) {
                     if (response.data[key] !== user[key]) {
                         Alert.alert('Something change!', 'Please login again to update your profile.');
                         authCtx.logout();
-                        setRefreshing(false);
                         setProfileIsLoading(false);
                         return;
                     }
                 }
             }
-
-            setRefreshing(false);
             setProfileIsLoading(false);
 
         } catch (error){
-            setRefreshing(false);
             console.log(error);
         }                  
     }
@@ -120,52 +108,40 @@ export default function SchoolHomeScreen({navigation}) {
     return (
         <>
             <StatusBar style='dark'/>
-            <SafeAreaView style={styles.saveAreaContainer}>       
-                <ScrollView
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={refreshProfile} />
-                    }                   
-                >             
-                    <View style={styles.generalContainer}>
-                        <View style={styles.topContainer}>
-                            <View style={styles.topTextContainer}>
-                                <Text style={styles.nameText}>{user.name}</Text>
-                                <Text style={styles.usernameText}>{user.username}</Text>
-                            </View>
-                            {/* <View style={styles.topRatingContainer}>
-                                <Text style={styles.ratingText}>9.8</Text>
-                                <Entypo name="star" size={24} color={Colors.color_lightGreen} />
-                            </View> */}
-                        </View> 
-                        <View style={styles.contactContainer}>
-                            <Text style={styles.contactText}>Contact: {user.emailContact}</Text>
-                            <Text style={styles.contactText}>Adress: {user.adress}</Text>
+            <SafeAreaView style={styles.saveAreaContainer}>                  
+                <View style={styles.generalContainer}>
+                    <View style={styles.topContainer}>
+                        <View style={styles.topTextContainer}>
+                            <Text style={styles.nameText}>{user.name}</Text>
+                            <Text style={styles.usernameText}>{user.username}</Text>
                         </View>
-                        <View style={styles.descriptionContainer}>
-                            <Text style={styles.descriptionText}>{user.description}</Text>
-                        </View>
-                        <View style={styles.optionsContainer}>
-                            <ButtonInfoInput 
-                                text='GROUPS' 
-                                onPressGeneral={toGroups}
-                            />
-                            {/* <ButtonInfoInput text='POST'/> */}
-                            <ButtonInfoInput 
-                                text='STUDENTS'
-                                onPressGeneral={toStudents}
-                            />
-                            <ButtonInfoInput 
-                                text='TEACHERS'
-                                onPressGeneral={toTeachers}
-                            />
-                            <ButtonInfoInput 
-                                text='SUBJECTS'
-                                onPressGeneral={toSubjects}
-                            />
-                            {/* <ButtonInfoInput text='FEEDBACKS'/> */}
-                        </View>   
-                    </View>    
-                </ScrollView>                                           
+                    </View> 
+                    <View style={styles.contactContainer}>
+                        <Text style={styles.contactText}>Contact: {user.emailContact}</Text>
+                        <Text style={styles.contactText}>Adress: {user.adress}</Text>
+                    </View>
+                    <View style={styles.descriptionContainer}>
+                        <Text style={styles.descriptionText}>{user.description}</Text>
+                    </View>
+                    <View style={styles.optionsContainer}>
+                        <ButtonInfoInput 
+                            text='GROUPS' 
+                            onPressGeneral={toGroups}
+                        />
+                        <ButtonInfoInput 
+                            text='SUBJECTS'
+                            onPressGeneral={toSubjects}
+                        />    
+                        <ButtonInfoInput 
+                            text='STUDENTS'
+                            onPressGeneral={toStudents}
+                        />
+                        <ButtonInfoInput 
+                            text='TEACHERS'
+                            onPressGeneral={toTeachers}
+                        />                    
+                    </View>   
+                </View>                                             
             </SafeAreaView>
         </>
     )
@@ -173,11 +149,11 @@ export default function SchoolHomeScreen({navigation}) {
 
 const styles = StyleSheet.create({
     saveAreaContainer: {
-        flex: 1,
-        marginTop: Platform.OS === 'android'? 10 : 0
+        flex: 1
     },
     generalContainer: {
         flex: 1,
+        padding: 10
     },
     nameText: {
         fontSize: 25,
@@ -189,8 +165,7 @@ const styles = StyleSheet.create({
         color: Colors.color_darkGreen
     },
     topContainer: {
-        flexDirection: 'row',
-        padding: 10,
+        flexDirection: 'row'
     },
     topTextContainer: {
         flex: 1
@@ -206,8 +181,7 @@ const styles = StyleSheet.create({
 
     },
     descriptionContainer: {
-        paddingTop: 20,
-        padding: 10
+        paddingVertical: 20,
     },
     descriptionText: {
         fontSize: 16
@@ -216,11 +190,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     contactText: {
-        paddingHorizontal: 10,
+        paddingRight: 10,
         fontSize: 12
     },
     optionsContainer: {
-        padding: 10,
+        flex: 1,
+        paddingTop: 10,
         alignItems: 'center'
     }
 });
