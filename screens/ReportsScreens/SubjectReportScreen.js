@@ -74,11 +74,13 @@ export default function SubjectReportScreen({route}) {
     }
 
     function checkCorrelation(value) {
-        if (value >= -1 && value <= -0.2) {
+        let r = value;
+        r < -1 ? r = -1 : r > 1 ? r = 1 : r = value;
+        if (r >= -1 && r <= -0.2) {
             return 'INVERSELY';
-        } else if (value > -0.2 && value <= 0.2) {
+        } else if (r > -0.2 && r <= 0.2) {
             return 'NO CORRELATION';
-        } else if (value > 0.2 && value <= 1) {
+        } else if (r > 0.2 && r <= 1) {
             return 'DIRECTLY';
         }
     }

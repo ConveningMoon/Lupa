@@ -125,12 +125,10 @@ export async function fetchStudentReport(valueDate, valueStudentId, valueSubject
         subjectEmotions.push(currentEmotion)
     }
     subjectEmotions.sort((a, b) => {
-        // Extract values of the first entry of each dictionary
         let aValue = Object.values(a)[0];
         let bValue = Object.values(b)[0];
         
-        // Compare the values
-        return aValue + bValue;
+        return bValue - aValue; // Sorting in descending order
     });
 
     finalReport.choosenReport = subjectEmotions;

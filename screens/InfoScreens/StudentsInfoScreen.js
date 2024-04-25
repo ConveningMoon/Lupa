@@ -124,6 +124,12 @@ export default function StudentsInfoScreen({navigation, route}) {
         return <LoadingOverlay message="Loading information..." />;
     }
 
+    function toReports() {  
+        navigation.navigate('StudentReport', {
+            student: student
+        });
+    }
+
     return (
         <View style={styles.globalContainer}>
             <View style={styles.topInfoContainer}>
@@ -170,12 +176,8 @@ export default function StudentsInfoScreen({navigation, route}) {
             <View style={styles.allButtonsContainer}> 
                 <ButtonInfoInput 
                     text='REPORTS'
-                    //onPressGeneral={searchTeachers}
+                    onPressGeneral={toReports}
                 />
-                {/* <ButtonInfoInput
-                    text='SHEDULE'
-                    //onPressGeneral={searchTeachers}
-                /> */}
                 <ButtonInfoInput 
                     text='PARENTS'
                     onPressGeneral={displayParents}

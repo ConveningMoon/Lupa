@@ -3,7 +3,8 @@ import {
     Text,
     StyleSheet,
     Pressable,
-    ScrollView
+    ScrollView,
+    Alert
 } from 'react-native'
 
 import Colors from '../../constants/colors';
@@ -46,12 +47,15 @@ export default function StudentReportScreen({route}) {
     const [worstSubject, setWorstSubject] = useState('No subject');
     const [worstGrade, setWorstGrade] = useState(0);
 
+    const [firstEmoji, setFirstEmoji] = useState('🤑');
     const [firstEmotion, setFirstEmotion] = useState('First emotion');
     const [firstPercentage, setFirstPercentage] = useState(0);
 
+    const [secondEmoji, setSecondEmoji] = useState('🤑');
     const [secondEmotion, setSecondEmotion] = useState('Second emotion');
     const [secondPercentage, setSecondPercentage] = useState(0);
 
+    const [thirdEmoji, setThirdEmoji] = useState('🤑');
     const [thirdEmotion, setThirdEmotion] = useState('Third emotion');
     const [thirdPercentage, setThirdPercentage] = useState(0);
 
@@ -70,11 +74,15 @@ export default function StudentReportScreen({route}) {
         "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
     };
 
+    const emojisEmotions = {
+        "HAPPY": '😄', "SMILING": '🙂', "NEUTRAL": '😐', "SURPRISED": '😮', "ANGRY": '😠', "SAD": '😢'
+    };
+
     useEffect(() => {
         setInfoIsLoading(true);
         async function getInfo() {
             try{
-                const responseGroup = await fetchGroupInfo(student.data.group);
+                const responseGroup = await fetchGroupInfo(student.group);
                 setOriginalSubjects(responseGroup.data.subjects);      
                 
                 setInfoIsLoading(false); 
@@ -101,11 +109,13 @@ export default function StudentReportScreen({route}) {
     }
 
     function checkCorrelation(value) {
-        if (value >= -1 && value <= -0.2) {
+        let r = value;
+        r < -1 ? r = -1 : r > 1 ? r = 1 : r = value;
+        if (r >= -1 && r <= -0.2) {
             return 'INVERSELY';
-        } else if (value > -0.2 && value <= 0.2) {
+        } else if (r > -0.2 && r <= 0.2) {
             return 'NO CORRELATION';
-        } else if (value > 0.2 && value <= 1) {
+        } else if (r > 0.2 && r <= 1) {
             return 'DIRECTLY';
         }
     }
@@ -114,7 +124,7 @@ export default function StudentReportScreen({route}) {
         setUpdateInfo(true);
         setSwitchedToDay(modeDay);
         try {
-            const responseStudent = await fetchStudentReport(selectedDate, student.data.id, selectedSubject, modeDay);
+            const responseStudent = await fetchStudentReport(selectedDate, student.id, selectedSubject, modeDay);
 
             if (isNaN(responseStudent.choosenGrade['grade'])){
                 setCheckNoData(true);
@@ -133,15 +143,18 @@ export default function StudentReportScreen({route}) {
             setSelectedSubjectGrade(parseFloat(responseStudent.choosenGrade.grade).toFixed(2));
 
             setFirstEmotion(Object.keys(responseStudent.choosenReport[0])[0]);
+            //setFirstEmoji(emojisEmotions[Object.keys(responseStudent.choosenReport[0])[0]]);
             setFirstPercentage(parseFloat(Object.values(responseStudent.choosenReport[0])[0]).toFixed(3));
 
             setSecondEmotion(Object.keys(responseStudent.choosenReport[1])[0]);
+            //setSecondEmoji(emojisEmotions(Object.keys(responseStudent.choosenReport[1])[0]));
             setSecondPercentage(parseFloat(Object.values(responseStudent.choosenReport[1])[0]).toFixed(3));
 
             setThirdEmotion(Object.keys(responseStudent.choosenReport[2])[0]);
+            //setThirdEmoji(emojisEmotions[Object.keys(responseStudent.choosenReport[2])[0]]);
             setThirdPercentage(parseFloat(Object.values(responseStudent.choosenReport[2])[0]).toFixed(3));
 
-            const responseGeneral = await fetchGeneralReport(selectedDate, '', selectedSubject, false, false, student.data.id, true);
+            const responseGeneral = await fetchGeneralReport(selectedDate, '', selectedSubject, false, false, student.id, true);
 
             setAverageEmotion(responseGeneral.choosenReportAverage.toFixed(2));
 
@@ -278,20 +291,18 @@ export default function StudentReportScreen({route}) {
                                             <Text style={styles.subjectNameText}>{selectedSubject}</Text>
                                         </View>
                                         <View style={styles.firstEmotionContainer}>
-                                            <Text style={styles.emotionEmojiText}>&#x1F620;</Text>
-                                            {/* <Text style={styles.emotionNameText}>{firstEmotion}</Text>  */}
-                                            <Text style={styles.emotionNameText}>ANGRY</Text> 
+                                            <Text style={styles.emotionEmojiText}>{firstEmoji}</Text>
+                                            <Text style={styles.emotionNameText}>{firstEmotion}</Text> 
                                             <Text style={styles.emotionPercentageText}>{firstPercentage}%</Text>
                                         </View>
                                         <View style={styles.secondEmotionContainer}>
-                                            <Text style={styles.emotionEmojiText}>&#x1F614;</Text>
+                                            <Text style={styles.emotionEmojiText}>{secondEmoji}</Text>
                                             <Text style={styles.emotionNameText}>{secondEmotion}</Text>
                                             <Text style={styles.emotionPercentageText}>{secondPercentage}%</Text>
                                         </View>
                                         <View style={styles.thirdEmotionContainer}>
-                                            <Text style={styles.emotionEmojiText}>&#x1F604;</Text>
-                                            {/* <Text style={styles.emotionNameText}>{thirdEmotion}</Text> */}
-                                            <Text style={styles.emotionNameText}>HAPPY</Text>
+                                            <Text style={styles.emotionEmojiText}>{thirdEmoji}</Text>
+                                            <Text style={styles.emotionNameText}>{thirdEmotion}</Text>
                                             <Text style={styles.emotionPercentageText}>{thirdPercentage}%</Text>
                                         </View>
                                         {!switchedToDay &&

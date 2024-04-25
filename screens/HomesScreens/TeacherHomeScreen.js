@@ -7,8 +7,11 @@ import {
     SafeAreaView,
     ScrollView,
     RefreshControl,
-    Alert
+    Alert,
+    Button
 } from 'react-native';
+
+import moment from 'moment-timezone';
 
 import { useState, useEffect, useContext } from 'react';
 
@@ -99,14 +102,17 @@ export default function StudentHomeScreen({navigation}) {
     },[isFocused])
 
     async function checkClassStatus() {
+        setProfileIsLoading(true);
         const response = await checkClass(user.id);
 
         if (response.existed) {
             setClassData(response.info);
             setClassCreated(true);      
             response.info.data.started ? setClassStarted(true) : setClassStarted(false);
+            setProfileIsLoading(false);
         } else {
             setClassCreated(false);
+            setProfileIsLoading(false);
         }                       
     }
 
@@ -165,9 +171,12 @@ export default function StudentHomeScreen({navigation}) {
         const code = Math.random().toString(36).substring(2, 8);
 
         async function confirmNewClass() {
-            await createNewClass({code: code, teacherId: user.id, subject: user.subject, started: false});
-            setClassCreated(true); 
-            setProfileIsLoading(false);
+            const timeZone = moment.tz.guess(); 
+            const currentTime = moment().tz(timeZone);
+            const hours = currentTime.format('HH'); // Extracts hours in 24-hour format
+            const minutes = currentTime.format('mm'); // Extracts minutes
+            await createNewClass({code: code, teacherId: user.id, subject: user.subject, started: false, startedTime: {hour: hours, minutes: minutes}});
+            setClassCreated(true);             
             checkClassStatus();
         }
 
@@ -282,15 +291,7 @@ export default function StudentHomeScreen({navigation}) {
                     <ButtonInfoInput 
                         text='GROUPS'
                         onPressGeneral={toGroups}
-                    />                            
-                    {/* <ButtonInfoInput
-                        text='SCHEDULE'
-                        //onPressGeneral={searchTeachers}
-                    />
-                    <ButtonInfoInput
-                        text='FEEDBACK'
-                        //onPressGeneral={searchTeachers}
-                    /> */}                            
+                    />                                                      
                 </View>
             }
             {joinedSchool && !classCreated &&
