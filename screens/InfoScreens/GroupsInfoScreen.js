@@ -116,14 +116,14 @@ export default function GroupsInfoScreen({navigation, route}) {
                     //onPressGeneral={toTeachers}
                 />
             </View>
-            {authCtx.infoUser.type === 'School' &&
+            {/* {authCtx.infoUser.type === 'School' &&
                 <ButtonToClass
                     text='REPORT'
                     onPressGeneral={reportHandler}
                     colors={[Colors.color_lightGreen, Colors.color_darkBlue]}
                     start={{x: 0, y: 0}}
                 />
-            }
+            } */}
         </View>
     )
 }

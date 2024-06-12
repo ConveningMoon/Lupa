@@ -42,6 +42,8 @@ export default function StudentHomeScreen({navigation}) {
     const [disabledRequest, setDisabledRequest] = useState(false);
     const [requestMessage, setRequestMessage] = useState('JOIN TO YOUR SCHOOL');
 
+    const[codeClass, setCodeClass] = useState('');
+
     const [classData, setClassData] = useState();
     const [classCreated, setClassCreated] = useState(false);
     const [classStarted, setClassStarted] = useState(false);
@@ -169,6 +171,7 @@ export default function StudentHomeScreen({navigation}) {
         setProfileIsLoading(true);
 
         const code = Math.random().toString(36).substring(2, 8);
+        setCodeClass(code);
 
         async function confirmNewClass() {
             const timeZone = moment.tz.guess(); 
@@ -198,7 +201,7 @@ export default function StudentHomeScreen({navigation}) {
         async function confirmStartClass() {
             await startClassStatus(classData.id, {started: true});
             setClassStarted(true); 
-            setProfileIsLoading(false);
+            setProfileIsLoading(false); 
         }
 
         Alert.alert('START THE CLASS?', `Are you sure you want to start the class?`, [
@@ -303,6 +306,11 @@ export default function StudentHomeScreen({navigation}) {
                 />
             }
             {joinedSchool && classCreated && !classStarted &&
+                <View style={styles.codeContainer}>
+                    <Text style={styles.codeText}>Code: {codeClass}</Text>
+                </View>
+            }            
+            {joinedSchool && classCreated && !classStarted &&
                 <ButtonToClass
                     text='START THE CLASS'
                     onPressGeneral={startClassChandler}
@@ -400,4 +408,13 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center'
     },
+    codeContainer: {
+        alignSelf: 'center'
+    },
+    codeText: {
+        color: Colors.color_black,
+        fontWeight: 'bold',
+        fontSize: 20,
+        paddingVertical: 10
+    }
 });

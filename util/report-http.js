@@ -12,6 +12,10 @@ export async function fetchStudentReport(valueDate, valueStudentId, valueSubject
     //STARTING GRADES ANALYSIS
     const finalReport = {};
 
+    function calculateMean(data) {
+        return data.reduce((acc, val) => acc + val, 0) / data.length;
+    }
+
     const filterGrades = forDay ? Object.values(responseGrades.data).filter(grade => 
         (   
             new Date(grade.datetime).getUTCDate() === valueDay && 
@@ -23,19 +27,70 @@ export async function fetchStudentReport(valueDate, valueStudentId, valueSubject
         )
     );
 
-    let sumChoosenGrades = 0;
-    let lengthChoosenGrades = 0;
+    const filterPrevious = forDay ? Object.values(responseGrades.data).filter(grade => 
+        (   
+            new Date(grade.datetime).getUTCDate() === valueDay && 
+            new Date(grade.datetime).getUTCMonth() === valueMonth - 1
+        )
+    ) : Object.values(responseGrades.data).filter(grade => 
+        (    
+            new Date(grade.datetime).getUTCMonth() === valueMonth - 1
+        )
+    );
+
+    const gradesInMonths = {};
+    const listDaysInMonthGrades = [];
+    for (let key in filterGrades) {
+        if (!listDaysInMonthGrades.includes(new Date(filterGrades[key].datetime).getUTCDate())) {
+            listDaysInMonthGrades.push(new Date(filterGrades[key].datetime).getUTCDate());
+        }
+    }
+
+    const gradesInPrevious = {};
+    const listDaysInPreviousGrades = [];
+    for (let key in filterPrevious) {
+        if (!listDaysInPreviousGrades.includes(new Date(filterPrevious[key].datetime).getUTCDate())) {
+            listDaysInPreviousGrades.push(new Date(filterPrevious[key].datetime).getUTCDate());
+        }
+    }
+
+    for (let key in listDaysInMonthGrades) {
+        gradesInMonths[listDaysInMonthGrades[key]] = [];
+    }
+
+    for (let key in listDaysInPreviousGrades) {
+        gradesInPrevious[listDaysInPreviousGrades[key]] = [];
+    }
+
     for (let element  in filterGrades) {
         for (let key in filterGrades[element].grades) {
-            if (filterGrades[element].grades[key].studentId == valueStudentId && filterGrades[element].grades[key].subject === valueSubject) {
-                sumChoosenGrades += filterGrades[element].grades[key].grade;
-                lengthChoosenGrades += 1;
+            if (filterGrades[element].grades[key].studentId === valueStudentId) {
+                gradesInMonths[new Date(filterGrades[element].datetime).getUTCDate()].push(filterGrades[element].grades[key].grade);
             }
         }
     }
 
-    const averageChoosenGrade = sumChoosenGrades / lengthChoosenGrades;
-    finalReport.choosenGrade = {'subject': valueSubject, 'grade': averageChoosenGrade};
+    for (let element  in filterPrevious) {
+        for (let key in filterPrevious[element].grades) {
+            if (filterPrevious[element].grades[key].studentId === valueStudentId) {
+                gradesInPrevious[new Date(filterPrevious[element].datetime).getUTCDate()].push(filterPrevious[element].grades[key].grade);
+            }
+        }
+    }
+
+    for (let key in gradesInMonths) {
+        const averageGrades = calculateMean(gradesInMonths[key]);
+        gradesInMonths[key] = averageGrades;
+    }
+
+    for (let key in gradesInPrevious) {
+        const averageGrades = calculateMean(gradesInPrevious[key]);
+        gradesInPrevious[key] = averageGrades;
+    }
+
+    //const averageChoosenGrade = sumChoosenGrades / lengthChoosenGrades;
+    finalReport.choosenGradeAverage = calculateMean(Object.values(gradesInMonths));
+    finalReport.choosenPreviousAverage = calculateMean(Object.values(gradesInPrevious));
 
     const listSubjectsNames = [];
     for (let element in filterGrades) {
@@ -81,6 +136,9 @@ export async function fetchStudentReport(valueDate, valueStudentId, valueSubject
     }
     
     //STARTING EMOTION ANALYSIS
+    const emotionsValues = {
+        "HAPPY": 6, "SMILING": 5, "NEUTRAL": 4, "SURPRISED": 3, "ANGRY": 2, "SAD": 1
+    }
     const filterReports = forDay ? Object.values(responseReports.data).filter(report => 
         (   
             new Date(report.datetime).getUTCDate() === valueDay && 
@@ -133,6 +191,106 @@ export async function fetchStudentReport(valueDate, valueStudentId, valueSubject
 
     finalReport.choosenReport = subjectEmotions;
 
+    const emotionsInMonths = {};
+    const listDaysInMonthReports = [];
+    for (let key in filterReports) {
+        if (!listDaysInMonthReports.includes(new Date(filterReports[key].datetime).getUTCDate())) {
+            listDaysInMonthReports.push(new Date(filterReports[key].datetime).getUTCDate());
+        }
+    }
+
+    for (let key in listDaysInMonthReports) {
+        emotionsInMonths[listDaysInMonthReports[key]] = [];
+    }
+
+    for (let element in filterReports) {
+        if (filterReports[element].studentId === valueStudentId && filterReports[element].subject === valueSubject) {
+            let currentSum = 0;
+            let currentLength = 0;
+            for (let key in filterReports[element].emotions) {
+                currentSum += emotionsValues[filterReports[element].emotions[key].emotion];
+                currentLength += 1
+            }
+            emotionsInMonths[new Date(filterReports[element].datetime).getUTCDate()].push(currentSum/currentLength);
+        }
+    }
+
+    for (let key in emotionsInMonths) {
+        const averageEmotions = calculateMean(emotionsInMonths[key]);
+        emotionsInMonths[key] = averageEmotions;
+    }
+
+    finalReport.choosenReportAverage = calculateMean(Object.values(emotionsInMonths));
+
+    //CHECKING NORMAL DISTRIBUTION    
+    function calculateStandardDeviation(data, mean) {
+        const squareDiffs = data.map(value => Math.pow(value - mean, 2));
+        const avgSquareDiff = calculateMean(squareDiffs);
+        return Math.sqrt(avgSquareDiff);
+    }
+    
+    function skewness(data) {
+        let mean = calculateMean(data);
+        let stdDev = calculateStandardDeviation(data, mean);
+        let n = data.length;
+        let skewness = data.reduce((acc, val) => acc + Math.pow(val - mean, 3), 0) / n;
+        return skewness / Math.pow(stdDev, 3);
+    }
+    
+    function kurtosis(data) {
+        let mean = calculateMean(data);
+        let stdDev = calculateStandardDeviation(data, mean);
+        let n = data.length;
+        let kurtosis = data.reduce((acc, val) => acc + Math.pow(val - mean, 4), 0) / n;
+        return (kurtosis / Math.pow(stdDev, 4)) - 3;
+    }
+    
+    function checkNormality(data) {
+        let dataSkewness = skewness(data);
+        let dataKurtosis = kurtosis(data);
+        if(Math.abs(dataSkewness) > 2 || Math.abs(dataKurtosis) > 2) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    finalReport.normalDistribution = checkNormality(Object.values(emotionsInMonths));
+
+    const finalListEmotions = [];
+    const finalListGrades = [];
+    for (let key in emotionsInMonths) {
+        finalListEmotions.push(emotionsInMonths[key]);
+        finalListGrades.push(gradesInMonths[key]);
+    } 
+
+    //STARTING CHECKING CORRELATION
+    function pearsonCorrelation(arr1, arr2) {
+        let n = arr1.length;
+        let sum1 = arr1.reduce((acc, val) => acc + val, 0);
+        let sum2 = arr2.reduce((acc, val) => acc + val, 0);
+        let sum1Sq = arr1.reduce((acc, val) => acc + val * val, 0);
+        let sum2Sq = arr2.reduce((acc, val) => acc + val * val, 0);
+        let pSum = arr1.map((val, i) => val * arr2[i]).reduce((acc, val) => acc + val, 0);
+        
+        let num = pSum - (sum1 * sum2 / n);
+        let den = Math.sqrt((sum1Sq - Math.pow(sum1, 2) / n) * (sum2Sq - Math.pow(sum2, 2) / n));
+        
+        if(den == 0) return 0;
+        
+        return num / den;
+    }
+    
+    finalReport.correlation = pearsonCorrelation(finalListEmotions, finalListGrades);
+
+    //STARTING SURVEY ANALYSIS
+    for (let element in filterReports) {
+        if (filterReports[element].studentId === valueStudentId && filterReports[element].subject === valueSubject) {
+            finalReport.surveyAverage = filterReports[element].average
+        }
+    }
+
+    //console.log(Object.keys(finalReport));
     return finalReport;
 }
 

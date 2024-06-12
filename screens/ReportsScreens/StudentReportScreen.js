@@ -39,6 +39,8 @@ export default function StudentReportScreen({route}) {
     const [selectedSubject, setSelectedSubject] = useState('No subject');
     const [selectedSubjectGrade, setSelectedSubjectGrade] = useState(0);
 
+    const [percentageComparation, setPercentageComparation] = useState(0);
+
     const [switchedToDay, setSwitchedToDay] = useState(true);
 
     const [bestSubject, setBestSubject] = useState('No subject');
@@ -60,6 +62,7 @@ export default function StudentReportScreen({route}) {
     const [thirdPercentage, setThirdPercentage] = useState(0);
 
     const [averageEmotion, setAverageEmotion] = useState(0);
+    const [averageTotal, setAverageTotal] = useState();
     const [normalDistribution, setNormalDistribution] = useState('NONE');
     const [correlation, setCorrelation] = useState('NONE');
     const [result, setResult] = useState('No results');
@@ -111,13 +114,26 @@ export default function StudentReportScreen({route}) {
     function checkCorrelation(value) {
         let r = value;
         r < -1 ? r = -1 : r > 1 ? r = 1 : r = value;
-        if (r >= -1 && r <= -0.2) {
+        if (r >= -1 && r <= -0.7) {
             return 'INVERSELY';
-        } else if (r > -0.2 && r <= 0.2) {
+        } else if (r > -0.7 && r < 0.7) {
             return 'NO CORRELATION';
-        } else if (r > 0.2 && r <= 1) {
+        } else if (r >= 0.7 && r <= 1) {
             return 'DIRECTLY';
         }
+    }
+    function checkSurveyValues(values) {
+        let review = ""
+        if (values['MATERIAL'] <= 5) {
+            review += "- Improve the material used or use extra support material.\n";
+        }
+        if (values['SPACE'] <= 5) {
+            review += "- Improve the space where the student is, a more comfortable space or with fewer interruptions.\n";
+        }
+        if (values['TEACHER'] <= 5) {
+            review += "- Consider acquiring a private tutor or changing instructors.\n";
+        } 
+        return review;
     }
     async function showHandler(modeDay) {
         setShowContent(true);
@@ -126,49 +142,80 @@ export default function StudentReportScreen({route}) {
         try {
             const responseStudent = await fetchStudentReport(selectedDate, student.id, selectedSubject, modeDay);
 
-            if (isNaN(responseStudent.choosenGrade['grade'])){
+            if (isNaN(responseStudent.choosenGradeAverage) || isNaN(responseStudent.choosenReportAverage)){
                 setCheckNoData(true);
                 setUpdateInfo(false);                
             } else { 
                 setCheckNoData(false); 
             };
-
+            //BEST SUBJECT
             setBestSubject(responseStudent.bestGrade.subject);
             setBestGrade(parseFloat(responseStudent.bestGrade.grade).toFixed(2));
-
+            //WORST SUBJECT
             setWorstSubject(responseStudent.worstGrade.subject);
             setWorstGrade(parseFloat(responseStudent.worstGrade.grade).toFixed(2));
-
-            setSelectedSubject(responseStudent.choosenGrade.subject);
-            setSelectedSubjectGrade(parseFloat(responseStudent.choosenGrade.grade).toFixed(2));
-
+            //CURRENT SUBJECT
+            setSelectedSubject(selectedSubject);
+            setSelectedSubjectGrade(parseFloat(responseStudent.choosenGradeAverage).toFixed(2));
+            // PREVIOUS MONTH
+            if(!isNaN(responseStudent.choosenPreviousAverage)) {
+                setPercentageComparation((((responseStudent.choosenGradeAverage - responseStudent.choosenPreviousAverage)/responseStudent.choosenPreviousAverage)*100).toFixed(3));
+            }
+            //3 EMOTIONS
             setFirstEmotion(Object.keys(responseStudent.choosenReport[0])[0]);
-            //setFirstEmoji(emojisEmotions[Object.keys(responseStudent.choosenReport[0])[0]]);
+            setFirstEmoji(emojisEmotions[Object.keys(responseStudent.choosenReport[0])[0]]);
             setFirstPercentage(parseFloat(Object.values(responseStudent.choosenReport[0])[0]).toFixed(3));
 
             setSecondEmotion(Object.keys(responseStudent.choosenReport[1])[0]);
-            //setSecondEmoji(emojisEmotions(Object.keys(responseStudent.choosenReport[1])[0]));
+            setSecondEmoji(emojisEmotions[Object.keys(responseStudent.choosenReport[1])[0]]);
             setSecondPercentage(parseFloat(Object.values(responseStudent.choosenReport[1])[0]).toFixed(3));
 
             setThirdEmotion(Object.keys(responseStudent.choosenReport[2])[0]);
-            //setThirdEmoji(emojisEmotions[Object.keys(responseStudent.choosenReport[2])[0]]);
+            setThirdEmoji(emojisEmotions[Object.keys(responseStudent.choosenReport[2])[0]]);
             setThirdPercentage(parseFloat(Object.values(responseStudent.choosenReport[2])[0]).toFixed(3));
-
-            const responseGeneral = await fetchGeneralReport(selectedDate, '', selectedSubject, false, false, student.id, true);
-
-            setAverageEmotion(responseGeneral.choosenReportAverage.toFixed(2));
-
-            responseGeneral.normalDistribution ? setNormalDistribution('YES') : setNormalDistribution('NO');
-
-            setCorrelation(checkCorrelation(responseGeneral.correlation));
-
-            if (responseGeneral.choosenGradeAverage <= 10 && responseGeneral.choosenGradeAverage >= 7) {
-                responseGeneral.normalDistribution ? setResult('EXCELLENT') : setResult('GOOD')
-            } else if (responseGeneral.choosenGradeAverage < 7 && responseGeneral.choosenGradeAverage >= 5) {
-                responseGeneral.normalDistribution ? setResult('THE MATERIAL SHOULD BE IMPROVED') : setResult("THE STUDENT'S EMOTIONAL ENVIRONMENT SHOULD BE IMPROVED")
-            } else if (responseGeneral.choosenGradeAverage < 5 && responseGeneral.choosenGradeAverage >= 0) {
-                responseGeneral.normalDistribution ? setResult('THE MATERIAL IS NOT WORKING') : setResult("THE STUDENT'S EMOTIONS HAVE PROBLEMS")
-            }                   
+            //AVERAGE EMOTIONS
+            setAverageEmotion(responseStudent.choosenReportAverage);
+            //NORMAL DISTRIBUTION
+            responseStudent.normalDistribution ? setNormalDistribution('YES') : setNormalDistribution('NO');
+            //PEARSON CORRELATION
+            setCorrelation(checkCorrelation(responseStudent.correlation));
+            //SURVEYS AVERAGE VALUES
+            setAverageTotal(responseStudent.surveyAverage);
+            //FINAL RESULT
+            if(responseStudent.choosenReportAverage >= 3) {
+                let distributionText = "";
+                if(!responseStudent.normalDistribution) {
+                    distributionText = "- Emotional instability.\n\n";
+                } else {
+                    distributionText = "- Normal change of emotions.\n\n";
+                }
+                const correlationValue = checkCorrelation(responseStudent.correlation);
+                const surveyValues = checkSurveyValues(responseStudent.surveyAverage);
+                if (correlationValue === 'INVERSELY') {
+                    setResult(distributionText + '- Consider eliminating possible distractions such as cell phones, video games, etc.\n\n' + surveyValues);
+                } else if (correlationValue === 'NO CORRELATION') {
+                    setResult(distributionText + '- No evidence of emotional interference or relationship.\n\n' + surveyValues);
+                } else if (correlationValue === 'DIRECTLY') {
+                    setResult(distributionText + '- Excellent.\n\n' + surveyValues);
+                }
+            } else {
+                let distributionText = "";
+                if(!responseStudent.normalDistribution) {
+                    distributionText = "- Emotional instability.\n\n";
+                } else {
+                    distributionText = "- Normal change of emotions.\n\n";
+                }
+                const correlationValue = checkCorrelation(responseStudent.correlation);
+                const surveyValues = checkSurveyValues(responseStudent.surveyAverage);
+                if (correlationValue === 'INVERSELY') {
+                    setResult(distributionText + '- Consider eliminating possible distractions such as cell phones, video games, etc.\n\n' + surveyValues);
+                } else if (correlationValue === 'NO CORRELATION') {
+                    setResult(distributionText + '- No evidence of emotional interference pr relationship.\n\n' + surveyValues);
+                } else if (correlationValue === 'DIRECTLY') {
+                    setResult(distributionText + '- Improve the students mood, recommend a psychological specialist.\n\n' + surveyValues);
+                }                
+            }
+                           
 
             setUpdateInfo(false);
         } catch {}
@@ -186,6 +233,9 @@ export default function StudentReportScreen({route}) {
         showHandler(false);
     }
 
+    function onInfoAverageSurvey() {
+        Alert.alert('What it means?', 'Score from 1 to 7, where 1 is the worst and 7 the best');
+    }
     function onInfoAverageEmotion() {
         Alert.alert('What it means?', 'Emotions values: \n \n \
         HAPPY: 6         SMILING: 5 \n \
@@ -280,12 +330,16 @@ export default function StudentReportScreen({route}) {
                             <View style={styles.contentContainer}>
                                 {checkNoData && 
                                     <View style={styles.noDataContainer}>
-                                        <Text style={styles.noDataText}>NO DATA FOUND</Text>
+                                        <Text style={styles.noDataText}>NO DATA FOUND OR SOMETHING IS MISSING</Text>
                                     </View>
                                 }
                                 {!checkNoData &&
                                     <View style={styles.infoContainer}>
-                                        <Text style={styles.titleText}>Top 3 emotions and grade of:</Text>
+                                        <View style={styles.compareContainer}>
+                                            <Text style={styles.titleText}>With previous month: </Text>
+                                            <Text style={styles.titleComparation}> {percentageComparation}%</Text>
+                                        </View>
+                                        <Text style={styles.titleText}>Average grade and emotions:</Text>
                                         <View style={styles.subjectContainer}>                        
                                             <Text style={styles.gradeText}>{selectedSubjectGrade}</Text>
                                             <Text style={styles.subjectNameText}>{selectedSubject}</Text>
@@ -305,33 +359,30 @@ export default function StudentReportScreen({route}) {
                                             <Text style={styles.emotionNameText}>{thirdEmotion}</Text>
                                             <Text style={styles.emotionPercentageText}>{thirdPercentage}%</Text>
                                         </View>
-                                        {!switchedToDay &&
-                                            <View style={styles.infoContainer}>
-                                                <View style={styles.averageContainer}>
-                                                    <Text style={styles.averageLabel}>Average emotion: </Text>
-                                                    <Text style={styles.averageResultText}>{averageEmotion}</Text>
-                                                    <Pressable onPress={onInfoAverageEmotion}>
-                                                        <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
-                                                    </Pressable>
-                                                </View>
-                                                <View style={styles.averageContainer}>
-                                                    <Text style={styles.averageLabel}>Normal distribution: </Text>
-                                                    <Text style={styles.averageResultText}>{normalDistribution}</Text>
-                                                    <Pressable onPress={onInfoNormalDistribution}>
-                                                        <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
-                                                    </Pressable>
-                                                </View>
-                                                <View style={styles.averageContainer}>
-                                                    <Text style={styles.averageLabel}>Correlation: </Text>
-                                                    <Text style={styles.averageResultText}>{correlation}</Text>
-                                                    <Pressable onPress={onInfoCorrelation}>
-                                                        <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
-                                                    </Pressable>                                            
-                                                </View>
-                                                <Text style={styles.resultLabel}>Result: </Text>
-                                                <Text style={styles.resultContentText}>{result}</Text>
+                                        <Text style={styles.titleText}>Survey:</Text>
+                                        <View style={styles.infoContainer}>
+                                            <View style={styles.averageContainer}>
+                                                <Text style={styles.averageLabel}>Material: </Text>
+                                                <Text style={styles.averageResultText}>{parseFloat(averageTotal['MATERIAL']).toFixed(2)}</Text>
+                                                <Pressable onPress={onInfoAverageSurvey}>
+                                                    <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
+                                                </Pressable>
                                             </View>
-                                        }
+                                            <View style={styles.averageContainer}>
+                                                <Text style={styles.averageLabel}>Teacher: </Text>
+                                                <Text style={styles.averageResultText}>{parseFloat(averageTotal['TEACHER']).toFixed(2)}</Text>
+                                                <Pressable onPress={onInfoAverageSurvey}>
+                                                    <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
+                                                </Pressable>
+                                            </View>
+                                            <View style={styles.averageContainer}>
+                                                <Text style={styles.averageLabel}>Space: </Text>
+                                                <Text style={styles.averageResultText}>{parseFloat(averageTotal['SPACE']).toFixed(2)}</Text>
+                                                <Pressable onPress={onInfoAverageSurvey}>
+                                                    <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
+                                                </Pressable>
+                                            </View>
+                                        </View>
                                         <Text style={styles.titleText}>Best subject</Text>
                                         <View style={styles.subjectContainer}>
                                             <Text style={styles.gradeText}>{bestGrade}</Text>
@@ -341,7 +392,37 @@ export default function StudentReportScreen({route}) {
                                         <View style={styles.subjectContainer}>                        
                                             <Text style={styles.gradeText}>{worstGrade}</Text>
                                             <Text style={styles.subjectNameText}>{worstSubject}</Text>
-                                        </View>                                        
+                                        </View>  
+                                        {!switchedToDay &&
+                                            <View>
+                                                <Text style={styles.titleText}>Stats:</Text>
+                                                <View style={styles.infoContainer}>
+                                                    <View style={styles.averageContainer}>
+                                                        <Text style={styles.averageLabel}>Average emotion: </Text>
+                                                        <Text style={styles.averageResultText}>{averageEmotion}</Text>
+                                                        <Pressable onPress={onInfoAverageEmotion}>
+                                                            <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
+                                                        </Pressable>
+                                                    </View>
+                                                    <View style={styles.averageContainer}>
+                                                        <Text style={styles.averageLabel}>Normal distribution: </Text>
+                                                        <Text style={styles.averageResultText}>{normalDistribution}</Text>
+                                                        <Pressable onPress={onInfoNormalDistribution}>
+                                                            <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
+                                                        </Pressable>
+                                                    </View>
+                                                    <View style={styles.averageContainer}>
+                                                        <Text style={styles.averageLabel}>Correlation: </Text>
+                                                        <Text style={styles.averageResultText}>{correlation}</Text>
+                                                        <Pressable onPress={onInfoCorrelation}>
+                                                            <AntDesign name="questioncircleo" size={20} color={Colors.color_darkGreen}/>
+                                                        </Pressable>                                            
+                                                    </View>
+                                                    <Text style={styles.resultLabel}>Result: </Text>
+                                                    <Text style={styles.resultContentText}>{result}</Text>
+                                                </View>
+                                            </View>
+                                        }                                      
                                     </View>
                                 }
                             </View>
@@ -391,6 +472,16 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         marginBottom: 30
         //backgroundColor: Colors.bg_blue,
+    },
+    compareContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    titleComparation: {
+        color: Colors.color_black,
+        fontWeight: 'bold',
+        fontSize: 30,
+        paddingBottom: 10
     },
     titleText: {
         color: Colors.gray_placeholder,
@@ -511,11 +602,12 @@ const styles = StyleSheet.create({
         width: '100%'
     },
     noDataContainer: {
-        marginTop: 200,
+        marginVertical: 200,
+        marginHorizontal: 10,
         alignItems: 'center'
     },
     noDataText: {
-        color: Colors.color_darkBlue,
+        color: Colors.gray_placeholder,
         fontSize: 25,
         fontWeight: 'bold'
     },
