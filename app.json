@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "AwesomeProject2",
-    "slug": "AwesomeProject2",
+    "name": "Lupa",
+    "slug": "Lupa",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,16 +15,27 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "1.0.0",
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.conveningmoon.Lupa"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a79d0282-a449-4f03-b802-26641d95fed0"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
